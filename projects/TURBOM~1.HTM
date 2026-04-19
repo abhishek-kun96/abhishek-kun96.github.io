@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Turbomachinery CFD &amp; Aerodynamic Development — Abhishek Kuntal</title>
+  <meta name="description" content="Honeywell turbomachinery CFD case study — RANS, CHT, mesh morphing, UQ, and Python automation that cut analysis time 26% and saved $33K/yr." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav-brand" href="../index.html">AK.</a>
+      <ul class="nav-links">
+        <li><a href="../work.html">Work</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../resume.html">Résumé</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme" data-theme-toggle>
+        <span class="theme-toggle-icon" aria-hidden="true">◐</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <header class="page-header">
+      <div class="container">
+        <p class="eyebrow">Case study · CFD &amp; automation</p>
+        <h1>Turbomachinery CFD &amp; aerodynamic development.</h1>
+        <p>Four years of RANS, CHT, and transient stage simulations for Honeywell gas-turbine components — plus the Python and VBA pipelines that made the results decision-ready.</p>
+      </div>
+    </header>
+
+    <section class="container case">
+      <dl class="case-meta">
+        <div><dt>Context</dt><dd>Industry — Honeywell Technology Solutions</dd></div>
+        <div><dt>Role</dt><dd>Sr. Mechanical Design Engineer</dd></div>
+        <div><dt>Duration</dt><dd>2019 – 2023</dd></div>
+        <div><dt>Stack</dt><dd>ANSYS CFX, ICEM, Python, VBA, SAP</dd></div>
+      </dl>
+
+      <div class="case-section">
+        <h2>Problem</h2>
+        <p>
+          Honeywell&#39;s gas-turbine blades needed continuous aerodynamic refinement under tight mass and tool-readiness
+          constraints. Each geometry variant had to be meshed, simulated, validated against rig data, and cleared
+          for manufacturing — and engineers were spending an outsized share of every cycle on manual data extraction
+          from solver output, slowing iteration velocity.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Approach</h2>
+        <ul>
+          <li>3D compressible RANS simulations through rotor / stator passages with SST k-ω and realisable k-ε turbulence closures, chosen based on separation sensitivity and near-wall behaviour.</li>
+          <li>Mesh morphing for parametric geometry sweeps — re-meshing avoided where surface topology was preserved, which cut wall-clock per design point dramatically.</li>
+          <li>Uncertainty quantification across tip-clearance and blade-angle tolerance windows to understand performance scatter before committing to manufacture.</li>
+          <li>CHT-coupled thermal analysis on blade internal cooling passages for the hot-section variants.</li>
+          <li>Validation against rig test data: total pressure ratio, isentropic efficiency, and stage temperature rise.</li>
+          <li>A Python + VBA post-processing layer: CFX solver output → metric extraction → performance-comparison dashboards consumed by the wider design review team.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Tools &amp; setup</h2>
+        <ul>
+          <li><strong>ANSYS CFX</strong> — rotating machinery solver, turbo post-processing, CHT.</li>
+          <li><strong>ANSYS Meshing + ICEM CFD</strong> — structured hexahedral grids for periodic passages.</li>
+          <li><strong>Python (NumPy, Pandas, Matplotlib)</strong> — automated result parsing, performance dashboards, parametric sensitivity reports.</li>
+          <li><strong>Excel VBA</strong> — interactive performance comparison dashboards for engineering review.</li>
+          <li><strong>SAP / ERP</strong> — cross-functional coordination with test and manufacturing teams.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Results</h2>
+        <div class="results-grid">
+          <div class="result">
+            <div class="result-value">26%</div>
+            <div class="result-label">Reduction in manual analysis time</div>
+          </div>
+          <div class="result">
+            <div class="result-value">$33K</div>
+            <div class="result-label">Annual engineering savings</div>
+          </div>
+          <div class="result">
+            <div class="result-value">±3%</div>
+            <div class="result-label">Stage efficiency vs. rig data</div>
+          </div>
+          <div class="result">
+            <div class="result-value">On-time</div>
+            <div class="result-label">Mass-optimised geometries, no schedule slip</div>
+          </div>
+        </div>
+
+        <div class="figure-placeholder">
+          Figure 1 — Pressure contour plots, baseline vs. optimised geometry.
+          <br />
+          Drop an image at <code>assets/images/turbo-pressure-contour.png</code>, then replace this block with an
+          <code>&lt;img&gt;</code> tag.
+        </div>
+        <div class="figure-placeholder">
+          Figure 2 — Python performance dashboard screenshot.
+          <br />
+          Save at <code>assets/images/turbo-dashboard.png</code>.
+        </div>
+      </div>
+
+      <div class="case-section">
+        <h2>Validation</h2>
+        <p>
+          Stage-level metrics were cross-checked against Honeywell rig test campaigns. Total pressure ratio,
+          isentropic efficiency, and stage temperature rise agreed within ±2–3%, which was within the combined
+          measurement and modelling uncertainty window we had quantified up front. Where disagreements appeared,
+          the UQ sweep was revisited rather than tuning the CFD — a practice that kept the models honest.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons learned</h2>
+        <ul>
+          <li>The biggest lift came from automating the last mile of post-processing, not from a better solver or finer mesh. Engineers ignore results they can&#39;t see; the dashboard layer was what moved the needle.</li>
+          <li>Mesh morphing pays off only when surface topology is stable across the sweep. For larger geometry changes, full re-meshing was faster end-to-end.</li>
+          <li>UQ was initially sold internally as &quot;nice to have&quot;, but it turned into the most persuasive slide in every design review — quantifying risk made approval decisions cleaner.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Artifacts</h2>
+        <ul>
+          <li>Technical brief PDFs (anonymised — available on request).</li>
+          <li>Python post-processing snippet — drop at <code>assets/code/cfx_parser.py</code> and link here.</li>
+          <li>Performance dashboard screenshots (add to <code>assets/images/</code>).</li>
+        </ul>
+      </div>
+
+      <nav class="case-nav" aria-label="Project navigation">
+        <a class="btn btn-ghost" href="../work.html">← All projects</a>
+        <a class="btn btn-primary" href="cooling-passage-cht.html">Next: CHT cooling passage →</a>
+      </nav>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span data-year></span> Abhishek Kuntal · Munich</p>
+      <p class="footer-links">
+        <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://www.linkedin.com/in/abhishek-kuntal-4155b7124/" target="_blank" rel="noopener">LinkedIn</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js" defer></script>
+</body>
+</html>
