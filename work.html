@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Work — Abhishek Kuntal</title>
+  <meta name="description" content="Selected CFD, materials, and automation projects by Abhishek Kuntal — Honeywell turbomachinery, BARC heat exchangers, TUM research." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav-brand" href="index.html">AK.</a>
+      <ul class="nav-links">
+        <li><a href="work.html">Work</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="resume.html">Résumé</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme" data-theme-toggle>
+        <span class="theme-toggle-icon" aria-hidden="true">◐</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <header class="page-header">
+      <div class="container">
+        <p class="eyebrow">Selected work · 2018 – 2026</p>
+        <h1>Projects.</h1>
+        <p>Industrial CFD studies from Honeywell, research projects from TUM and BARC, and the Python / VBA tooling I built around them. Click any card for the full case study.</p>
+      </div>
+    </header>
+
+    <section class="container" aria-label="Project list">
+      <div class="filter-bar" role="toolbar" aria-label="Filter projects" data-filter-bar>
+        <button type="button" class="filter-btn" data-filter="all" aria-pressed="true">All</button>
+        <button type="button" class="filter-btn" data-filter="cfd" aria-pressed="false">CFD &amp; Simulation</button>
+        <button type="button" class="filter-btn" data-filter="materials" aria-pressed="false">Experimental &amp; Materials</button>
+        <button type="button" class="filter-btn" data-filter="automation" aria-pressed="false">Automation &amp; Tools</button>
+      </div>
+
+      <div class="project-grid">
+
+        <a class="project-card" href="projects/turbomachinery-cfd.html" data-category="cfd automation">
+          <span class="project-tag">CFD · Honeywell · 2019–2023</span>
+          <h3 class="project-title">Turbomachinery CFD &amp; aerodynamic development</h3>
+          <p class="project-summary">RANS stage simulations with mesh morphing and uncertainty quantification; built Python pipelines that cut analysis time by 26% and saved $33K/yr.</p>
+          <div class="project-tools">
+            <span class="tool">ANSYS CFX</span>
+            <span class="tool">ICEM</span>
+            <span class="tool">Python</span>
+            <span class="tool">VBA</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="projects/cooling-passage-cht.html" id="cht" data-category="cfd">
+          <span class="project-tag">CHT · Honeywell · 2019–2023</span>
+          <h3 class="project-title">Cooling-passage CHT &amp; sand-resilient redesign</h3>
+          <p class="project-summary">Conjugate heat-transfer root-cause investigation of cooling-passage anomalies; defined repair thresholds and a sand-resilient passage redesign with verified fatigue margins.</p>
+          <div class="project-tools">
+            <span class="tool">ANSYS CFX</span>
+            <span class="tool">ANSYS Mechanical</span>
+            <span class="tool">SolidWorks</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="projects/transient-fod.html" data-category="cfd">
+          <span class="project-tag">Transient CFD · Honeywell</span>
+          <h3 class="project-title">Transient FOD damage thresholds</h3>
+          <p class="project-summary">Transient Fluent simulations of compressor blade damage to define repair-vs-replace envelopes; results fed Honeywell maintenance criteria.</p>
+          <div class="project-tools">
+            <span class="tool">ANSYS Fluent</span>
+            <span class="tool">Transient</span>
+            <span class="tool">Structural</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="projects/shell-tube-barc.html" id="barc" data-category="cfd">
+          <span class="project-tag">CFD · BARC · 2018</span>
+          <h3 class="project-title">Shell-and-tube HX optimisation</h3>
+          <p class="project-summary">Parametric DOE on baffle spacing and tube pitch; ~22% improvement in heat-transfer efficiency, validated against Kern / Dittus-Boelter correlations.</p>
+          <div class="project-tools">
+            <span class="tool">ANSYS Fluent</span>
+            <span class="tool">DOE</span>
+            <span class="tool">SolidWorks</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="projects/wind-farm-wake.html" data-category="cfd">
+          <span class="project-tag">CFD · TUM</span>
+          <h3 class="project-title">Wind-farm wake aerodynamics</h3>
+          <p class="project-summary">Actuator-disk simulations with k-ω SST in an atmospheric boundary layer; layout sweep to maximise total farm power output.</p>
+          <div class="project-tools">
+            <span class="tool">ANSYS Fluent</span>
+            <span class="tool">OpenFOAM</span>
+            <span class="tool">Python</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="projects/hot-wire-anemometry.html" data-category="materials">
+          <span class="project-tag">Experiment · TUM</span>
+          <h3 class="project-title">Hot-wire anemometry &amp; wind-tunnel validation</h3>
+          <p class="project-summary">CTA boundary-layer profiling with a LabVIEW FPGA DAQ; entrance length measured within ±5% of the analytical Blasius prediction.</p>
+          <div class="project-tools">
+            <span class="tool">LabVIEW FPGA</span>
+            <span class="tool">CTA</span>
+            <span class="tool">Python</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="projects/thermomechanical-modeling.html" data-category="materials">
+          <span class="project-tag">Materials · TUM</span>
+          <h3 class="project-title">Thermomechanical characterisation &amp; HAZ modelling</h3>
+          <p class="project-summary">Gleeble 3800 thermal cycling of weld HAZs; SEM + Vickers mapping with a Python hardness-prediction model accurate to ±8 HV.</p>
+          <div class="project-tools">
+            <span class="tool">Gleeble 3800</span>
+            <span class="tool">SEM</span>
+            <span class="tool">Python</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="projects/solid-state-electrolytes.html" data-category="materials">
+          <span class="project-tag">Materials · TUM · 2024–25</span>
+          <h3 class="project-title">Solid-state electrolytes — GDC thin films</h3>
+          <p class="project-summary">Spray pyrolysis of nanostructured GDC films; SEM interface characterisation correlating processing parameters with grain size and homogeneity.</p>
+          <div class="project-tools">
+            <span class="tool">Spray pyrolysis</span>
+            <span class="tool">SEM</span>
+            <span class="tool">Image analysis</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span data-year></span> Abhishek Kuntal · Munich</p>
+      <p class="footer-links">
+        <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://www.linkedin.com/in/abhishek-kuntal-4155b7124/" target="_blank" rel="noopener">LinkedIn</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>
