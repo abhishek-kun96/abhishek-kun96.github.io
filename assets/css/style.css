@@ -714,6 +714,61 @@ code, pre {
   .reveal { opacity: 1; transform: none; }
 }
 
+/* --- Case-study figures & media ---------------------------------------- */
+.case figure {
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--bg-elevated);
+}
+.case figure img,
+.case figure video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.case figure figcaption {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg-muted);
+}
+.case-figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.case-figures figure { margin: 0; }
+.case .video-hero {
+  margin: 1rem 0 2rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: #000;
+}
+.case .video-hero video { width: 100%; display: block; }
+.callout {
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  padding: 1rem 1.25rem;
+  border-radius: 0.25rem;
+  margin: 1.5rem 0;
+  color: var(--text);
+}
+.callout p:last-child { margin-bottom: 0; }
+.ip-note {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--text-faint);
+  border: 1px dashed var(--border-strong);
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.25rem;
+  margin: 1rem 0;
+}
+
 /* --- Small screens ------------------------------------------------------ */
 @media (max-width: 540px) {
   .nav-links { gap: 1rem; }
