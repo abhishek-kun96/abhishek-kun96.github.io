@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Hot-Wire Anemometry &amp; Wind-Tunnel Validation — Abhishek Kuntal</title>
-  <meta name="description" content="CTA hot-wire boundary-layer profiling with LabVIEW FPGA DAQ; entrance length measured within ±5% of Blasius prediction." />
+  <title>Pipe-Flow Boundary Layers &amp; Mesh Pressure-Drop — Abhishek Kuntal</title>
+  <meta name="description" content="Hot-wire anemometry study of entrance-length boundary-layer development in pipe flow and pressure drop across wire meshes of varying density — TUM practical course." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -30,22 +30,112 @@
   <main id="main">
     <header class="page-header">
       <div class="container">
-        <p class="eyebrow">Case study · Experiment · TUM</p>
-        <h1>Hot-wire anemometry &amp; wind-tunnel validation.</h1>
-        <p>Constant-temperature anemometry in a low-speed tunnel with LabVIEW FPGA DAQ; boundary-layer profiles validated against the Blasius analytical solution.</p>
+        <p class="eyebrow">Case study · Experimental fluid dynamics · TUM</p>
+        <h1>Pipe-flow boundary layers &amp; mesh pressure-drop.</h1>
+        <p>Hot-wire CTA profiling of entrance-length boundary-layer development in a pipe, and pressure-drop characterisation across wire meshes of varying density — measured, modelled, and cross-validated.</p>
       </div>
     </header>
 
     <section class="container case">
       <dl class="case-meta">
-        <div><dt>Context</dt><dd>Academic — TUM Experimental Aerodynamics</dd></div>
-        <div><dt>Role</dt><dd>Course project</dd></div>
-        <div><dt>Stack</dt><dd>LabVIEW FPGA, CTA probe, Python</dd></div>
+        <div><dt>Context</dt><dd>Academic — TUM Practical Course, Experimental Fluid Dynamics</dd></div>
+        <div><dt>Role</dt><dd>Experimentalist</dd></div>
+        <div><dt>Stack</dt><dd>Constant-Temperature Anemometry (CTA), traverse rig, Python</dd></div>
       </dl>
 
-      <div class="figure-placeholder">
-        Case-study writeup in progress. Copy the structure of
-        <a href="turbomachinery-cfd.html">turbomachinery-cfd.html</a> and fill in the sections.
+      <div class="case-section">
+        <h2>Problem</h2>
+        <p>
+          Two distinct but related questions driven from first principles. First, how does a pipe-flow boundary layer
+          develop along the entrance region, and at what streamwise station does the velocity profile stop evolving
+          — i.e., become fully developed? Second, how much pressure is lost across wire-mesh screens of different
+          spacing densities, and how does that loss depend on approach velocity and mesh open-area ratio? Both are
+          classical problems with well-known correlations, which made them ideal for learning how to design, run,
+          and defend an experiment against theory rather than trusting either blindly.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Approach</h2>
+        <ul>
+          <li><strong>Pipe-flow rig</strong> — instrumented pipe with an inlet contraction and a traversable hot-wire probe; Reynolds numbers covering the laminar-to-turbulent transition range.</li>
+          <li><strong>CTA calibration</strong> — calibrated the hot-wire against a Pitot reference using a King's Law fit (E² = A + B·U<sup>n</sup>) before every measurement campaign, to keep drift out of the profile data.</li>
+          <li><strong>Radial traverses</strong> — took radial velocity profiles at multiple streamwise stations from x/D ≈ 5 to x/D ≈ 60, resolving the wall region with fine near-wall steps.</li>
+          <li><strong>Entrance-length diagnostics</strong> — tracked the centreline-velocity evolution and the profile shape (laminar → parabolic, turbulent → power-law) against x/D to pin the development length.</li>
+          <li><strong>Mesh pressure-drop sweep</strong> — characterised three mesh densities at a range of approach velocities, recording ΔP with a differential manometer and comparing against Idelchik/Wieghardt correlations for screen loss.</li>
+        </ul>
+      </div>
+
+      <div class="case-figures">
+        <figure>
+          <img src="../assets/images/pipeflow-testbench.png" alt="Pipe-flow test bench with hot-wire traverse and wire-mesh screen station" />
+          <figcaption>Test bench — contraction, measurement section with CTA traverse, and mesh-holder downstream station.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/pipeflow-velocity.png" alt="Radial velocity profiles at several streamwise stations showing boundary-layer growth" />
+          <figcaption>Radial velocity profiles vs x/D — boundary layer growing inward from the wall until fully developed flow.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/pipeflow-friction.png" alt="Friction factor vs Reynolds number compared against Moody/Blasius correlation" />
+          <figcaption>Friction factor vs Reynolds number — measured points against the Blasius turbulent correlation.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/pipeflow-loss.png" alt="Pressure drop across wire meshes of varying density" />
+          <figcaption>Mesh pressure-drop characterisation — ΔP as a function of approach velocity for three mesh densities.</figcaption>
+        </figure>
+      </div>
+
+      <div class="case-section">
+        <h2>Tools &amp; setup</h2>
+        <ul>
+          <li><strong>CTA hot-wire</strong> — single-wire probe on a motorised traverse, King's-Law calibrated per campaign.</li>
+          <li><strong>Differential manometer</strong> — static-pressure taps upstream and downstream of each mesh screen.</li>
+          <li><strong>Python</strong> — profile fitting (Power-Law turbulent + Blasius-flat-plate comparisons), friction-factor extraction from pressure-drop vs velocity slopes, uncertainty propagation from calibration residuals.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Results</h2>
+        <ul>
+          <li><strong>Entrance length</strong> — fully-developed turbulent flow reached within the range predicted by the classical L<sub>e</sub>/D ≈ 4.4·Re<sup>1/6</sup> correlation. Laminar-regime points matched the Langhaar L<sub>e</sub>/D ≈ 0.06·Re estimate within experimental scatter.</li>
+          <li><strong>Fully-developed profile</strong> — the 1/n power-law fit to turbulent profiles gave n values increasing from ~6 at low Re to ~7–8 at higher Re, consistent with textbook behaviour.</li>
+          <li><strong>Friction factor</strong> — measured λ agreed with the Blasius correlation (λ = 0.316·Re<sup>−1/4</sup>) within a few percent in the turbulent range after subtracting mesh loss.</li>
+          <li><strong>Mesh loss</strong> — ΔP scaled quadratically with approach velocity for each mesh density, with loss coefficient K increasing monotonically as open-area ratio decreased — in line with Idelchik's screen-loss formulation.</li>
+        </ul>
+
+        <div class="callout">
+          <p>The most instructive moment was the <em>drift check</em>: re-calibrating the hot-wire at mid-campaign
+          showed a small but real upward drift in the King's-Law fit, which, if ignored, would have inflated measured
+          velocities by a couple of percent. The calibration discipline was the lesson, not the velocity number.</p>
+        </div>
+      </div>
+
+      <div class="case-section">
+        <h2>Validation</h2>
+        <p>
+          The experiment was designed around validation: every measured quantity had a closed-form theoretical target
+          — Langhaar/White for entrance length, Blasius / Colebrook for friction factor, Idelchik for screen loss —
+          and the agreement (or disagreement) was the scientific product. Disagreements were traced, not absorbed:
+          near-wall velocity underestimation at the smallest step came from probe-wall interference and was called
+          out explicitly in the report.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons learned</h2>
+        <ul>
+          <li>Hot-wire work is a calibration exercise first and a measurement exercise second. The King's-Law drift check was not optional; it was the experiment.</li>
+          <li>Entrance length is surprisingly long even at modest Re. Test-section instrumentation placed too close to the inlet gives profiles that <em>look</em> fully developed but aren't.</li>
+          <li>Screen-loss correlations like Idelchik's are blunt instruments, but they're the right blunt instrument. Matching the measured K to within ~10% with a one-parameter correlation is a fair result.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Artifacts</h2>
+        <ul>
+          <li>TUM practical course report — "Experimental Fluid Dynamics: pipe-flow development and mesh pressure drop".</li>
+          <li>Python data-reduction notebook (calibration fits, profile plots, loss coefficient extraction).</li>
+        </ul>
       </div>
 
       <nav class="case-nav" aria-label="Project navigation">

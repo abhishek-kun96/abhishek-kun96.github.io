@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CALPHAD Ni-Superalloy Workflow — Abhishek Kuntal</title>
+  <meta name="description" content="Self-directed CALPHAD + machine-learning workflow for Ni-base superalloy composition screening — pycalphad thermodynamics, Latin Hypercube sampling, surrogate ML with bootstrap UQ, and a top-candidate ranking by γ/γ′ stability and TCP phase avoidance." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav-brand" href="../index.html">AK.</a>
+      <ul class="nav-links">
+        <li><a href="../work.html">Work</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../resume.html">Résumé</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme" data-theme-toggle>
+        <span class="theme-toggle-icon" aria-hidden="true">◐</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <header class="page-header">
+      <div class="container">
+        <p class="eyebrow">Case study · CALPHAD + ML · Self-directed</p>
+        <h1>CALPHAD Ni-superalloy composition workflow.</h1>
+        <p>A self-directed project to learn CALPHAD end-to-end: thermodynamic equilibrium calculations in pycalphad, Latin-Hypercube composition sweeps, machine-learning surrogates with bootstrap uncertainty, and a candidate-ranking rule for γ/γ′ superalloys.</p>
+      </div>
+    </header>
+
+    <section class="container case">
+      <dl class="case-meta">
+        <div><dt>Context</dt><dd>Self-directed — learning CALPHAD &amp; surrogate modelling</dd></div>
+        <div><dt>Role</dt><dd>Modeller</dd></div>
+        <div><dt>Stack</dt><dd>pycalphad, scikit-learn, SciPy, NumPy, Pandas, Matplotlib</dd></div>
+      </dl>
+
+      <div class="case-section">
+        <h2>Problem</h2>
+        <p>
+          Ni-base superalloys are designed around a two-phase γ (FCC disordered) matrix / γ′ (L1<sub>2</sub>-ordered Ni<sub>3</sub>Al-type)
+          structure. Alloying elements partition between the two phases; some stabilise γ′, some raise the solvus,
+          some form unwanted topologically-close-packed (TCP) phases like σ, μ, or Laves at high operating
+          temperatures. The design question — which composition windows keep γ/γ′ stable at service temperature
+          without unlocking TCP phases — is a multi-variable thermodynamic problem. CALPHAD is the standard tool for
+          it, but evaluating enough compositions to map the window directly is slow. The goal here was pedagogical
+          and practical: build the end-to-end workflow from thermodynamic equilibria to a machine-learning surrogate
+          that can rank composition candidates by a design-relevant score.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Approach</h2>
+        <ul>
+          <li><strong>pycalphad equilibrium calculations</strong> — multicomponent Ni-Al-Cr-Co-Mo-Ti-W-Re-Ta system (subset depending on database availability). For each composition, computed equilibrium phase fractions of γ, γ′, and TCP families at a representative service temperature.</li>
+          <li><strong>Latin Hypercube Sampling</strong> — LHS across the composition space rather than a full factorial grid, which gives good space-filling at a fraction of the evaluation cost. A few hundred CALPHAD calls gave enough samples to train a surrogate.</li>
+          <li><strong>Feature engineering</strong> — composition-level features plus cheap derived quantities (electron-hole number N<sub>v</sub>, average atomic radius, γ′-former vs γ-stabiliser balance) known from the metallurgy literature to correlate with phase stability.</li>
+          <li><strong>Surrogate ML</strong> — regressors (Random Forest, Gaussian Process) trained on the CALPHAD output to predict γ′ fraction and TCP presence directly from composition. The surrogate is what makes composition ranking tractable at screening scale.</li>
+          <li><strong>Bootstrap UQ</strong> — resampled-training-set bootstrap to produce prediction intervals, not point predictions. Candidates with uncertain predictions were flagged rather than ranked.</li>
+          <li><strong>Ranking rule</strong> — score each candidate by predicted γ′ fraction within a target band and a heavy penalty on predicted TCP presence; surface the top-N for inspection.</li>
+        </ul>
+      </div>
+
+      <div class="case-figures">
+        <figure>
+          <img src="../assets/images/calphad-bootstrap.png" alt="Bootstrap prediction intervals for surrogate ML model predictions of phase fraction" />
+          <figcaption>Bootstrap prediction intervals — the surrogate reports uncertainty, not just a point estimate.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/calphad-feature-importance.png" alt="Random-forest feature importance highlighting Al, Ti, Cr, Co as top drivers of γ′ fraction" />
+          <figcaption>Feature importance — γ′-forming and γ-stabilising elements dominate as expected from the metallurgy.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/calphad-topcandidates.png" alt="Top candidate compositions ranked by composite γ/γ′-TCP score" />
+          <figcaption>Top candidate compositions — ranked by predicted γ′ fraction in target band, penalised for TCP presence.</figcaption>
+        </figure>
+      </div>
+
+      <div class="case-section">
+        <h2>Tools &amp; setup</h2>
+        <ul>
+          <li><strong>pycalphad</strong> — open-source multicomponent thermodynamic equilibrium solver with CALPHAD databases.</li>
+          <li><strong>scikit-learn</strong> — Random Forest and Gaussian Process regressors; cross-validation and bootstrap routines.</li>
+          <li><strong>SciPy</strong> — Latin Hypercube sampling via <code>scipy.stats.qmc</code>.</li>
+          <li><strong>NumPy / Pandas / Matplotlib</strong> — vectorised feature engineering, bookkeeping, and visualisation of the surrogate, bootstrap intervals, and ranked candidates.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Outcomes</h2>
+        <ul>
+          <li><strong>End-to-end workflow</strong> — a reusable pipeline (LHS → pycalphad → feature engineering → ML surrogate → bootstrap UQ → ranking) that replaces a by-hand composition search.</li>
+          <li><strong>Surrogate quality</strong> — Random Forest and GP surrogates both tracked the CALPHAD-predicted γ′ fraction closely on held-out compositions; the GP additionally gave calibrated uncertainty.</li>
+          <li><strong>Ranked shortlist</strong> — top-candidate compositions identified with predicted γ′ in the target band and predicted TCP presence below threshold, each with a bootstrap interval on the prediction.</li>
+        </ul>
+
+        <div class="callout">
+          <p>The workflow is the deliverable, not the ranked list. A published commercial alloy was not the point —
+          the point was to establish that "CALPHAD + ML surrogate + bootstrap UQ" is a practical screening pattern
+          and to build the muscle to apply it to a real composition search.</p>
+        </div>
+      </div>
+
+      <div class="case-section">
+        <h2>Validation</h2>
+        <p>
+          The surrogate was cross-validated against held-out pycalphad equilibrium calculations. Feature-importance
+          rankings were checked against known superalloy metallurgy — Al and Ti drove γ′ formation in the expected
+          direction; Cr and Co partitioned into γ consistent with the literature; TCP predictions flagged the usual
+          heavy-element-rich combinations. When the surrogate's bootstrap interval was wider than the γ′ band width,
+          that composition was kept <em>out</em> of the ranked shortlist — uncertainty was treated as a filter, not
+          a cosmetic.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons learned</h2>
+        <ul>
+          <li>The ML surrogate is only useful if the CALPHAD evaluations behind it are physically right. Most of the project's time went into getting the thermodynamic database and phase selection correct, not into the ML layer.</li>
+          <li>Latin Hypercube gives you 80% of the value of a full factorial at a small fraction of the evaluation cost. For composition screening it's the correct default.</li>
+          <li>Point-predictions without UQ are not good enough for design. Bootstrap intervals let the surrogate admit what it does not know, which is the only honest way to rank.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Artifacts</h2>
+        <ul>
+          <li>Self-study report — "CALPHAD Ni-Superalloy Workflow: equilibrium, surrogate, UQ, ranking".</li>
+          <li>Python workflow notebook (pycalphad + sklearn), shareable on request.</li>
+        </ul>
+      </div>
+
+      <nav class="case-nav" aria-label="Project navigation">
+        <a class="btn btn-ghost" href="../work.html">← All projects</a>
+        <a class="btn btn-primary" href="bioreactor-cfd.html">Next: Bioreactor CFD (passion project) →</a>
+      </nav>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span data-year></span> Abhishek Kuntal · Munich</p>
+      <p class="footer-links">
+        <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://www.linkedin.com/in/abhishek-kuntal-4155b7124/" target="_blank" rel="noopener">LinkedIn</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+  <script src="../assets/js/main.js" defer></script>
+</body>
+</html>

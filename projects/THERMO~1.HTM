@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Thermomechanical Characterisation &amp; HAZ Modelling — Abhishek Kuntal</title>
-  <meta name="description" content="Gleeble 3800 thermal cycling, SEM and Vickers mapping, with a Python hardness-prediction model accurate to ±8 HV." />
+  <title>Thermomechanical Behaviour &amp; HAZ Modelling — Abhishek Kuntal</title>
+  <meta name="description" content="Gleeble thermal-cycling study of S355J2C+C weld/AM HAZ with Vickers hardness mapping and an extended open-source Python model for TTT-curve and hardness prediction." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -30,27 +30,128 @@
   <main id="main">
     <header class="page-header">
       <div class="container">
-        <p class="eyebrow">Case study · Materials · TUM</p>
-        <h1>Thermomechanical characterisation &amp; HAZ modelling.</h1>
-        <p>Gleeble 3800 thermal cycling of weld HAZs with SEM and Vickers mapping; Python hardness-prediction model accurate to ±8 HV.</p>
+        <p class="eyebrow">Case study · Thermomechanical materials behaviour · TUM</p>
+        <h1>Weld / AM HAZ behaviour — experiment + extended Python model.</h1>
+        <p>Gleeble thermal-cycling study of S355J2C+C heat-affected zones with Vickers hardness mapping, and an extended open-source Python model that predicts hardness and TTT-curve behaviour directly from the imposed thermal cycle.</p>
       </div>
     </header>
 
     <section class="container case">
       <dl class="case-meta">
-        <div><dt>Context</dt><dd>Academic — TUM Materials Characterisation</dd></div>
-        <div><dt>Role</dt><dd>M.Sc. project</dd></div>
-        <div><dt>Stack</dt><dd>Gleeble 3800, SEM, Python, OriginPro</dd></div>
+        <div><dt>Context</dt><dd>Academic — TUM Practical Course, Thermomechanical Material Behaviour in Additive Manufacturing &amp; Welding</dd></div>
+        <div><dt>Role</dt><dd>Experimentalist + modelling extension (beyond course scope)</dd></div>
+        <div><dt>Stack</dt><dd>Gleeble thermal simulator, Vickers HV1, metallography, Python</dd></div>
       </dl>
 
-      <div class="figure-placeholder">
-        Case-study writeup in progress. Copy the structure of
-        <a href="turbomachinery-cfd.html">turbomachinery-cfd.html</a> and fill in the sections.
+      <div class="case-section">
+        <h2>Problem</h2>
+        <p>
+          The heat-affected zone (HAZ) next to a weld or along an additively-manufactured deposit line is not a single
+          microstructure — it's a gradient driven by peak temperature and cooling rate that change with distance from
+          the heat source. In S355J2C+C structural steel, that gradient runs from untransformed base metal, through
+          partially-transformed intercritical zones, to fully austenitised and then quenched grain-coarsened zones
+          where the final microstructure can be anything from ferrite/pearlite to bainite to fully martensitic
+          depending on the cooling trajectory. The practical course set out to measure that gradient. The modelling
+          extension I built on top of it set out to <em>predict</em> it from the thermal cycle alone.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Approach</h2>
+        <ul>
+          <li><strong>Gleeble thermal cycling</strong> — a range of weld/AM-representative cycles programmed on Gleeble specimens, spanning peak temperatures from sub-critical through full austenitisation and cooling rates from slow-air to quench.</li>
+          <li><strong>Metallography + SEM</strong> — cross-section preparation, Nital etch, and optical/SEM imaging to classify microstructure zone-by-zone: ferrite/pearlite, bainite, martensite, plus grain-coarsened austenite-origin structures.</li>
+          <li><strong>Vickers microhardness mapping</strong> — HV1 traverses across each cycled specimen; the hardness trace is the scalar that integrates the microstructural change.</li>
+          <li><strong>Open-source model extension</strong> — started from a published open-source Python implementation of Maynier-family hardness predictions and Kirkaldy-style TTT-curve calculations; extended it to accept arbitrary thermal cycles (not just isothermal holds) and fitted it against this experiment's measurements so it could predict hardness and phase fractions for unseen cycles.</li>
+          <li><strong>Stress–strain check</strong> — representative Gleeble tensile pulls at chosen points in the cycle to anchor the model's constitutive side and to show that the hardness prediction implied a sensible flow-stress story.</li>
+        </ul>
+      </div>
+
+      <div class="case-figures">
+        <figure>
+          <img src="../assets/images/thermomechanical-cycles.png" alt="Imposed Gleeble thermal cycles over time for a set of HAZ-representative conditions" />
+          <figcaption>Imposed Gleeble thermal cycles — peak-temperature and cooling-rate sweep that represents the HAZ gradient.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/thermomechanical-phase.png" alt="Predicted phase fractions (ferrite, pearlite, bainite, martensite) vs cooling rate" />
+          <figcaption>Predicted phase fractions vs cooling rate — the transition from diffusional products to martensite is the headline.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/thermomechanical-micrographs.png" alt="Optical/SEM micrographs of HAZ microstructures across cooling conditions" />
+          <figcaption>Micrographs — base metal through grain-coarsened HAZ to martensitic fast-cool regime.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/thermomechanical-stressstrain.png" alt="Measured stress-strain curves across HAZ zones" />
+          <figcaption>Stress–strain behaviour across HAZ zones — strength rises with martensite fraction at the cost of uniform elongation.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/thermomechanical-ttt.png" alt="Predicted TTT curve for baseline composition" />
+          <figcaption>Python-predicted TTT curve — Kirkaldy-style diffusion-product noses plus the martensite-start band.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/thermomechanical-ttt2.png" alt="Comparison of TTT curves for varied compositions or austenitising conditions" />
+          <figcaption>Sensitivity runs — how composition and austenitising temperature shift the TTT noses.</figcaption>
+        </figure>
+      </div>
+
+      <div class="case-section">
+        <h2>Tools &amp; setup</h2>
+        <ul>
+          <li><strong>Gleeble thermal simulator</strong> — resistance-heated specimens with closed-loop peak-temperature and cooling-rate control.</li>
+          <li><strong>Vickers HV1 microhardness</strong> — cross-section traverses, indent spacing per ISO 6507.</li>
+          <li><strong>Optical microscopy + SEM</strong> — Nital-etched cross sections, grain-size and constituent identification.</li>
+          <li><strong>Python</strong> — forked open-source Maynier/Kirkaldy-style implementation, extended to accept non-isothermal cycles, and re-fit using the course measurements. Predicts hardness, phase fractions, and TTT-curve shifts for arbitrary compositions.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Outcomes</h2>
+        <ul>
+          <li><strong>Experimental HAZ map</strong> — microstructure and hardness gradients as a function of peak temperature and cooling rate, anchored against S355J2C+C reference data.</li>
+          <li><strong>Extended predictive model</strong> — a Python tool that takes a thermal cycle and returns predicted phase fractions, hardness, and a recomputed TTT diagram. The extension was beyond the course scope; the starting point was an open-source repository that only did isothermal holds.</li>
+          <li><strong>Reasonable agreement</strong> — the extended model reproduced the measured hardness trend across cooling rates and flagged the martensite-transition band at approximately the right cooling-rate threshold.</li>
+        </ul>
+
+        <div class="callout">
+          <p>The point of the model was not to replace a CCT chart — it was to turn the HAZ gradient into something
+          <em>scriptable</em>. With a thermal-cycle input from an FEA weld simulation, the extension can predict a
+          through-thickness hardness map without doing another experiment, which is the correct place to use a
+          model of this fidelity.</p>
+        </div>
+      </div>
+
+      <div class="case-section">
+        <h2>Validation</h2>
+        <p>
+          Predicted HV values were cross-checked against the Vickers traverse data and against published
+          Maynier-formulation hardness predictions for S355-family steels. The predicted martensite-start cooling
+          rate was cross-checked against classical CCT diagrams in the steels literature. Where the model
+          under-predicted hardness (slow-cool bainitic zone), the discrepancy was traced to the Kirkaldy
+          nose-shape assumption for this specific composition rather than to measurement error — reported honestly
+          as a known limitation.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons learned</h2>
+        <ul>
+          <li>An open-source model is a starting point, not an answer. The course deliverable could have stopped at the measurements; wiring the measurements into a model turned a descriptive study into a predictive one.</li>
+          <li>Extending a published tool is a better learning move than writing a new one. Reading and modifying working code for non-isothermal cycles taught more about the Kirkaldy/Scheil framework than implementing it from scratch would have.</li>
+          <li>Hardness is a surprisingly faithful integrator of thermal history — a single scalar that carries enough information to validate a multi-phase predictor in most structural-steel regimes.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Artifacts</h2>
+        <ul>
+          <li>TUM practical course paper — "Thermomechanical Material Behaviour in Additive Manufacturing &amp; Welding" (final draft).</li>
+          <li>Extended Python model — fork of an open-source TTT/hardness predictor (available on request).</li>
+        </ul>
       </div>
 
       <nav class="case-nav" aria-label="Project navigation">
         <a class="btn btn-ghost" href="../work.html">← All projects</a>
-        <a class="btn btn-primary" href="solid-state-electrolytes.html">Next: Solid-state electrolytes →</a>
+        <a class="btn btn-primary" href="solid-state-electrolytes.html">Next: GDC thin films →</a>
       </nav>
     </section>
   </main>

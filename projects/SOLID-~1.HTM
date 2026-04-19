@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Solid-State Electrolytes — GDC Thin Films — Abhishek Kuntal</title>
-  <meta name="description" content="Spray pyrolysis of nanostructured GDC films and SEM interface characterisation — TUM Research Intern." />
+  <title>GDC Thin Films via Spray Pyrolysis — Abhishek Kuntal</title>
+  <meta name="description" content="Nanostructured gadolinium-doped ceria (GDC) thin films synthesised by spray pyrolysis; processing-parameter study with SEM characterisation and dense-layer optimisation for SOFC electrolytes." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -30,28 +30,127 @@
   <main id="main">
     <header class="page-header">
       <div class="container">
-        <p class="eyebrow">Case study · Materials · TUM · 2024–25</p>
-        <h1>Solid-state electrolytes — GDC thin films.</h1>
-        <p>Spray pyrolysis synthesis of nanostructured GDC films; SEM-based interface characterisation correlating processing parameters with grain size and homogeneity.</p>
+        <p class="eyebrow">Case study · Thin-film materials · TUM Internship</p>
+        <h1>GDC thin films via spray pyrolysis.</h1>
+        <p>Processing-parameter study of nanostructured gadolinium-doped ceria films for solid-oxide fuel-cell electrolytes — correlating substrate temperature, solvent chemistry, and flow rate with dense, crack-free microstructure.</p>
       </div>
     </header>
 
     <section class="container case">
       <dl class="case-meta">
-        <div><dt>Context</dt><dd>Academic — TUM Research Intern</dd></div>
-        <div><dt>Role</dt><dd>Research Intern</dd></div>
-        <div><dt>Duration</dt><dd>Oct 2024 – Jan 2025</dd></div>
-        <div><dt>Stack</dt><dd>Spray pyrolysis, SEM, image analysis</dd></div>
+        <div><dt>Context</dt><dd>Academic — TUM Research Internship, Development of Nanostructured GDC Thin Films</dd></div>
+        <div><dt>Role</dt><dd>Research Intern · deposition &amp; characterisation</dd></div>
+        <div><dt>Duration</dt><dd>2024 – 2025</dd></div>
+        <div><dt>Stack</dt><dd>Ultrasonic spray pyrolysis, SEM, profilometry, image analysis</dd></div>
       </dl>
 
-      <div class="figure-placeholder">
-        Case-study writeup in progress. Copy the structure of
-        <a href="turbomachinery-cfd.html">turbomachinery-cfd.html</a> and fill in the sections.
+      <div class="case-section">
+        <h2>Problem</h2>
+        <p>
+          Gadolinium-doped ceria (Ce<sub>0.9</sub>Gd<sub>0.1</sub>O<sub>1.95</sub>, "GDC") is one of the best-performing
+          intermediate-temperature solid-oxide-fuel-cell electrolyte materials, but the electrochemical performance is
+          dominated by film microstructure — dense, pinhole-free, well-adhered films with submicron grains. Spray
+          pyrolysis is an attractive low-cost, scalable deposition route but it has a notoriously narrow process
+          window: too cold and the film cracks from trapped solvent (the Deegan "coffee-ring" regime); too hot and
+          the droplets decompose in flight and deposit as a loose powder (the Thornton "rain" zone). The internship
+          objective was to locate the <em>dense-film</em> zone in process space and explain why it sits where it sits.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Approach</h2>
+        <ul>
+          <li><strong>Ultrasonic spray pyrolysis rig</strong> — nitrate precursor solution atomised onto a heated substrate held on a temperature-controlled stage. Substrate temperature, carrier-gas flow rate, solvent composition (water / ethanol / ethylene glycol blends), and precursor molarity were the controlled variables.</li>
+          <li><strong>Thornton zone mapping</strong> — films deposited across a temperature sweep so the deposits could be placed on a Thornton-style process-vs-microstructure diagram (smooth dense zone I vs cracked zone II vs porous zone III vs CVD-like zone IV).</li>
+          <li><strong>Coffee-ring diagnostics</strong> — inspected single-droplet deposits under optical microscopy to separate substrate-wetting effects from bulk-film effects, following Deegan's convective-flow model for droplet drying.</li>
+          <li><strong>SEM characterisation</strong> — top-view and cross-section imaging to quantify grain size, pinhole density, and through-thickness columnar structure; the grain-size → ionic-conductivity link is the payoff metric in downstream fuel-cell use.</li>
+          <li><strong>Adhesion / residual-stress checks</strong> — used a simplified Hutchinson–Suo blister/channeling argument to reason about which deposition conditions were producing the observed crack patterns vs. adhesion failure.</li>
+        </ul>
+      </div>
+
+      <div class="case-figures">
+        <figure>
+          <img src="../assets/images/gdc-spray-pyrolysis.png" alt="Spray pyrolysis rig schematic — atomiser, heated substrate stage, carrier gas" />
+          <figcaption>Ultrasonic spray pyrolysis rig — atomised nitrate precursor, heated substrate, controlled carrier flow.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/gdc-thornton.png" alt="Thornton zone diagram annotated for GDC spray pyrolysis process window" />
+          <figcaption>Thornton-style process-map positioning — the dense-film target window sits between droplet-drying and in-flight decomposition regimes.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/gdc-coffeering.png" alt="Deegan coffee-ring pattern in droplet drying" />
+          <figcaption>Droplet-drying diagnostics — coffee-ring formation sets a lower temperature bound on the usable process window.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/gdc-top-view.png" alt="SEM top-view of dense GDC film" />
+          <figcaption>SEM top view of a dense GDC film produced inside the target window — fine, uniform grains, no resolvable pinholes.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/gdc-cross-section.png" alt="SEM cross-section of GDC thin film showing film/substrate interface" />
+          <figcaption>SEM cross-section — film/substrate interface and through-thickness columnar morphology characteristic of zone-I growth.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/gdc-topview-table.png" alt="Summary table of process conditions and microstructure outcomes" />
+          <figcaption>Process matrix summary — substrate temperature and solvent composition against observed microstructure class.</figcaption>
+        </figure>
+      </div>
+
+      <div class="case-section">
+        <h2>Tools &amp; setup</h2>
+        <ul>
+          <li><strong>Ultrasonic spray pyrolysis rig</strong> — atomiser, carrier-gas controller, heated substrate stage.</li>
+          <li><strong>SEM (secondary + back-scatter)</strong> — top-view and fracture cross-section imaging with ImageJ quantification of grain size and pore fraction.</li>
+          <li><strong>Profilometry</strong> — film thickness and surface-roughness check per condition.</li>
+          <li><strong>Solution chemistry</strong> — cerium and gadolinium nitrate precursors in water-ethanol-ethylene-glycol blends, formulated for controlled droplet dryout during flight.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Outcomes</h2>
+        <ul>
+          <li><strong>Process window mapped</strong> — identified the substrate-temperature / solvent-composition envelope that reliably produced dense, crack-free submicron-grained GDC films. Outside this envelope the failure modes were well-characterised and predictable.</li>
+          <li><strong>Failure-mode attribution</strong> — coffee-ring and channel-crack patterns traced to solvent-dryout physics, not to any single "process error"; the solvent blend was the most effective lever.</li>
+          <li><strong>Reproducible recipe</strong> — the final condition set produced the same SEM microstructure class across repeat runs, which is the result that matters for downstream cell fabrication.</li>
+        </ul>
+
+        <div class="callout">
+          <p>The insight that made the project work was recognising that a spray-pyrolysis "process window" is really
+          a <em>microstructure</em> window, and that the correct organising framework was the Thornton zone diagram
+          overlaid with Deegan droplet physics — not a one-dimensional temperature sweep.</p>
+        </div>
+      </div>
+
+      <div class="case-section">
+        <h2>Validation</h2>
+        <p>
+          Microstructure classifications were cross-checked between the SEM operator's read and ImageJ
+          grain-size histograms. Film thickness from profilometry agreed with cross-section SEM within expected
+          instrument tolerance. Where a condition straddled two Thornton zones, repeat runs were performed and the
+          variability itself was reported — films near the window edge were inherently more scatter-prone, which was
+          important information for later cell-fabrication planning.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons learned</h2>
+        <ul>
+          <li>Thin-film quality is non-monotonic in substrate temperature — past a certain point hotter is worse, not better. Zone-diagram thinking kept the team from chasing the wrong axis.</li>
+          <li>Solvent composition is an underused degree of freedom. Small ethanol/glycol additions changed the dryout behaviour enough to move a failing recipe into the dense-film window without changing the precursor chemistry.</li>
+          <li>SEM is a microstructure diagnostic, not a film-quality diagnostic in isolation — pairing it with profilometry and a droplet-physics argument was what made the conclusions defensible.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Artifacts</h2>
+        <ul>
+          <li>TUM internship presentation — "Development of Nanostructured GDC Thin Films via Spray Pyrolysis".</li>
+          <li>Annotated SEM image set (top-view and cross-section).</li>
+        </ul>
       </div>
 
       <nav class="case-nav" aria-label="Project navigation">
         <a class="btn btn-ghost" href="../work.html">← All projects</a>
-        <a class="btn btn-primary" href="turbomachinery-cfd.html">Back to start: Turbomachinery CFD →</a>
+        <a class="btn btn-primary" href="calphad-ni-workflow.html">Next: CALPHAD Ni workflow →</a>
       </nav>
     </section>
   </main>

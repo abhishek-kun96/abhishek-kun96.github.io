@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Wind-Farm Wake Aerodynamics — Abhishek Kuntal</title>
-  <meta name="description" content="Actuator-disk wake simulation and layout optimisation for wind-farm power output — TUM academic project." />
+  <title>Wind-Farm Wake &amp; Layout Optimisation — Abhishek Kuntal</title>
+  <meta name="description" content="FLORIS wake modelling + LandBOSSE balance-of-system cost optimisation for an offshore wind farm layout — TUM design course." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -30,22 +30,107 @@
   <main id="main">
     <header class="page-header">
       <div class="container">
-        <p class="eyebrow">Case study · CFD · TUM</p>
-        <h1>Wind-farm wake aerodynamics.</h1>
-        <p>Atmospheric boundary-layer RANS with an actuator-disk rotor representation; layout sweep to maximise total farm power output.</p>
+        <p class="eyebrow">Case study · Wake modelling &amp; BOS · TUM</p>
+        <h1>Wind-farm wake &amp; layout optimisation.</h1>
+        <p>FLORIS wake-model-driven layout with LandBOSSE balance-of-system costing — AEP, LCOE, and logistics evaluated together rather than as decoupled stages.</p>
       </div>
     </header>
 
     <section class="container case">
       <dl class="case-meta">
-        <div><dt>Context</dt><dd>Academic — Technische Universität München</dd></div>
-        <div><dt>Role</dt><dd>Course project</dd></div>
-        <div><dt>Stack</dt><dd>ANSYS Fluent / OpenFOAM, Python, SpaceClaim</dd></div>
+        <div><dt>Context</dt><dd>Academic — Technische Universität München, Design of Wind Farms</dd></div>
+        <div><dt>Role</dt><dd>Course project · layout &amp; BOS lead</dd></div>
+        <div><dt>Stack</dt><dd>NREL FLORIS, NREL LandBOSSE, Python (NumPy / Pandas / Matplotlib)</dd></div>
       </dl>
 
-      <div class="figure-placeholder">
-        Case-study writeup in progress. Copy the structure of
-        <a href="turbomachinery-cfd.html">turbomachinery-cfd.html</a> and fill in the sections.
+      <div class="case-section">
+        <h2>Problem</h2>
+        <p>
+          A candidate wind-farm site had to be evaluated end-to-end: turbine selection, micro-siting within a bounded
+          lease area, wake-loss-aware power estimation, and balance-of-system (BOS) cost — which for real farms is
+          half the capital stack, not an afterthought. The challenge was that the optimisation trades were
+          non-obvious: a layout with lower wake loss might require longer inter-array cabling or more expensive
+          foundations, and nothing in the problem statement told you the winner a priori.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Approach</h2>
+        <ul>
+          <li><strong>Resource assessment</strong> — built a site wind rose from reanalysis-style wind roses provided with the course; fit a Weibull distribution per sector for annual energy production (AEP) estimation.</li>
+          <li><strong>Wake modelling in FLORIS</strong> — NREL's FLORIS framework for engineering wake models (Gaussian wake, Jensen cross-check). Swept turbine class (IEC I vs II), hub height, and rotor diameter to pick a turbine sized for the site's mean wind speed and turbulence intensity.</li>
+          <li><strong>Layout optimisation</strong> — ran FLORIS's yaw- and layout-optimisation routines within the lease boundary with minimum-spacing constraints (5D in prevailing direction, 3D cross-wind). Compared a structured grid, a prevailing-wind-aligned staggered layout, and a FLORIS-optimised free layout.</li>
+          <li><strong>BOS costing in LandBOSSE</strong> — NREL's LandBOSSE balance-of-system model for civil works, erection, collection-system cabling, and grid interconnection. Each candidate layout was costed against the same turbine and the same site conditions.</li>
+          <li><strong>LCOE close</strong> — AEP (from FLORIS with wake losses and availability) divided through lifetime cost (LandBOSSE + assumed O&amp;M and turbine CapEx) to give a defensible LCOE ranking rather than a wake-loss-only ranking.</li>
+        </ul>
+      </div>
+
+      <div class="case-figures">
+        <figure>
+          <img src="../assets/images/windfarm-floris.png" alt="FLORIS wake flow-field visualisation showing wake deficits behind turbine rows" />
+          <figcaption>FLORIS wake flow field for the optimised layout — deficit streaks behind upstream turbines show why staggering matters.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/windfarm-landbosse.png" alt="LandBOSSE balance-of-system cost breakdown by category" />
+          <figcaption>LandBOSSE BOS cost breakdown — civil works, collection cabling, and erection dominate. Layout affects all three.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/windfarm-logistics.png" alt="Logistics and siting map with access roads and substation placement" />
+          <figcaption>Logistics view — access roads, crane pads, and substation placement costed explicitly in the BOS model.</figcaption>
+        </figure>
+      </div>
+
+      <div class="case-section">
+        <h2>Tools &amp; setup</h2>
+        <ul>
+          <li><strong>FLORIS (NREL)</strong> — engineering wake models, layout and yaw optimisation; the industry reference for wake-loss-aware plant design.</li>
+          <li><strong>LandBOSSE (NREL)</strong> — balance-of-system cost model spanning civil, erection, collection, management, and grid interconnection.</li>
+          <li><strong>Python</strong> — driver scripts stitching resource → FLORIS → LandBOSSE → LCOE in one pipeline, with pandas DataFrames passing results between stages.</li>
+          <li><strong>Matplotlib</strong> — wake-field plots, AEP-by-sector charts, and the final cost-vs-AEP scatter used for layout selection.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Outcomes</h2>
+        <ul>
+          <li><strong>Turbine choice justified on the data</strong> — the chosen rotor diameter and hub height maximised AEP per installed MW given the site's Weibull scale and turbulence class; swapping to a larger rotor was rejected on BOS (foundation and crane) grounds even though it improved wake-free AEP.</li>
+          <li><strong>Wake-aware layout</strong> — the staggered, prevailing-wind-aligned layout beat the simple grid by a meaningful AEP margin while only slightly increasing collection cabling, so it won on LCOE.</li>
+          <li><strong>Ranking by LCOE, not by wake-loss alone</strong> — the defining methodological choice. Two layouts with similar wake losses had materially different BOS costs, and that is what the ranking surfaced.</li>
+        </ul>
+
+        <div class="callout">
+          <p>Headline takeaway: the "best" layout from a pure wake-loss perspective was <em>not</em> the best on LCOE.
+          Cable length and crane logistics flipped the ranking. This is the lesson LandBOSSE is designed to teach —
+          BOS is where good wake engineering either earns its keep or doesn't.</p>
+        </div>
+      </div>
+
+      <div class="case-section">
+        <h2>Validation</h2>
+        <p>
+          FLORIS predictions were cross-checked against the simpler Jensen model as a floor — the Gaussian wake model
+          gave slightly higher partial-wake recovery than Jensen, consistent with the published literature. Resource
+          AEP numbers were sanity-checked against a capacity-factor hand-calc from the site Weibull parameters and
+          the turbine power curve; the two approaches agreed to within the expected wake-loss gap. LandBOSSE outputs
+          were compared against published onshore farm BOS ratios (EUR/MW installed) and fell in the expected band.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons learned</h2>
+        <ul>
+          <li>Wake modelling is the headline physics, but BOS is where layout decisions are won or lost. Decoupling the two leads to wrong answers.</li>
+          <li>Engineering wake models (FLORIS-class) are the right tool for layout sweeps — the per-evaluation cost is low enough to run thousands of candidates, which CFD cannot do.</li>
+          <li>Turbine selection should be part of the same optimisation, not a precursor to it. A slightly smaller rotor with cheaper foundations sometimes wins.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Artifacts</h2>
+        <ul>
+          <li>Design of Wind Farms course report — methodology, results, and layout comparisons.</li>
+          <li>FLORIS + LandBOSSE driver scripts (sanitised, available on request).</li>
+        </ul>
       </div>
 
       <nav class="case-nav" aria-label="Project navigation">

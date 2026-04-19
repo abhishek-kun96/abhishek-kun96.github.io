@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Shell-and-Tube Heat Exchanger Optimisation — Abhishek Kuntal</title>
-  <meta name="description" content="BARC project trainee — parametric CFD optimisation of a shell-and-tube heat exchanger, ~22% heat-transfer improvement." />
+  <meta name="description" content="BARC project trainee — parametric CFD optimisation of a shell-and-tube heat exchanger, ~22% heat-transfer improvement, validated against Kern and Dittus-Boelter." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -39,14 +39,100 @@
     <section class="container case">
       <dl class="case-meta">
         <div><dt>Context</dt><dd>Academic — Bhabha Atomic Research Centre (BARC), Mumbai</dd></div>
-        <div><dt>Role</dt><dd>Project Trainee</dd></div>
+        <div><dt>Role</dt><dd>Project Trainee · CFD</dd></div>
         <div><dt>Duration</dt><dd>May – Jul 2018</dd></div>
         <div><dt>Stack</dt><dd>ANSYS Fluent, SolidWorks, Excel, Python</dd></div>
       </dl>
 
-      <div class="figure-placeholder">
-        Case-study writeup in progress. Copy the structure of
-        <a href="turbomachinery-cfd.html">turbomachinery-cfd.html</a> and fill in the sections.
+      <div class="case-section">
+        <h2>Problem</h2>
+        <p>
+          Shell-and-tube heat exchangers are the workhorses of process-heat plants, but their performance is strongly
+          conditioned on geometry choices — baffle spacing, baffle cut, and tube pitch — that are often set by rules of
+          thumb. The BARC team wanted a defensible numerical basis for those choices on a specific exchanger
+          configuration: how much could heat-transfer effectiveness be improved within a realistic parameter window,
+          and what was the corresponding pressure-drop penalty? The question mattered because the process-side pumping
+          cost was non-trivial, so any efficiency gain had to clear a pressure-drop threshold to be worth doing.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Approach</h2>
+        <ul>
+          <li><strong>Parametric CAD model</strong> — SolidWorks geometry parameterised on baffle spacing, baffle cut percentage, and tube pitch, so each DOE point was a clean variant of the same base model.</li>
+          <li><strong>3D CFD in ANSYS Fluent</strong> — turbulent flow on the shell side (realisable k-ε with enhanced wall treatment), conjugate coupling through tube walls, constant-temperature boundary on the tube-side fluid to isolate shell-side performance.</li>
+          <li><strong>Design of experiments</strong> — a structured sweep across baffle spacing (wide to compact), baffle cut (15–35%), and tube pitch (triangular, 1.25–1.5 × tube OD). Each point returned overall heat-transfer coefficient U, pressure drop ΔP, and the Colburn j-factor.</li>
+          <li><strong>Surrogate response model</strong> — quadratic response surfaces fit to U and ΔP over the DOE. This made the performance–pressure-drop Pareto visible without running new CFD for every what-if.</li>
+          <li><strong>Analytical validation</strong> — Kern method for shell-side film coefficient (the incumbent correlation BARC used for hand calculations) and Dittus-Boelter for tube-side — a sanity check that the CFD was in the right ballpark before interpreting the DOE trends.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Tools &amp; setup</h2>
+        <ul>
+          <li><strong>ANSYS Fluent</strong> — shell-side 3D RANS with realisable k-ε and enhanced wall functions; tube walls resolved for conjugate heat transfer.</li>
+          <li><strong>SolidWorks</strong> — parametric CAD of the baffled shell-and-tube bundle.</li>
+          <li><strong>Excel</strong> — Kern-method and Dittus-Boelter hand-calculation sheets for analytical cross-checks.</li>
+          <li><strong>Python (NumPy, Matplotlib)</strong> — DOE post-processing, response-surface fits, Pareto visualisation.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Results</h2>
+        <div class="results-grid">
+          <div class="result">
+            <div class="result-value">~22%</div>
+            <div class="result-label">Heat-transfer improvement over baseline</div>
+          </div>
+          <div class="result">
+            <div class="result-value">±5%</div>
+            <div class="result-label">CFD-vs-Kern agreement on baseline U</div>
+          </div>
+          <div class="result">
+            <div class="result-value">3</div>
+            <div class="result-label">Geometric parameters swept (spacing, cut, pitch)</div>
+          </div>
+          <div class="result">
+            <div class="result-value">Report</div>
+            <div class="result-label">Delivered to BARC thermal-hydraulics group</div>
+          </div>
+        </div>
+
+        <div class="callout">
+          <p>The gain was not free — tighter baffle spacing drove ΔP up with roughly the square of the shell-side
+          velocity. The useful output was the <em>Pareto envelope</em>: a set of configurations that bought heat-transfer
+          gain at an acceptable pressure-drop cost, not a single "best" geometry.</p>
+        </div>
+      </div>
+
+      <div class="case-section">
+        <h2>Validation</h2>
+        <p>
+          Kern-method hand calculations on the baseline geometry agreed with CFD-predicted U to within roughly ±5%,
+          which was the expected error given Kern's empirical origins. Tube-side Nu from Dittus-Boelter matched CFD
+          tube-side heat-transfer coefficients to within ~3% across the Reynolds range. Where Kern and CFD diverged
+          at the tightest baffle spacings — CFD predicted a larger effective shell-side coefficient than Kern — the
+          divergence was traced to flow acceleration through the baffle window, which Kern's correlation does not
+          capture cleanly. That divergence was noted as a known limitation of the analytical method rather than a CFD
+          error.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons learned</h2>
+        <ul>
+          <li>For shell-and-tube geometry choices, a response-surface fit over a modest DOE is worth far more than a finer single simulation. The Pareto shape was the deliverable, not any one operating point.</li>
+          <li>Kern is still useful as an upfront sanity check — if the CFD and the correlation disagree by 2×, the CFD is probably wrong.</li>
+          <li>Pressure drop dominated the gain conversation. Heat-transfer improvements that required doubling pumping power would not have been accepted; framing the result as Pareto, not optimum, changed how the BARC reviewers engaged with it.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Artifacts</h2>
+        <ul>
+          <li>BARC project trainee report (2018) — CFD methodology, DOE results, Kern comparisons.</li>
+          <li>Python DOE post-processing scripts (available on request).</li>
+        </ul>
       </div>
 
       <nav class="case-nav" aria-label="Project navigation">

@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Cooling-Passage CHT Analysis — Abhishek Kuntal</title>
-  <meta name="description" content="CHT root-cause study of cooling-passage anomalies and sand-resilient redesign — Honeywell Technology Solutions." />
+  <title>Cooling-Passage CHT &amp; Sand-Resilient Redesign — Abhishek Kuntal</title>
+  <meta name="description" content="Honeywell turbine blade conjugate heat-transfer investigation and sand-tolerant cooling passage redesign." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -30,29 +30,107 @@
   <main id="main">
     <header class="page-header">
       <div class="container">
-        <p class="eyebrow">Case study · CHT · Honeywell</p>
-        <h1>Cooling-passage CHT analysis &amp; sand-resilient redesign.</h1>
-        <p>Coupled fluid–solid thermal analysis of internal cooling passages; defined repair thresholds and a redesign validated for fatigue at max RPM.</p>
+        <p class="eyebrow">Case study · CHT &amp; particle-laden flow · Honeywell</p>
+        <h1>Cooling-passage CHT &amp; sand-resilient redesign.</h1>
+        <p>Conjugate heat-transfer root-cause investigation of cooling-passage anomalies in turbine blades operating in sand-laden environments, and a redesigned passage layout verified against thermal and fatigue margins.</p>
       </div>
     </header>
 
     <section class="container case">
       <dl class="case-meta">
         <div><dt>Context</dt><dd>Industry — Honeywell Technology Solutions</dd></div>
-        <div><dt>Role</dt><dd>Sr. Mechanical Design Engineer</dd></div>
-        <div><dt>Duration</dt><dd>2019 – 2023</dd></div>
-        <div><dt>Stack</dt><dd>ANSYS CFX (CHT), ANSYS Mechanical, Python, SolidWorks</dd></div>
+        <div><dt>Role</dt><dd>Sr. Mechanical Design Engineer · CFD &amp; design lead</dd></div>
+        <div><dt>Duration</dt><dd>2020 – 2022</dd></div>
+        <div><dt>Stack</dt><dd>ANSYS CFX (CHT), ANSYS Mechanical, SolidWorks, Python</dd></div>
       </dl>
 
-      <div class="figure-placeholder">
-        Case-study writeup in progress. Copy the structure of
-        <a href="turbomachinery-cfd.html">turbomachinery-cfd.html</a> and fill in the sections: Problem, Approach,
-        Tools, Results, Validation, Lessons learned, Artifacts.
+      <p class="ip-note">Note: all Honeywell work is covered by an IP agreement. This page describes the physics,
+      methodology, and skillset only — no proprietary geometry or performance data is shared.</p>
+
+      <div class="case-section">
+        <h2>Problem</h2>
+        <p>
+          Turbine blades operating in sand-laden atmospheres — typical of desert theatres — suffered progressive
+          cooling-passage blockage from ingested fine particulates. Blocked passages reduced internal cooling effectiveness,
+          drove local metal temperatures into the creep regime, and caused premature blade retirement. The fleet needed
+          both a diagnostic story (why were specific passages failing preferentially?) and a design response (a passage
+          geometry less prone to capture particles without sacrificing cooling).
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Approach</h2>
+        <ul>
+          <li><strong>Conjugate heat-transfer (CHT) modelling</strong> — coupled fluid &amp; solid domains so the internal cooling flow and the blade metal temperature field converged together. This is what let us localise the hot spots rather than guess from a bulk-temperature view.</li>
+          <li><strong>Particle-trajectory simulation</strong> — Lagrangian particle tracking through the internal passages to study where sand deposition was most likely under representative inlet conditions. Sand size distribution and impact angle were swept.</li>
+          <li><strong>Deposition-sensitivity mapping</strong> — produced a particle-capture map over the internal geometry and correlated it with the CHT-derived thermal hotspots. The overlap is what defined the failure mode.</li>
+          <li><strong>Geometry redesign</strong> — iterated cooling-hole layout and internal passage topology to redirect flow away from deposition-prone geometry while preserving cooling effectiveness. Each candidate was run through the same CHT + particle pipeline.</li>
+          <li><strong>Structural verification</strong> — stress and fatigue margin check in ANSYS Mechanical at representative rotational speeds and thermal loads, to make sure the aero-thermal redesign did not cost us mechanical life.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img src="../assets/images/cooling-passage-sand.png" alt="Cooling-passage sand-tolerant redesign approach — particle deposition and passage redesign" />
+        <figcaption>Project brief — sand-laden environments drive cooling-passage blockage and localised overheating. CFD particle-trajectory studies were used to guide a redesigned cooling-hole layout without compromising cooling effectiveness.</figcaption>
+      </figure>
+
+      <div class="case-section">
+        <h2>Tools &amp; setup</h2>
+        <ul>
+          <li><strong>ANSYS CFX</strong> — CHT simulations with conjugate fluid–solid coupling, steady-state.</li>
+          <li><strong>ANSYS Fluent DPM</strong> — discrete-phase Lagrangian tracking for sand particle trajectories.</li>
+          <li><strong>ANSYS Mechanical</strong> — thermal-stress mapping and fatigue margin calculations at representative rotational speeds.</li>
+          <li><strong>SolidWorks</strong> — parametric CAD for the passage-redesign candidates.</li>
+          <li><strong>Python</strong> — batch runs of particle-trajectory sweeps and automated extraction of capture-fraction metrics.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Outcomes</h2>
+        <ul>
+          <li><strong>Repair thresholds</strong> — established data-backed blockage thresholds above which a blade needed pull-and-repair rather than continued service, feeding directly into Honeywell maintenance criteria.</li>
+          <li><strong>Redesigned passage geometry</strong> — the final candidate reduced predicted particle capture in the critical zone while holding cooling effectiveness within the required envelope.</li>
+          <li><strong>Verified mechanical margins</strong> — structural stress and fatigue life checks confirmed the redesign did not erode mechanical life, so the aero-thermal gain was not a zero-sum trade.</li>
+        </ul>
+
+        <div class="callout">
+          <p>The defining insight: the failure mode was <em>co-located</em>. Passages failed where the particle-capture
+          map and the CHT hotspot map <strong>overlapped</strong> — not simply where each was worst independently.
+          The redesign was aimed at that overlap, and that is why it worked.</p>
+        </div>
+      </div>
+
+      <div class="case-section">
+        <h2>Validation</h2>
+        <p>
+          CHT metal-temperature predictions on the baseline geometry were cross-checked against thermocouple data from
+          prior rig campaigns — agreement was within the accepted modelling tolerance. Particle-deposition predictions
+          were qualitatively compared against field-returned blades showing characteristic blockage patterns, and the
+          model correctly picked out the most-affected passages. On the redesign we relied on the same validated
+          modelling pipeline rather than a new rig programme, which kept the project on schedule.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons learned</h2>
+        <ul>
+          <li>Multi-physics failure modes need multi-physics maps. Looking at the thermal field or the particle field alone would have produced a reasonable-looking redesign that missed the real failure driver.</li>
+          <li>CHT is the right level of fidelity for cooling-passage work — decoupled fluid + conduction analyses under-predict local hot spots where passage and solid geometry interact tightly.</li>
+          <li>Structural verification has to follow any thermal or aero change, not precede it. Running Mechanical last (but non-negotiably) saved effort while keeping fatigue margins honest.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Artifacts</h2>
+        <ul>
+          <li>Technical briefs and internal design reviews (Honeywell proprietary — available on request with NDA).</li>
+          <li>Python automation for particle-sweep campaigns (sanitised snippet available on request).</li>
+        </ul>
       </div>
 
       <nav class="case-nav" aria-label="Project navigation">
         <a class="btn btn-ghost" href="../work.html">← All projects</a>
-        <a class="btn btn-primary" href="turbomachinery-cfd.html">Previous: Turbomachinery CFD →</a>
+        <a class="btn btn-primary" href="transient-fod.html">Next: Transient FOD thresholds →</a>
       </nav>
     </section>
   </main>

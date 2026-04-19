@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Transient FOD Simulations — Abhishek Kuntal</title>
-  <meta name="description" content="Transient CFD simulations of compressor blade foreign-object damage, defining repair-vs-replace envelopes." />
+  <meta name="description" content="Transient CFD &amp; structural simulations of bird-strike foreign-object damage on gas-turbine fan blades, defining repair-versus-replace envelopes." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -30,23 +30,95 @@
   <main id="main">
     <header class="page-header">
       <div class="container">
-        <p class="eyebrow">Case study · Transient CFD · Honeywell</p>
+        <p class="eyebrow">Case study · Transient CFD &amp; structural · Honeywell</p>
         <h1>Transient FOD damage thresholds.</h1>
-        <p>Transient Fluent simulations of foreign-object damage across leading- and trailing-edge geometries to define repair-or-replace envelopes.</p>
+        <p>Transient Fluent + structural simulations of bird-strike impact on fan blades, quantifying deformation and thrust
+        degradation across strike scenarios, to define repair-versus-replace envelopes.</p>
       </div>
     </header>
 
     <section class="container case">
       <dl class="case-meta">
         <div><dt>Context</dt><dd>Industry — Honeywell Technology Solutions</dd></div>
-        <div><dt>Role</dt><dd>Sr. Mechanical Design Engineer</dd></div>
-        <div><dt>Duration</dt><dd>2019 – 2023</dd></div>
-        <div><dt>Stack</dt><dd>ANSYS Fluent (transient), Structural, Python</dd></div>
+        <div><dt>Role</dt><dd>Sr. Mechanical Design Engineer · CFD &amp; impact analysis</dd></div>
+        <div><dt>Duration</dt><dd>2020 – 2022</dd></div>
+        <div><dt>Stack</dt><dd>ANSYS Fluent (transient), ANSYS Mechanical (explicit), Python</dd></div>
       </dl>
 
-      <div class="figure-placeholder">
-        Case-study writeup in progress. Copy the structure of
-        <a href="turbomachinery-cfd.html">turbomachinery-cfd.html</a> and fill in the sections.
+      <p class="ip-note">Note: all Honeywell work is covered by an IP agreement. This page describes the physics,
+      methodology, and skillset only — no proprietary geometry, certification data, or performance envelopes are shared.</p>
+
+      <div class="case-section">
+        <h2>Problem</h2>
+        <p>
+          Foreign-Object Damage (FOD), especially bird strike on fan blades at the front of a gas-turbine engine, is one
+          of the defining safety and maintenance concerns for aero engines. After a strike event, operators need a
+          defensible answer to one question: is this blade repairable, or does it need replacement? The team needed to
+          translate a realistic range of strike conditions — varying bird mass, ingestion angle, rotational speed, and
+          impact location — into deformation and aerodynamic-performance envelopes that inform repair-versus-replace
+          criteria and certification-relevant thrust-degradation behaviour.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Approach</h2>
+        <ul>
+          <li><strong>Transient fluid simulation</strong> — ANSYS Fluent transient runs captured the aerodynamic response as deformed blade geometry swept through the flow field across a strike event window.</li>
+          <li><strong>Impact / structural response</strong> — explicit-dynamics modelling of the blade under impulsive loading; plastic deformation was mapped across parametric strike scenarios for different bird sizes, incoming velocities, and impact angles.</li>
+          <li><strong>Strike matrix</strong> — scenarios spanned small-to-medium-to-large bird mass, tip-to-root impact locations, and representative engine rotational speeds, producing a parametric map of deformation severity.</li>
+          <li><strong>Aerodynamic loss quantification</strong> — deformed blade geometries were re-analysed to predict thrust degradation and pressure-loss increase, giving engineers a direct link from impact severity to thrust envelope.</li>
+          <li><strong>Repair-envelope definition</strong> — results were used to construct a repair-versus-replace decision rule rooted in a minimum-acceptable-thrust criterion (objective: blades retain at least ~75% thrust capability after tolerable impact).</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img src="../assets/images/transient-fod-birdstrike.png" alt="Bird-strike FOD simulation summary — impact scenarios, deformation, aerodynamic losses" />
+        <figcaption>FOD study overview — CFD + structural simulation of bird-strike impact on fan blades. Scenarios covered varying bird size, velocity, and impact angle; the analysis quantified deformation and aerodynamic losses to define damage-tolerant design guidance.</figcaption>
+      </figure>
+
+      <div class="case-section">
+        <h2>Tools &amp; setup</h2>
+        <ul>
+          <li><strong>ANSYS Fluent (transient)</strong> — time-resolved compressible flow through deformed blade passages.</li>
+          <li><strong>ANSYS Mechanical / explicit dynamics</strong> — blade response to impulsive loading; plastic deformation and stress states.</li>
+          <li><strong>Python</strong> — parametric run orchestration; extraction of thrust degradation, deformation magnitude, and stress metrics across the strike matrix.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Outcomes</h2>
+        <ul>
+          <li><strong>Repair-versus-replace envelope</strong> — a thrust-degradation map over the strike parameter space that informs maintenance decisions directly.</li>
+          <li><strong>Identification of sensitive design regions</strong> — particular blade zones disproportionately responsible for thrust loss were flagged for future damage-tolerant design treatments.</li>
+          <li><strong>Guidance for mitigation</strong> — the study fed forward into design guidance for damage tolerance in future engine configurations.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Validation</h2>
+        <p>
+          Impact and deformation trends were compared against existing Honeywell impact-test campaigns and accepted
+          industry bird-strike correlations. Aerodynamic thrust loss on deformed geometries was cross-checked against
+          steady-state baseline CFD where equivalent deformation modes had been studied in isolation. The combined
+          transient + structural pipeline was kept deliberately conservative on the aero side to protect the
+          certification margin.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons learned</h2>
+        <ul>
+          <li>Transient CFD + explicit structural runs are expensive individually; the pipeline only earned its keep because the parametric matrix was carefully designed (not brute-forced) so every run answered a distinct design question.</li>
+          <li>The useful output of a FOD study is not a single failure case — it is the repair envelope. That reframing changed how the team consumed the results.</li>
+          <li>Deformation modes mattered more than absolute impact energy: two strikes delivering equivalent kinetic energy produced very different thrust losses depending on where on the span they landed.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Artifacts</h2>
+        <ul>
+          <li>Technical briefs and maintenance-criteria documentation (Honeywell proprietary — available on request with NDA).</li>
+        </ul>
       </div>
 
       <nav class="case-nav" aria-label="Project navigation">
