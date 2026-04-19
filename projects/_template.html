@@ -1,0 +1,142 @@
+<!doctype html>
+<!--
+  PROJECT PAGE TEMPLATE
+  =====================
+  1. Save a copy of this file as projects/your-project-slug.html
+  2. Replace every [[PLACEHOLDER]] below with the real content.
+  3. Add the matching card to work.html so it links to your new page.
+  4. Drop figures at assets/images/ and replace each <div class="figure-placeholder">
+     with an <img src="../assets/images/your-figure.png" alt="..." />.
+-->
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>[[PROJECT TITLE]] — Abhishek Kuntal</title>
+  <meta name="description" content="[[ONE-SENTENCE SUMMARY FOR SEO / SOCIAL]]" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav-brand" href="../index.html">AK.</a>
+      <ul class="nav-links">
+        <li><a href="../work.html">Work</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../resume.html">Résumé</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme" data-theme-toggle>
+        <span class="theme-toggle-icon" aria-hidden="true">◐</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <header class="page-header">
+      <div class="container">
+        <p class="eyebrow">Case study · [[CATEGORY e.g. CFD &amp; Simulation]]</p>
+        <h1>[[PROJECT TITLE]].</h1>
+        <p>[[TAGLINE — one sentence that summarises the whole project]]</p>
+      </div>
+    </header>
+
+    <section class="container case">
+      <dl class="case-meta">
+        <div><dt>Context</dt><dd>[[Industry / Academic — Organisation]]</dd></div>
+        <div><dt>Role</dt><dd>[[Your role]]</dd></div>
+        <div><dt>Duration</dt><dd>[[YYYY – YYYY]]</dd></div>
+        <div><dt>Stack</dt><dd>[[Key tools, comma-separated]]</dd></div>
+      </dl>
+
+      <div class="case-section">
+        <h2>Problem</h2>
+        <p>[[2–3 sentences: what needed to be solved, why it mattered, what the constraints were.]]</p>
+      </div>
+
+      <div class="case-section">
+        <h2>Approach</h2>
+        <ul>
+          <li>[[Physics / methodology bullet 1]]</li>
+          <li>[[Bullet 2 — turbulence model, mesh strategy, etc.]]</li>
+          <li>[[Bullet 3 — validation plan]]</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Tools &amp; setup</h2>
+        <ul>
+          <li><strong>[[Tool 1]]</strong> — [[what it was used for]]</li>
+          <li><strong>[[Tool 2]]</strong> — [[what it was used for]]</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Results</h2>
+        <div class="results-grid">
+          <div class="result">
+            <div class="result-value">[[XX%]]</div>
+            <div class="result-label">[[Key metric 1]]</div>
+          </div>
+          <div class="result">
+            <div class="result-value">[[±Y]]</div>
+            <div class="result-label">[[Key metric 2]]</div>
+          </div>
+        </div>
+
+        <div class="figure-placeholder">
+          Figure 1 — [[Caption]].
+          <br />
+          Drop an image at <code>assets/images/[[slug]]-fig1.png</code>, then replace this block with an
+          <code>&lt;img&gt;</code> tag.
+        </div>
+      </div>
+
+      <div class="case-section">
+        <h2>Validation</h2>
+        <p>[[How you checked the result was real — analytical comparison, rig data, benchmark, cross-code check.]]</p>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons learned</h2>
+        <ul>
+          <li>[[Honest takeaway 1]]</li>
+          <li>[[Honest takeaway 2]]</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Artifacts</h2>
+        <ul>
+          <li>[[PDF report, code snippet, dataset — with links where possible]]</li>
+        </ul>
+      </div>
+
+      <nav class="case-nav" aria-label="Project navigation">
+        <a class="btn btn-ghost" href="../work.html">← All projects</a>
+        <a class="btn btn-primary" href="[[NEXT-PROJECT.html]]">Next: [[Next project title]] →</a>
+      </nav>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span data-year></span> Abhishek Kuntal · Munich</p>
+      <p class="footer-links">
+        <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://www.linkedin.com/in/abhishek-kuntal-4155b7124/" target="_blank" rel="noopener">LinkedIn</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js" defer></script>
+</body>
+</html>
