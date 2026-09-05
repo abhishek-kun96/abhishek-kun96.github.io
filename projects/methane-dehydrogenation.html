@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Methane Dehydrogenation Reactor — Abhishek Kuntal</title>
+  <meta name="description" content="Reacting-flow CFD of a pressurised methane dehydrogenation reactor — finite-rate kinetics coupled with turbulent transport and species conservation in ANSYS Fluent." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav-brand" href="../index.html">AK.</a>
+      <ul class="nav-links">
+        <li><a href="../work.html">Work</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../resume.html">Résumé</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme" data-theme-toggle>
+        <span class="theme-toggle-icon" aria-hidden="true">◐</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <header class="page-header">
+      <div class="container">
+        <p class="eyebrow">Case study · Reacting flow · Honeywell UOP</p>
+        <h1>Methane dehydrogenation reactor CFD.</h1>
+        <p>Reacting-flow CFD of a pressurised reactor — finite-rate chemical kinetics coupled with turbulent transport and species conversion in ANSYS Fluent.</p>
+      </div>
+    </header>
+
+    <section class="container case">
+      <dl class="case-meta">
+        <div><dt>Context</dt><dd>Industry — Honeywell UOP collaboration</dd></div>
+        <div><dt>Role</dt><dd>Sr. Mechanical Design Engineer · reacting-flow CFD</dd></div>
+        <div><dt>Duration</dt><dd>2021 – 2022</dd></div>
+        <div><dt>Stack</dt><dd>ANSYS Fluent (reacting flow), Python, chemical kinetics</dd></div>
+      </dl>
+
+      <p class="ip-note">Note: all Honeywell work is covered by an IP agreement. This page describes the physics,
+      methodology, and skillset only — no proprietary reactor geometry, performance data, or conversion targets are shared.</p>
+
+      <div class="case-section">
+        <h2>Problem</h2>
+        <p>
+          Methane dehydrogenation is a process route to ethylene and acetylene production. The reactor operates at
+          elevated pressure with methane as feedstock, and the design challenge is maximising conversion efficiency
+          while managing the competing demands of residence time, temperature distribution, and flow uniformity.
+          The team needed a reacting-flow model that could predict conversion and selectivity across the operating
+          envelope, and identify whether flow maldistribution or kinetics was the limiting factor.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Approach</h2>
+        <ul>
+          <li><strong>Reacting-flow formulation</strong> — finite-rate chemical kinetics coupled with turbulent transport and species conservation in ANSYS Fluent. Multiple competing reaction pathways were modelled to capture the conversion–selectivity trade.</li>
+          <li><strong>Geometry & mesh</strong> — reactor inlet and distribution zone resolved to capture flow maldistribution; mesh independence confirmed for the target conversion metrics.</li>
+          <li><strong>Parametric sweep</strong> — inlet temperature, pressure, and residence time were varied systematically to map the operating envelope.</li>
+          <li><strong>Results extraction</strong> — Python post-processing of species mass fractions, velocity fields, and temperature profiles to identify recirculation zones, hot spots, and conversion-limiting regions.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Tools &amp; setup</h2>
+        <ul>
+          <li><strong>ANSYS Fluent</strong> — reacting flow with finite-rate kinetics, species transport, and energy coupling.</li>
+          <li><strong>Python</strong> — automated extraction of conversion, selectivity, and flow uniformity metrics across the parametric sweep.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Outcomes</h2>
+        <ul>
+          <li><strong>Conversion mapping</strong> — identified the operating window that maximised target product yield while avoiding undesirable side reactions.</li>
+          <li><strong>Flow diagnostics</strong> — recirculation zones and flow maldistribution were quantified and linked to conversion losses.</li>
+          <li><strong>Design guidance</strong> — results fed into reactor inlet and distributor design recommendations.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons learned</h2>
+        <ul>
+          <li>Reacting-flow CFD is a three-field coupled problem — flow, species, and chemistry must converge together. Decoupling any one of them gives plausible-looking but wrong answers.</li>
+          <li>Residence time distribution matters as much as kinetics. A reactor with perfect chemistry but poor flow uniformity underperforms.</li>
+          <li>Mesh independence for reacting flow is harder than for inert flow — the reaction zone can be thin and easily under-resolved.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Artifacts</h2>
+        <ul>
+          <li>Internal technical report (Honeywell proprietary — available on request with NDA).</li>
+        </ul>
+      </div>
+
+      <div class="share-bar">
+        <button class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button class="share-btn" data-share="twitter">Share on X</button>
+        <button class="share-btn" data-share="copy">Copy link</button>
+      </div>
+
+      <nav class="case-nav" aria-label="Project navigation">
+        <a class="btn btn-ghost" href="../work.html">← All projects</a>
+        <a class="btn btn-primary" href="bioreactor-cfd.html">Next: Bioreactor CFD →</a>
+      </nav>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span data-year></span> Abhishek Kuntal · Munich · Updated <span data-last-updated>Sept 2026</span></p>
+      <p class="footer-links">
+        <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+  <script src="../assets/js/main.js" defer></script>
+  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close lightbox">×</button>
+    <img src="" alt="" id="lightbox-img">
+  </div>
+</body>
+</html>

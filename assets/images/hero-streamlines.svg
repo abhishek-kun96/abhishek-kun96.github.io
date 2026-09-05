@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <linearGradient id="stream1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="currentColor" stop-opacity="0"/>
+      <stop offset="20%" stop-color="currentColor" stop-opacity="0.08"/>
+      <stop offset="50%" stop-color="currentColor" stop-opacity="0.15"/>
+      <stop offset="80%" stop-color="currentColor" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="currentColor" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="stream2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="currentColor" stop-opacity="0"/>
+      <stop offset="25%" stop-color="currentColor" stop-opacity="0.06"/>
+      <stop offset="50%" stop-color="currentColor" stop-opacity="0.12"/>
+      <stop offset="75%" stop-color="currentColor" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="currentColor" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="stream3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="currentColor" stop-opacity="0"/>
+      <stop offset="30%" stop-color="currentColor" stop-opacity="0.05"/>
+      <stop offset="60%" stop-color="currentColor" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="currentColor" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Streamlines suggesting flow around a body -->
+  <path d="M-50 280 Q200 260 400 290 Q600 320 800 285 Q1000 250 1250 270" fill="none" stroke="url(#stream1)" stroke-width="2"/>
+  <path d="M-50 300 Q200 280 400 310 Q600 340 800 305 Q1000 270 1250 290" fill="none" stroke="url(#stream1)" stroke-width="2.5"/>
+  <path d="M-50 320 Q200 300 400 330 Q600 360 800 325 Q1000 290 1250 310" fill="none" stroke="url(#stream2)" stroke-width="2"/>
+  <path d="M-50 260 Q200 240 400 270 Q600 300 800 265 Q1000 230 1250 250" fill="none" stroke="url(#stream2)" stroke-width="1.5"/>
+  <path d="M-50 340 Q200 320 400 350 Q600 380 800 345 Q1000 310 1250 330" fill="none" stroke="url(#stream3)" stroke-width="1.5"/>
+  <path d="M-50 240 Q200 220 400 250 Q600 280 800 245 Q1000 210 1250 230" fill="none" stroke="url(#stream3)" stroke-width="1"/>
+  <path d="M-50 360 Q200 340 400 370 Q600 400 800 365 Q1000 330 1250 350" fill="none" stroke="url(#stream3)" stroke-width="1"/>
+  <!-- Faint velocity contour suggestion -->
+  <ellipse cx="600" cy="300" rx="180" ry="120" fill="none" stroke="currentColor" stroke-opacity="0.04" stroke-width="40"/>
+  <ellipse cx="600" cy="300" rx="120" ry="80" fill="none" stroke="currentColor" stroke-opacity="0.06" stroke-width="30"/>
+  <ellipse cx="600" cy="300" rx="60" ry="40" fill="none" stroke="currentColor" stroke-opacity="0.08" stroke-width="20"/>
+</svg>

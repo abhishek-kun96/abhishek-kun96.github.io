@@ -8,10 +8,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="scroll-progress-bar" data-scroll-progress></div>
+  <button class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
 
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
@@ -34,6 +38,12 @@
         <p class="eyebrow">Résumé</p>
         <h1>Skills &amp; CV.</h1>
         <p>Curated overview of design &amp; simulation, programming, experimental, and industrial competencies. Full PDF available for download.</p>
+        <div class="current-work">
+          <h3><span class="current-work-status" aria-hidden="true"></span> Currently seeking</h3>
+          <p style="margin:0;font-size:0.95rem">
+            Full-time roles in CFD automation, thermal analysis, or materials simulation in Munich · Hiwi/working-student positions · Available immediately
+          </p>
+        </div>
         <div class="hero-ctas" style="margin-top:1.5rem">
           <a class="btn btn-primary" href="assets/pdfs/abhishek-kuntal-cv.pdf">Download CV (PDF)</a>
           <a class="btn btn-ghost" href="contact.html">Get in touch</a>
@@ -42,57 +52,95 @@
     </header>
 
     <section class="container">
-      <h2 class="section-title">Design &amp; simulation</h2>
+      <h2 class="section-title">CFD &amp; Numerical Methods</h2>
       <table class="skills-table">
         <thead>
           <tr><th>Tool</th><th>Proficiency</th><th>Key use</th></tr>
         </thead>
         <tbody>
-          <tr><td>ANSYS Fluent</td><td>Advanced</td><td>CHT, turbomachinery, FOD, heat exchangers</td></tr>
-          <tr><td>ANSYS CFX</td><td>Advanced</td><td>Rotating machinery, stage analysis, turbo post-processing</td></tr>
-          <tr><td>ANSYS Mechanical</td><td>Advanced</td><td>Structural stress, fatigue margins</td></tr>
-          <tr><td>Star-CCM+</td><td>Intermediate</td><td>Mesh and flow setup</td></tr>
-          <tr><td>Siemens NX / SolidWorks / CATIA</td><td>Advanced</td><td>Geometry prep, parametric design</td></tr>
-          <tr><td>Turbulence modelling</td><td>Advanced</td><td>k-ε, k-ω SST, wall treatment</td></tr>
-          <tr><td>Conjugate heat transfer (CHT)</td><td>Advanced</td><td>Coupled fluid–solid thermal analysis</td></tr>
-          <tr><td>Mesh morphing</td><td>Advanced</td><td>Parametric geometry without re-meshing</td></tr>
+          <tr class="skill-expert"><td>ANSYS Fluent</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>CHT, turbomachinery, reacting flow, multiphase, FOD</td></tr>
+          <tr class="skill-expert"><td>ANSYS CFX</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Rotating machinery, stage analysis, CHT</td></tr>
+          <tr class="skill-expert"><td>ANSYS Mechanical</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Structural stress, fatigue margins, blade-root analysis</td></tr>
+          <tr class="skill-advanced"><td>OpenFOAM</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Wind-farm wake, custom solvers</td></tr>
+          <tr class="skill-advanced"><td>Star-CCM+</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Intermediate</td><td>Mesh and flow setup</td></tr>
+          <tr class="skill-expert"><td>Turbulence modelling</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>k-ε, k-ω SST, wall treatment</td></tr>
+          <tr class="skill-expert"><td>Conjugate heat transfer (CHT)</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Coupled fluid–solid thermal analysis, cooling passage optimisation</td></tr>
+          <tr class="skill-expert"><td>Uncertainty quantification</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Operating window definition, confidence bounding</td></tr>
+          <tr class="skill-expert"><td>Mesh morphing</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Parametric geometry without re-meshing</td></tr>
+          <tr class="skill-advanced"><td>Mesh independence</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Grid convergence studies (GCI)</td></tr>
+          <tr class="skill-advanced"><td>ANSYS ICEM CFD</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Structured hexahedral grids for periodic passages</td></tr>
+          <tr class="skill-advanced"><td>Turbogrid</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Turbomachinery-specific meshing</td></tr>
+          <tr class="skill-intermediate"><td>Pointwise</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Intermediate</td><td>Mesh generation</td></tr>
         </tbody>
       </table>
 
-      <h2 class="section-title">Programming &amp; analytics</h2>
+      <h2 class="section-title">Programming, HPC &amp; Data</h2>
       <table class="skills-table">
         <thead>
           <tr><th>Language / tool</th><th>Proficiency</th><th>Key use</th></tr>
         </thead>
         <tbody>
-          <tr><td>Python</td><td>Expert</td><td>Post-processing, dashboards, data pipelines</td></tr>
-          <tr><td>MATLAB</td><td>Expert</td><td>Numerical methods, data analysis</td></tr>
-          <tr><td>Excel VBA</td><td>Expert</td><td>Performance dashboards, engineering review tools</td></tr>
-          <tr><td>C++</td><td>Advanced</td><td>Solver extensions, UDFs</td></tr>
-          <tr><td>LaTeX</td><td>Advanced</td><td>Technical reports, papers</td></tr>
-          <tr><td>Git / Bash</td><td>Advanced</td><td>Version control, scripting</td></tr>
-          <tr><td>OriginPro</td><td>Advanced</td><td>Scientific data visualisation</td></tr>
-          <tr><td>LINDO / LINGO</td><td>Intermediate</td><td>Optimisation modelling</td></tr>
-          <tr><td>LabVIEW</td><td>Intermediate</td><td>DAQ automation, FPGA programming</td></tr>
+          <tr class="skill-expert"><td>Python</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Expert</td><td>Post-processing, dashboards, data pipelines, phase transformation modelling, surrogate modelling</td></tr>
+          <tr class="skill-expert"><td>MATLAB</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Expert</td><td>Numerical methods, data analysis</td></tr>
+          <tr class="skill-expert"><td>Excel VBA</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Expert</td><td>Performance dashboards, engineering review tools</td></tr>
+          <tr class="skill-advanced"><td>C++</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Solver extensions, UDFs</td></tr>
+          <tr class="skill-advanced"><td>LaTeX</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Technical reports, papers</td></tr>
+          <tr class="skill-advanced"><td>Git / Bash</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Version control, scripting, Slurm, MPI</td></tr>
+          <tr class="skill-advanced"><td>OriginPro</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Scientific data visualisation</td></tr>
+          <tr class="skill-intermediate"><td>LabVIEW</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Intermediate</td><td>DAQ automation, FPGA programming</td></tr>
+          <tr class="skill-advanced"><td>Slurm (sbatch)</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>HPC job scheduling on Linux clusters</td></tr>
+          <tr class="skill-intermediate"><td>MPI</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Intermediate</td><td>Parallel job execution</td></tr>
         </tbody>
       </table>
 
-      <h2 class="section-title">Experimental &amp; materials</h2>
+      <h2 class="section-title">CAD &amp; Pre-/Post-Processing</h2>
+      <table class="skills-table">
+        <thead>
+          <tr><th>Tool</th><th>Proficiency</th><th>Key use</th></tr>
+        </thead>
+        <tbody>
+          <tr class="skill-expert"><td>Siemens NX (NX12)</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Geometry prep, parametric design, assembly</td></tr>
+          <tr class="skill-expert"><td>SolidWorks</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Geometry prep, parametric design</td></tr>
+          <tr class="skill-advanced"><td>CATIA</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Advanced</td><td>Surface modelling, aerospace design</td></tr>
+          <tr class="skill-intermediate"><td>CREO</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Intermediate</td><td>Parametric design</td></tr>
+          <tr class="skill-intermediate"><td>Fusion 360</td><td><span class="skill-bar"><span class="skill-bar-fill"></span></span>Intermediate</td><td>Generative design, prototyping</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-title">Materials &amp; Characterisation</h2>
       <table class="skills-table">
         <thead>
           <tr><th>Method</th><th>Equipment</th><th>Notes</th></tr>
         </thead>
         <tbody>
           <tr><td>SEM / optical microscopy</td><td>—</td><td>Interface characterisation, grain-size quantification</td></tr>
-          <tr><td>Thermomechanical simulation</td><td>Gleeble 3800</td><td>HAZ thermal cycling, phase transformation studies</td></tr>
-          <tr><td>Mechanical testing</td><td>ISO 6892-1</td><td>Tensile and Vickers hardness</td></tr>
+          <tr><td>Thermomechanical simulation</td><td>Gleeble 3800 (QuikSim HAZ)</td><td>HAZ thermal cycling, phase transformation studies</td></tr>
+          <tr><td>Mechanical testing</td><td>ISO 6892-1</td><td>Tensile and Vickers hardness (HV1)</td></tr>
           <tr><td>Wind-tunnel testing</td><td>CTA hot-wire</td><td>Velocity profiling, turbulence measurement</td></tr>
           <tr><td>Thin-film deposition</td><td>Spray pyrolysis</td><td>GDC films for solid-state electrolytes</td></tr>
-          <tr><td>Phase modelling</td><td>CALPHAD</td><td>Thermodynamic equilibrium simulation</td></tr>
+          <tr><td>Phase modelling</td><td>CALPHAD / pycalphad</td><td>Thermodynamic equilibrium simulation, Ni superalloy screening</td></tr>
+          <tr><td>Molecular dynamics</td><td>LAMMPS</td><td>EAM and Lennard-Jones potentials, atomistic deformation</td></tr>
+          <tr><td>Quantitative image analysis</td><td>—</td><td>Grain-size distribution, defect quantification</td></tr>
+          <tr><td>Metallography</td><td>—</td><td>Grinding, polishing, Nital etching</td></tr>
         </tbody>
       </table>
 
-      <h2 class="section-title">Industrial &amp; management</h2>
+      <h2 class="section-title">Verification, Validation &amp; Instrumentation</h2>
+      <table class="skills-table">
+        <thead>
+          <tr><th>Method</th><th>Context</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Rig test correlation</td><td>Honeywell</td><td>Confidence bounding, discrepancy isolation</td></tr>
+          <tr><td>Benchmarking</td><td>Analytical solutions</td><td>Hagen-Poiseuille, Power-Law, Blasius</td></tr>
+          <tr><td>Prototype trial correlation</td><td>TUM / enrope</td><td>Instrumented tidal energy prototype</td></tr>
+          <tr><td>Sensor calibration</td><td>King's Law</td><td>Hot-wire CTA calibration</td></tr>
+          <tr><td>LabVIEW FPGA DAQ</td><td>TUM</td><td>Real-time acquisition, automated post-processing</td></tr>
+          <tr><td>Grid convergence</td><td>GCI studies</td><td>Mesh independence verification</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-title">Industrial &amp; Engineering Process</h2>
       <table class="skills-table">
         <thead>
           <tr><th>Skill</th><th>Certification / context</th><th>Notes</th></tr>
@@ -100,17 +148,31 @@
         <tbody>
           <tr><td>Six Sigma Green Belt</td><td>Honeywell certification</td><td>DMAIC methodology applied to engineering processes</td></tr>
           <tr><td>Lean engineering</td><td>VSM, RCA, Kanban</td><td>Honeywell manufacturing projects</td></tr>
+          <tr><td>Requirements management</td><td>Specification to validation</td><td>Technical requirements for component design</td></tr>
+          <tr><td>PDR / CDR</td><td>Honeywell</td><td>Preliminary and Critical Design Review documentation</td></tr>
+          <tr><td>Supplier coordination</td><td>Honeywell</td><td>Technical specifications, interface compliance</td></tr>
           <tr><td>SAP / ERP</td><td>Honeywell</td><td>Test and manufacturing coordination</td></tr>
           <tr><td>Scrum principles</td><td>—</td><td>Agile project tracking</td></tr>
-          <tr><td>Project scheduling</td><td>MS Project</td><td>Multi-stakeholder delivery management</td></tr>
+          <tr><td>Project Management</td><td>MS Project, Kanban</td><td>Multi-stakeholder delivery management</td></tr>
+          <tr><td>Jira</td><td>—</td><td>Issue tracking, project management</td></tr>
         </tbody>
       </table>
 
       <h2 class="section-title">Languages</h2>
       <table class="skills-table">
         <tbody>
-          <tr><td>English</td><td>Fluent</td><td>Technical writing and professional communication</td></tr>
-          <tr><td>German</td><td>B1</td><td>Conversational; actively studying toward B2</td></tr>
+          <tr><td>English</td><td>C1</td><td>Technical writing and professional communication</td></tr>
+          <tr><td>German</td><td>A2</td><td>A1.1 & A1.2 achieved; studying toward B1</td></tr>
+          <tr><td>Hindi</td><td>Native</td><td>—</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-title">Certifications</h2>
+      <table class="skills-table">
+        <tbody>
+          <tr><td>Six Sigma Green Belt</td><td>Honeywell (2021)</td><td>Process optimisation, root-cause analysis (DMAIC)</td></tr>
+          <tr><td>3-Axis CNC Machine Development</td><td>VIT University (2018)</td><td>End-to-end CNC system design and calibration</td></tr>
+          <tr><td>Project Management and Job Scheduling</td><td>—</td><td>Multi-stakeholder delivery management</td></tr>
         </tbody>
       </table>
     </section>
@@ -118,11 +180,11 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© <span data-year></span> Abhishek Kuntal · Munich</p>
+      <p>© <span data-year></span> Abhishek Kuntal · Munich · Updated <span data-last-updated>Sept 2026</span></p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <span aria-hidden="true">·</span>
-        <a href="https://www.linkedin.com/in/abhishek-kuntal-4155b7124/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
         <span aria-hidden="true">·</span>
         <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
       </p>
@@ -130,5 +192,9 @@
   </footer>
 
   <script src="assets/js/main.js" defer></script>
+  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close lightbox">×</button>
+    <img src="" alt="" id="lightbox-img">
+  </div>
 </body>
 </html>

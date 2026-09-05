@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Page not found — Abhishek Kuntal</title>
+  <meta name="description" content="The page you were looking for doesn't exist. Try the homepage or projects section." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Abhishek Kuntal — 404" />
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    .error-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+    }
+    .error-code {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(4rem, 12vw, 8rem);
+      font-weight: 500;
+      color: var(--accent);
+      margin: 0;
+      line-height: 1;
+    }
+    .error-message {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem;
+      margin: 1rem 0 2rem;
+    }
+    .error-illustration {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <main id="main" class="error-page">
+    <div class="container">
+      <div class="error-illustration" aria-hidden="true">∿∿∿</div>
+      <h1 class="error-code">404</h1>
+      <p class="error-message">This page drifted out of the boundary layer.</p>
+      <p style="color:var(--text-muted);margin-bottom:2rem">
+        The page you were looking for has either moved, been renamed, or never existed.
+      </p>
+      <div class="hero-ctas" style="justify-content:center">
+        <a class="btn btn-primary" href="index.html">Back to homepage</a>
+        <a class="btn btn-ghost" href="work.html">View projects</a>
+      </div>
+    </div>
+  </main>
+  <script src="assets/js/main.js" defer></script>
+  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close lightbox">×</button>
+    <img src="" alt="" id="lightbox-img">
+  </div>
+</body>
+</html>

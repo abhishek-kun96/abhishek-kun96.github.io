@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
   <link rel="stylesheet" href="../assets/css/style.css" />
 </head>
 <body>
@@ -69,28 +70,24 @@
 
       <div class="case-figures">
         <figure>
-          <img src="../assets/images/thermomechanical-cycles.png" alt="Imposed Gleeble thermal cycles over time for a set of HAZ-representative conditions" />
-          <figcaption>Imposed Gleeble thermal cycles — peak-temperature and cooling-rate sweep that represents the HAZ gradient.</figcaption>
+          <img src="../assets/images/thermo-ttt-diagrams.png" alt="TTT and CCT diagrams for S355 steel" />
+          <figcaption>TTT/CCT diagrams — predicted phase transformation kinetics for S355 steel.</figcaption>
         </figure>
         <figure>
-          <img src="../assets/images/thermomechanical-phase.png" alt="Predicted phase fractions (ferrite, pearlite, bainite, martensite) vs cooling rate" />
-          <figcaption>Predicted phase fractions vs cooling rate — the transition from diffusional products to martensite is the headline.</figcaption>
+          <img src="../assets/images/thermo-phase-fraction.png" alt="Phase fractions vs cooling rate" />
+          <figcaption>Phase fractions — ferrite, pearlite, bainite, martensite as functions of cooling rate.</figcaption>
         </figure>
         <figure>
-          <img src="../assets/images/thermomechanical-micrographs.png" alt="Optical/SEM micrographs of HAZ microstructures across cooling conditions" />
-          <figcaption>Micrographs — base metal through grain-coarsened HAZ to martensitic fast-cool regime.</figcaption>
+          <img src="../assets/images/thermo-hardness-cooling.png" alt="Hardness vs cooling rate" />
+          <figcaption>Hardness prediction — Vickers hardness as a function of cooling rate.</figcaption>
         </figure>
         <figure>
-          <img src="../assets/images/thermomechanical-stressstrain.png" alt="Measured stress-strain curves across HAZ zones" />
-          <figcaption>Stress–strain behaviour across HAZ zones — strength rises with martensite fraction at the cost of uniform elongation.</figcaption>
+          <img src="../assets/images/thermo-micrograph-500x.jpg" alt="Optical micrograph of HAZ microstructure at 500x magnification" />
+          <figcaption>HAZ microstructure — optical micrograph at 500x showing grain structure across the heat-affected zone.</figcaption>
         </figure>
         <figure>
-          <img src="../assets/images/thermomechanical-ttt.png" alt="Predicted TTT curve for baseline composition" />
-          <figcaption>Python-predicted TTT curve — Kirkaldy-style diffusion-product noses plus the martensite-start band.</figcaption>
-        </figure>
-        <figure>
-          <img src="../assets/images/thermomechanical-ttt2.png" alt="Comparison of TTT curves for varied compositions or austenitising conditions" />
-          <figcaption>Sensitivity runs — how composition and austenitising temperature shift the TTT noses.</figcaption>
+          <img src="../assets/images/thermo-micrograph-1000x.jpg" alt="Optical micrograph of HAZ microstructure at 1000x magnification" />
+          <figcaption>HAZ microstructure — optical micrograph at 1000x showing detailed phase morphology.</figcaption>
         </figure>
       </div>
 
@@ -149,6 +146,12 @@
         </ul>
       </div>
 
+      <div class="share-bar">
+        <button class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button class="share-btn" data-share="twitter">Share on X</button>
+        <button class="share-btn" data-share="copy">Copy link</button>
+      </div>
+
       <nav class="case-nav" aria-label="Project navigation">
         <a class="btn btn-ghost" href="../work.html">← All projects</a>
         <a class="btn btn-primary" href="solid-state-electrolytes.html">Next: GDC thin films →</a>
@@ -158,16 +161,20 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© <span data-year></span> Abhishek Kuntal · Munich</p>
+      <p>© <span data-year></span> Abhishek Kuntal · Munich · Updated <span data-last-updated>Sept 2026</span></p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <span aria-hidden="true">·</span>
-        <a href="https://www.linkedin.com/in/abhishek-kuntal-4155b7124/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
         <span aria-hidden="true">·</span>
         <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
       </p>
     </div>
   </footer>
-  <script src="../assets/js/main.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
+  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close lightbox">×</button>
+    <img src="" alt="" id="lightbox-img">
+  </div>
 </body>
 </html>

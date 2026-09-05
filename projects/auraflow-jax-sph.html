@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AuraFlow — JAX SPH + PINN — Abhishek Kuntal</title>
+  <meta name="description" content="AuraFlow: differentiable GPU-native SPH platform. JAX-based WCSPH solver with CUDA oracle parity, inverse viscosity recovery, and neural-SPH inference relaxation. Work in progress." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav-brand" href="../index.html">AK.</a>
+      <ul class="nav-links">
+        <li><a href="../work.html">Work</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../resume.html">Résumé</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme" data-theme-toggle>
+        <span class="theme-toggle-icon" aria-hidden="true">◐</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <header class="page-header">
+      <div class="container">
+        <p class="eyebrow">Case study · Differentiable CFD · Self-directed · In Progress</p>
+        <h1>AuraFlow — JAX SPH + learned simulators.</h1>
+        <p>A differentiable, GPU-native Smoothed Particle Hydrodynamics platform — building toward physics-regularized learned simulators that advance fluid flow at large temporal strides.</p>
+      </div>
+    </header>
+
+    <section class="container case">
+      <dl class="case-meta">
+        <div><dt>Context</dt><dd>Self-directed — research into differentiable physics + learned simulators</dd></div>
+        <div><dt>Role</dt><dd>Solo developer — architecture, implementation, validation</dd></div>
+        <div><dt>Stack</dt><dd>JAX, jax-sph, LagrangeBench, PyTorch, CUDA, WSL</dd></div>
+        <div><dt>Status</dt><dd>Core complete; learned simulator in progress</dd></div>
+      </dl>
+
+      <div class="case-section">
+        <h2>Problem</h2>
+        <p>
+          Classical SPH solvers are fast but not differentiable — they can't train neural networks through
+          the physics. Physics-Informed Neural Networks (PINNs) are differentiable but fail on violent free-surface
+          flows. The question: can we build a <em>differentiable</em> SPH core that (a) reproduces audited
+          dam-break physics, (b) generates training data at scale, and (c) trains a learned simulator that
+          advances the flow at large temporal strides?
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Approach</h2>
+        <ul>
+          <li><strong>Frozen CUDA oracle</strong> — AuraFlow-CUDA WCSPH solver (Tait EOS, δ-SPH, Wendland C2 kernels) serves as the non-differentiable reference. Audit gates: Ritter wavefront, monotone TME decay, density stability. Never changes on mainline.</li>
+          <li><strong>JAX differentiable core</strong> — Forked <code>tumaer/jax-sph</code>, ported physics for parity: Wendland C2 kernels, Tait EOS, δ-SPH dissipative sign, Sun/Lind shifting, Morris viscosity. Hand-rolled cell-list neighbor search for O(N) scaling.</li>
+          <li><strong>Parity validation</strong> — Element-wise comparison against the live CUDA oracle at 1e-10 tolerance on Wendland value + gradient, density derivative, and acceleration.</li>
+          <li><strong>Inverse problem</strong> — Recover effective viscosity (ν<sub>eff</sub> ≡ α) from synthetic shear-decay trajectories by Adam GD through a 10-step differentiable rollout.</li>
+          <li><strong>Learned simulator (in progress)</strong> — Graph Neural Network (GNS) training on sweep data with physics-regularized losses: continuity residual, EOS residual, wall containment, bulk energy monotonicity.</li>
+          <li><strong>Neural-SPH relaxation</strong> — Inference-time corrector using classical SPH pressure/viscosity/shift to kill tensile-instability clustering in GNN predictions.</li>
+        </ul>
+      </div>
+
+      <div class="case-figures">
+        <figure>
+          <img src="../assets/images/auraflow-dambreak.png" alt="AuraFlow dam-break simulation — time evolution of particle dispersion" />
+          <figcaption>Dam-break validation — 12.8k particles, 240 frames. Frozen CUDA oracle reproducing audited WCSPH physics.</figcaption>
+        </figure>
+      </div>
+
+      <div class="case-section">
+        <h2>Tools &amp; setup</h2>
+        <ul>
+          <li><strong>JAX</strong> — Differentiable computing framework with <code>jax.checkpoint</code> remat, <code>lax.scan</code> rollouts, fp64 audit mode.</li>
+          <li><strong>jax-sph</strong> — Forked and extended with cell-list neighbor search, mDBC boundary conditions, adaptive timestepping.</li>
+          <li><strong>LagrangeBench</strong> — Benchmark framework for learned simulators; GNS baseline reproduction.</li>
+          <li><strong>CUDA</strong> — Frozen oracle on RTX 3070 Laptop 8GB; WSL Ubuntu for GPU training.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Completed work</h2>
+        <ul>
+          <li><strong>Differentiable SPH core</strong> — JAX WCSPH solver with hand-rolled cell lists, mDBC walls, and fp64 audit mode. <strong>127 tests green</strong> (P2.1-P2.5). Parity with CUDA oracle at 1e-10.</li>
+          <li><strong>Inverse viscosity recovery</strong> — Demonstrated gradient-based parameter estimation through a differentiable rollout. Recovered α within 5% of truth; AD-vs-FD gradient check &lt; 1e-4. <strong>5 tests green</strong>.</li>
+          <li><strong>Neural-SPH corrector</strong> — Eliminates tensile-instability clustering in learned predictions without retraining. <strong>148 tests green</strong>.</li>
+          <li><strong>Data engine</strong> — Sweep infrastructure (H × aspect × ν<sub>eff</sub> × seeds), probe series, LagrangeBench dataset loader. <strong>55 tests green</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>In progress</h2>
+        <ul>
+          <li><strong>72-run sweep</strong> — Generated but <strong>audit found issues</strong>: the dataset was not a physical dam break (periodic/toroidal BCs, no walls). Regeneration in progress.</li>
+          <li><strong>GNS baseline</strong> — LagrangeBench dam_2d baseline reproduction launched but not yet completed.</li>
+          <li><strong>Physics-regularized training</strong> — Residual wiring complete; retraining on validated data pending sweep regeneration.</li>
+        </ul>
+
+        <div class="callout">
+          <p>Honest status: the differentiable core is solid and validated. The learned simulator track is
+          incomplete — the training data had to be regenerated after an audit found the initial sweep
+          was not physical. This is research, and the research is ongoing.</p>
+        </div>
+      </div>
+
+      <div class="case-section">
+        <h2>Validation</h2>
+        <p>
+          The JAX core was validated element-wise against the frozen CUDA oracle at 1e-10 tolerance.
+          Dam-break simulations reproduce the Ritter wavefront reference within expected dissipative decay.
+          Total mechanical energy (TME) shows monotonic decay in the bulk (support ≥ 0.75), with spray
+          regions correctly identified as a known WCSPH free-surface artifact rather than a bulk defect.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons learned</h2>
+        <ul>
+          <li>Differentiability is not free — <code>jax.checkpoint</code> remat and padded neighbor lists are essential for memory-efficient backprop through long rollouts.</li>
+          <li>Cell-list neighbor search is the single load-bearing blocker for scaling. Hand-rolling it (rather than depending on jax-md) was the right call for JAX 0.4.29 compatibility.</li>
+          <li>Physics losses must be bulk-gated — training against total-TME monotonicity would fight the known WCSPH free-surface artifact in the spray layer.</li>
+          <li>A frozen oracle is essential — without the CUDA reference, debugging the JAX port would have been impossible.</li>
+          <li>Data generation is harder than it looks — the first 72-run sweep looked fine until an audit revealed it was a torus, not a dam break. Always validate the physics, not just the code.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Artifacts</h2>
+        <ul>
+          <li>GitHub repository — <code>auraflow-jax</code> (JAX core), <code>auraflow-cuda</code> (frozen oracle).</li>
+          <li>Test suite — 127+ tests covering operators, stepper, neighbors, parity, inverse problems.</li>
+          <li>Sweep infrastructure — configs and scripts for 72-run parameter sweep (regeneration in progress).</li>
+        </ul>
+      </div>
+
+      <div class="share-bar">
+        <button class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button class="share-btn" data-share="twitter">Share on X</button>
+        <button class="share-btn" data-share="copy">Copy link</button>
+      </div>
+
+      <nav class="case-nav" aria-label="Project navigation">
+        <a class="btn btn-ghost" href="../work.html">← All projects</a>
+        <a class="btn btn-primary" href="bioreactor-cfd.html">Next: Bioreactor CFD →</a>
+      </nav>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span data-year></span> Abhishek Kuntal · Munich · Updated <span data-last-updated>Sept 2026</span></p>
+      <p class="footer-links">
+        <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+  <script src="../assets/js/main.js" defer></script>
+  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close lightbox">×</button>
+    <img src="" alt="" id="lightbox-img">
+  </div>
+</body>
+</html>

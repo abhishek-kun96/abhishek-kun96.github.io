@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
   <link rel="stylesheet" href="../assets/css/style.css" />
 </head>
 <body>
@@ -67,16 +68,16 @@
 
       <div class="case-figures">
         <figure>
-          <img src="../assets/images/windfarm-floris.png" alt="FLORIS wake flow-field visualisation showing wake deficits behind turbine rows" />
-          <figcaption>FLORIS wake flow field for the optimised layout — deficit streaks behind upstream turbines show why staggering matters.</figcaption>
+          <img src="../assets/images/windfarm-windrose.png" alt="Wind rose for Site 1 Denmark showing prevailing wind directions" />
+          <figcaption>Wind rose — Site 1 (Denmark) wind resource assessment showing prevailing directions.</figcaption>
         </figure>
         <figure>
-          <img src="../assets/images/windfarm-landbosse.png" alt="LandBOSSE balance-of-system cost breakdown by category" />
-          <figcaption>LandBOSSE BOS cost breakdown — civil works, collection cabling, and erection dominate. Layout affects all three.</figcaption>
+          <img src="../assets/images/windfarm-buildable.png" alt="Buildable area map with site constraints" />
+          <figcaption>Buildable area — site constraints and exclusion zones for layout optimisation.</figcaption>
         </figure>
         <figure>
-          <img src="../assets/images/windfarm-logistics.png" alt="Logistics and siting map with access roads and substation placement" />
-          <figcaption>Logistics view — access roads, crane pads, and substation placement costed explicitly in the BOS model.</figcaption>
+          <img src="../assets/images/windfarm-optimized-layout.png" alt="Optimised turbine layout after 200 iterations" />
+          <figcaption>Optimised layout — turbine positions after 200 iterations of wake-aware optimisation.</figcaption>
         </figure>
       </div>
 
@@ -133,6 +134,12 @@
         </ul>
       </div>
 
+      <div class="share-bar">
+        <button class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button class="share-btn" data-share="twitter">Share on X</button>
+        <button class="share-btn" data-share="copy">Copy link</button>
+      </div>
+
       <nav class="case-nav" aria-label="Project navigation">
         <a class="btn btn-ghost" href="../work.html">← All projects</a>
         <a class="btn btn-primary" href="hot-wire-anemometry.html">Next: Hot-wire anemometry →</a>
@@ -142,16 +149,20 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© <span data-year></span> Abhishek Kuntal · Munich</p>
+      <p>© <span data-year></span> Abhishek Kuntal · Munich · Updated <span data-last-updated>Sept 2026</span></p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <span aria-hidden="true">·</span>
-        <a href="https://www.linkedin.com/in/abhishek-kuntal-4155b7124/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
         <span aria-hidden="true">·</span>
         <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
       </p>
     </div>
   </footer>
-  <script src="../assets/js/main.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
+  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close lightbox">×</button>
+    <img src="" alt="" id="lightbox-img">
+  </div>
 </body>
 </html>

@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
   <link rel="stylesheet" href="../assets/css/style.css" />
 </head>
 <body>
@@ -33,6 +34,7 @@
         <p class="eyebrow">Passion project · CFD · Bioprocess engineering</p>
         <h1>Stirred-tank bioreactor CFD.</h1>
         <p>An applied-bioprocess CFD demo built as a passion project — oxygen mass-transfer mapping, cell-damaging shear-stress prediction, a DOE over impeller speed and sparger layout, and a surrogate response-surface that makes the design trade directly visible.</p>
+        <div class="reading-time" data-reading-time>This page contains detailed methodology, results, and lessons learned from a comprehensive bioprocess CFD study including multiphase flow simulation, oxygen mass transfer modeling, shear stress mapping, design of experiments, surrogate response surface optimization, and transient visualization.</div>
       </div>
     </header>
 
@@ -45,17 +47,47 @@
 
       <figure class="video-hero">
         <video
-          src="../assets/video/bioreactor-impeller.mp4"
-          poster="../assets/images/bioreactor-impeller-poster.jpg"
-          controls
+          src="../assets/videos/bioreactor-pulse.mp4"
+          poster="../assets/images/bioreactor-pulse-thumb.png"
+          autoplay
           muted
           loop
           playsinline
           preload="metadata">
-          Your browser does not support embedded video. <a href="../assets/video/bioreactor-impeller.mp4">Download the clip</a>.
+          Your browser does not support embedded video. <a href="../assets/videos/bioreactor-pulse.mp4">Download the clip</a>.
         </video>
-        <figcaption>Transient impeller + bubble-column CFD — velocity / gas-holdup field around the Rushton-class impeller during steady operation. Chosen from a larger set of rendered animations as the most representative of the mixing field the DOE was optimising against.</figcaption>
+        <figcaption>Pulse animation — fluid particles traced from the impeller, colored by velocity magnitude. Looping continuously to convey the transient mixing field the DOE was optimising against.</figcaption>
       </figure>
+
+      <div class="case-section">
+        <h2>Mixing-field animations</h2>
+        <p>Two transient animations, rendered from the sliding-mesh CFD, make the mixing field inspectable by non-CFD reviewers. The pulse animation traces fluid particles from the impeller tip; the bubble animation tracks gas-holdup evolution during startup. Both loop continuously.</p>
+        <div class="video-grid">
+          <figure>
+            <video
+              src="../assets/videos/bioreactor-pulse.mp4"
+              poster="../assets/images/bioreactor-pulse-thumb.png"
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="metadata">
+            </video>
+            <figcaption>Pulse animation — velocity-colored particle traces from the impeller tip.</figcaption>
+          </figure>
+          <figure>
+            <video
+              src="../assets/videos/bioreactor-bubbles.mp4"
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="metadata">
+            </video>
+            <figcaption>Gas-holdup evolution — bubble dispersion during startup transient.</figcaption>
+          </figure>
+        </div>
+      </div>
 
       <div class="case-section">
         <h2>Why I built this</h2>
@@ -97,18 +129,6 @@
         <figure>
           <img src="../assets/images/bioreactor-mixing.png" alt="Bioreactor mixing field — velocity vectors and gas holdup around impeller" />
           <figcaption>Mixing field snapshot — velocity and gas holdup around a Rushton-class impeller.</figcaption>
-        </figure>
-        <figure>
-          <img src="../assets/images/bioreactor-kla.png" alt="Reactor-average oxygen mass transfer coefficient kLa across impeller speed and gas flow" />
-          <figcaption>Reactor-average k<sub>L</sub>a response — rises monotonically with RPM and gas flow, as expected.</figcaption>
-        </figure>
-        <figure>
-          <img src="../assets/images/bioreactor-bubble-doe.png" alt="DOE results showing bubble size and gas holdup trends" />
-          <figcaption>DOE sweep — bubble-size and gas-holdup trends across the design space.</figcaption>
-        </figure>
-        <figure>
-          <img src="../assets/images/bioreactor-sensitivities.png" alt="Sensitivity chart — parameter effects on kLa and shear stress" />
-          <figcaption>Sensitivity chart — which design levers move k<sub>L</sub>a and which move shear (they are not the same levers in the same proportions).</figcaption>
         </figure>
         <figure>
           <img src="../assets/images/bioreactor-optimization.png" alt="Response-surface optimum — maximise kLa under a shear-stress cap" />
@@ -161,21 +181,45 @@
         <a class="btn btn-ghost" href="../work.html">← All projects</a>
         <a class="btn btn-primary" href="turbomachinery-cfd.html">Back to start: Turbomachinery CFD →</a>
       </nav>
+
+      <div class="share-bar">
+        <button class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button class="share-btn" data-share="twitter">Share on X</button>
+        <button class="share-btn" data-share="copy">Copy link</button>
+      </div>
+
+      <div class="related-projects">
+        <h3>Related projects</h3>
+        <div class="project-grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+          <a class="project-card" href="turbomachinery-cfd.html" style="padding:1rem">
+            <span class="project-tag">CFD · Honeywell</span>
+            <h3 class="project-title" style="font-size:1rem">Turbomachinery CFD</h3>
+          </a>
+          <a class="project-card" href="calphad-ni-workflow.html" style="padding:1rem">
+            <span class="project-tag">ML · Self-directed</span>
+            <h3 class="project-title" style="font-size:1rem">CALPHAD Ni Workflow</h3>
+          </a>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© <span data-year></span> Abhishek Kuntal · Munich</p>
+      <p>© <span data-year></span> Abhishek Kuntal · Munich · Updated <span data-last-updated>Sept 2026</span></p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <span aria-hidden="true">·</span>
-        <a href="https://www.linkedin.com/in/abhishek-kuntal-4155b7124/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
         <span aria-hidden="true">·</span>
         <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
       </p>
     </div>
   </footer>
-  <script src="../assets/js/main.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
+  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close lightbox">×</button>
+    <img src="" alt="" id="lightbox-img">
+  </div>
 </body>
 </html>

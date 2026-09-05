@@ -8,10 +8,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="scroll-progress-bar" data-scroll-progress></div>
+  <button class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
 
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
@@ -33,7 +37,7 @@
       <div class="container">
         <p class="eyebrow">Contact</p>
         <h1>Let&#39;s talk.</h1>
-        <p>Open to Hiwi / working-student roles in CFD, thermal analysis, or materials research in the Munich area. Also happy to discuss research collaborations or speak about turbomachinery simulation workflows.</p>
+        <p>Open to <strong>full-time roles</strong> in CFD, thermal analysis, or materials simulation in Munich. Also available for Hiwi/working-student positions. Happy to discuss research collaborations, turbomachinery simulation workflows, or how to make your solver output actually useful.</p>
       </div>
     </header>
 
@@ -43,9 +47,9 @@
           <div class="label">Email</div>
           <div class="value">kuntal.abhishek@gmail.com</div>
         </a>
-        <a class="contact-card" href="https://www.linkedin.com/in/abhishek-kuntal-4155b7124/" target="_blank" rel="noopener">
+        <a class="contact-card" href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">
           <div class="label">LinkedIn</div>
-          <div class="value">@abhishek-kuntal-4155b7124</div>
+          <div class="value">@abhishek-kuntal996</div>
         </a>
         <a class="contact-card" href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">
           <div class="label">GitHub</div>
@@ -68,11 +72,11 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© <span data-year></span> Abhishek Kuntal · Munich</p>
+      <p>© <span data-year></span> Abhishek Kuntal · Munich · Updated <span data-last-updated>Sept 2026</span></p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <span aria-hidden="true">·</span>
-        <a href="https://www.linkedin.com/in/abhishek-kuntal-4155b7124/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
         <span aria-hidden="true">·</span>
         <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
       </p>
@@ -80,5 +84,9 @@
   </footer>
 
   <script src="assets/js/main.js" defer></script>
+  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close lightbox">×</button>
+    <img src="" alt="" id="lightbox-img">
+  </div>
 </body>
 </html>
