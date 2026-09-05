@@ -831,6 +831,27 @@ code, pre {
 }
 .case .video-hero video { width: 100%; display: block; }
 
+.case-poster {
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  background: var(--card);
+}
+.case-poster img {
+  width: 100%;
+  display: block;
+  height: auto;
+}
+.case-poster figcaption {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  padding: 0.75rem 1rem;
+  text-align: center;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+}
+
 .video-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
