@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -59,35 +59,18 @@
         <figcaption>Pulse animation — fluid particles traced from the impeller, colored by velocity magnitude. Looping continuously to convey the transient mixing field the DOE was optimising against.</figcaption>
       </figure>
 
-      <div class="case-section">
-        <h2>Mixing-field animations</h2>
-        <p>Two transient animations, rendered from the sliding-mesh CFD, make the mixing field inspectable by non-CFD reviewers. The pulse animation traces fluid particles from the impeller tip; the bubble animation tracks gas-holdup evolution during startup. Both loop continuously.</p>
-        <div class="video-grid">
-          <figure>
-            <video
-              src="../assets/videos/bioreactor-pulse.mp4"
-              poster="../assets/images/bioreactor-pulse-thumb.png"
-              autoplay
-              muted
-              loop
-              playsinline
-              preload="metadata">
-            </video>
-            <figcaption>Pulse animation — velocity-colored particle traces from the impeller tip.</figcaption>
-          </figure>
-          <figure>
-            <video
-              src="../assets/videos/bioreactor-bubbles.mp4"
-              autoplay
-              muted
-              loop
-              playsinline
-              preload="metadata">
-            </video>
-            <figcaption>Gas-holdup evolution — bubble dispersion during startup transient.</figcaption>
-          </figure>
-        </div>
-      </div>
+      <figure class="video-solo">
+        <video
+          src="../assets/videos/bioreactor-bubbles.mp4"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata">
+          Your browser does not support embedded video. <a href="../assets/videos/bioreactor-bubbles.mp4">Download the clip</a>.
+        </video>
+        <figcaption>Gas-holdup evolution — bubble dispersion during startup transient.</figcaption>
+      </figure>
 
       <div class="case-section">
         <h2>Why I built this</h2>
