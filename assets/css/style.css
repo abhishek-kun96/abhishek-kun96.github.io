@@ -1275,7 +1275,7 @@ img[loading="lazy"][data-loaded="true"] {
   margin-bottom: 1rem;
 }
 
-/* --- Project status badges --------------------------------------------- */
+/* --- Status badges ----------------------------------------------------- */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -1301,6 +1301,22 @@ img[loading="lazy"][data-loaded="true"] {
 .status-badge--passion {
   background: rgba(168, 85, 247, 0.15);
   color: #9333ea;
+}
+
+/* --- Focus visible ------------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --- Reduced motion -------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
 }
 
 /* --- Related projects --------------------------------------------------- */
