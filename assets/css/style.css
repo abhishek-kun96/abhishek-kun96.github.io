@@ -462,11 +462,34 @@ code, pre {
 }
 
 /* --- Filter bar (work page) --------------------------------------------- */
-.filter-bar {
+.work-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 1rem;
   margin-bottom: 1.75rem;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+}
+
+.search-input::placeholder {
+  color: var(--text-faint);
 }
 .filter-btn {
   appearance: none;
@@ -1337,4 +1360,21 @@ img[loading="lazy"][data-loaded="true"] {
   .nav-links a { font-size: 0.85rem; }
   .hero { padding: 3rem 0 2rem; }
   .case-meta { gap: 1rem; }
+  .video-grid { grid-template-columns: 1fr; }
+  .filter-bar { gap: 0.4rem; }
+  .filter-btn { font-size: 0.75rem; padding: 0.3rem 0.7rem; }
+  .project-grid { grid-template-columns: 1fr; }
+  .bio-grid { grid-template-columns: 1fr; }
+}
+
+/* --- Tablet ------------------------------------------------------------- */
+@media (min-width: 541px) and (max-width: 768px) {
+  .hero { padding: 4rem 0 2.5rem; }
+  .project-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* --- Large desktop ------------------------------------------------------ */
+@media (min-width: 1200px) {
+  .container { max-width: 1140px; }
+  .hero-title { font-size: 5rem; }
 }

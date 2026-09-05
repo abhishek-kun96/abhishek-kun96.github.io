@@ -38,9 +38,15 @@
     });
   }
 
-  // ---- Year in footer ----------------------------------------------------
+  // ---- Year in footer + last updated -------------------------------------
   var yearEl = document.querySelector('[data-year]');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
+  var lastUpdated = document.querySelector('[data-last-updated]');
+  if (lastUpdated) {
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var now = new Date();
+    lastUpdated.textContent = months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+  }
 
   // ---- Mark active nav link ---------------------------------------------
   var page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
@@ -94,23 +100,41 @@
   }
 
   // ---- Project filter (work page) ---------------------------------------
-  var filterBar = document.querySelector('[data-filter-bar]');
-  if (filterBar) {
+    var filterBar = document.querySelector('[data-filter-bar]');
+    var searchInput = document.querySelector('[data-search]');
     var cards = document.querySelectorAll('[data-category]');
-    filterBar.addEventListener('click', function (e) {
-      var btn = e.target.closest('.filter-btn');
-      if (!btn) return;
-      var cat = btn.getAttribute('data-filter');
-      filterBar.querySelectorAll('.filter-btn').forEach(function (b) {
-        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
-      });
+
+    function filterProjects() {
+      var cat = filterBar ? (filterBar.querySelector('.filter-btn[aria-pressed="true"]') || {}).getAttribute('data-filter') || 'all' : 'all';
+      var query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
       cards.forEach(function (card) {
         var categories = (card.getAttribute('data-category') || '').split(/\s+/);
-        var match = cat === 'all' || categories.indexOf(cat) !== -1;
-        card.classList.toggle('is-hidden', !match);
+        var matchCat = cat === 'all' || categories.indexOf(cat) !== -1;
+
+        var title = (card.querySelector('.project-title') || {}).textContent || '';
+        var summary = (card.querySelector('.project-summary') || {}).textContent || '';
+        var tools = Array.from(card.querySelectorAll('.tool')).map(function(t) { return t.textContent; }).join(' ');
+        var matchQuery = !query || title.toLowerCase().indexOf(query) !== -1 || summary.toLowerCase().indexOf(query) !== -1 || tools.toLowerCase().indexOf(query) !== -1;
+
+        card.classList.toggle('is-hidden', !(matchCat && matchQuery));
       });
-    });
-  }
+    }
+
+    if (filterBar) {
+      filterBar.addEventListener('click', function (e) {
+        var btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        filterBar.querySelectorAll('.filter-btn').forEach(function (b) {
+          b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+        });
+        filterProjects();
+      });
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', filterProjects);
+    }
 
   // ---- Lightbox ----------------------------------------------------------
   var lightbox = document.getElementById('lightbox');
