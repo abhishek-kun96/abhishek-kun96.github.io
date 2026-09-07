@@ -350,6 +350,12 @@ code, pre {
   color: var(--text-muted);
   margin-top: 0.25rem;
 }
+.stat-note {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin-top: 0.35rem;
+  line-height: 1.4;
+}
 
 /* --- Focus areas --------------------------------------------------------- */
 .focus { padding: 3rem 0; }

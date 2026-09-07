@@ -193,6 +193,18 @@
       </div>
 
       <div class="case-section">
+        <h2>Verification &amp; limitations</h2>
+        <ul>
+          <li><strong>Mesh independence</strong> — three mesh densities tested (coarse/medium/fine); reported k<sub>L</sub>a values converged within 5% between medium and fine grids.</li>
+          <li><strong>Convergence criteria</strong> — all DOE runs converged to residuals below 10<sup>-4</sup> for continuity and momentum, with imbalances monitored at sparger and outlet boundaries.</li>
+          <li><strong>Model choice rationale</strong> — Euler–Euler selected over VOF for computational tractability across 72 DOE points; mixture model validated against literature bubble-rise correlations.</li>
+          <li><strong>Surrogate validation</strong> — response surfaces cross-validated against held-out CFD points; Random Forest R² = 0.93 for k<sub>L</sub>a prediction.</li>
+          <li><strong>Boundary of validity</strong> — results are specific to the Rushton-class impeller and baffled tank geometry studied; extrapolation to other configurations requires re-validation.</li>
+          <li><strong>Experimental validation</strong> — this is a demonstration model; full experimental validation is planned for future work.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
         <h2>Artifacts</h2>
         <ul>
           <li>Interview demo summary deck (self-authored).</li>
