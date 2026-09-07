@@ -15,7 +15,7 @@
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Wind-Farm Wake &amp; Layout Optimisation — Abhishek Kuntal" />
   <meta property="og:url" content="https://abhishek-kun96.github.io/projects/wind-farm-wake.html" />
-  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/poster-windfarm.jpg" />
+  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/windfarm-layout.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="description" content="FLORIS wake modelling + LandBOSSE balance-of-system cost optimisation for an offshore wind farm layout — TUM design course." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -98,26 +98,46 @@
       <div class="case-section">
         <h2>Approach</h2>
         <ul>
-          <li><strong>Resource assessment</strong> — built a site wind rose from reanalysis-style wind roses provided with the course; fit a Weibull distribution per sector for annual energy production (AEP) estimation.</li>
-          <li><strong>Wake modelling in FLORIS</strong> — NREL's FLORIS framework for engineering wake models (Gaussian wake, Jensen cross-check). Swept turbine class (IEC I vs II), hub height, and rotor diameter to pick a turbine sized for the site's mean wind speed and turbulence intensity.</li>
-          <li><strong>Layout optimisation</strong> — ran FLORIS's yaw- and layout-optimisation routines within the lease boundary with minimum-spacing constraints (5D in prevailing direction, 3D cross-wind). Compared a structured grid, a prevailing-wind-aligned staggered layout, and a FLORIS-optimised free layout.</li>
-          <li><strong>BOS costing in LandBOSSE</strong> — NREL's LandBOSSE balance-of-system model for civil works, erection, collection-system cabling, and grid interconnection. Each candidate layout was costed against the same turbine and the same site conditions.</li>
-          <li><strong>LCOE close</strong> — AEP (from FLORIS with wake losses and availability) divided through lifetime cost (LandBOSSE + assumed O&amp;M and turbine CapEx) to give a defensible LCOE ranking rather than a wake-loss-only ranking.</li>
+          <li><strong>Site definition</strong> — defined the project boundary as a quadrilateral polygon with four corner coordinates (WGS84) covering ~9 km² of agricultural land in southern Jutland, Denmark.</li>
+          <li><strong>Constraint screening</strong> — applied legal buffers (740m residential setback, 30m road buffer, 100m power line buffer, 300m forest buffer), ecological buffers (30-100m from wetlands/meadows/streams, 50m voluntary wildlife buffer), and logistical buffers (60m from field boundaries for crane access).</li>
+          <li><strong>Buildable area</strong> — intersected the site boundary with all constraint buffers to identify the final usable area for turbine placement. Less than one-fifth of the total site remained after all exclusions.</li>
+          <li><strong>Resource assessment</strong> — built a site wind rose from reanalysis data; fit Weibull distributions per sector. Dominant wind directions: North (0°) and West (270%), ~29% of total occurrences, with scale parameters 9-11.7 m/s.</li>
+          <li><strong>Turbine selection</strong> — selected IEA 3.4 MW reference turbine (130m rotor, 120m hub height) based on specific power (256 W/m²), logistics (65m blades transportable on Danish roads), and cost efficiency (16-25% cheaper per MW than larger options).</li>
+          <li><strong>Wake modelling in FLORIS</strong> — NREL's FLORIS framework with Gaussian wake model. Swept turbine counts (14-18 turbines) for 45-60 MW target capacity.</li>
+          <li><strong>Layout optimisation</strong> — FLORIS's layout-optimisation routines within the lease boundary with minimum-spacing constraints (5D prevailing, 3D cross-wind). Compared structured grid, staggered, and FLORIS-optimised free layouts.</li>
+          <li><strong>BOS costing in LandBOSSE</strong> — NREL's LandBOSSE model for civil works, erection, collection-system cabling, and grid interconnection. Each candidate layout costed against the same turbine and site conditions.</li>
+          <li><strong>LCOE close</strong> — AEP (from FLORIS with wake losses and availability) divided through lifetime cost (LandBOSSE + assumed O&M and turbine CapEx) to give a defensible LCOE ranking.</li>
         </ul>
       </div>
 
       <div class="case-figures">
         <figure>
+          <img src="../assets/images/windfarm-site-boundary.png" alt="Site 1 boundary polygon — 9 km² agricultural land in southern Jutland, Denmark" />
+          <figcaption>Site definition — quadrilateral boundary polygon (Pt1-Pt4) covering ~9 km² near Kastrup, Denmark. Coordinates: Pt1 (55°15'48.06"N, 9°0'48.68"E) to Pt4 (55°14'39.19"N, 9°0'41.31"E).</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/windfarm-constraints.png" alt="Legal, ecological, and logistical constraints for wind farm siting" />
+          <figcaption>Siting constraints — legal (740m residential, 30m road, 100m power line, 300m forest), ecological (30-100m wetlands/meadows, 50m wildlife), logistical (60m field boundaries for crane access).</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/windfarm-buildable.png" alt="Buildable area after constraint screening — final usable area in dark green" />
+          <figcaption>Buildable area — constraint screening reduces the site to less than one-fifth of total area. Light mint: initial buildable. Light blue: buffered field boundaries. Dark green: final usable area.</figcaption>
+        </figure>
+        <figure>
           <img src="../assets/images/windfarm-windrose.png" alt="Wind rose for Site 1 Denmark showing prevailing wind directions" />
-          <figcaption>Wind rose — Site 1 (Denmark) wind resource assessment showing prevailing directions.</figcaption>
+          <figcaption>Wind resource — Site 1 wind rose showing dominant North (0°) and West (270%) directions. Weibull scale parameters 9-11.7 m/s confirm excellent wind resource potential.</figcaption>
         </figure>
         <figure>
-          <img src="../assets/images/windfarm-buildable.png" alt="Buildable area map with site constraints" />
-          <figcaption>Buildable area — site constraints and exclusion zones for layout optimisation.</figcaption>
+          <img src="../assets/images/windfarm-layout.png" alt="Initial vs optimized turbine layout — red circles initial, blue X optimized, green square substation" />
+          <figcaption>Layout optimization — red circles: initial layout. Blue X: FLORIS-optimized layout. Green square: substation. Optimized layout reduces wake losses through staggered positioning.</figcaption>
         </figure>
         <figure>
-          <img src="../assets/images/windfarm-optimized-layout.png" alt="Optimised turbine layout after 200 iterations" />
-          <figcaption>Optimised layout — turbine positions after 200 iterations of wake-aware optimisation.</figcaption>
+          <img src="../assets/images/wake-comparison.png" alt="Wake flow comparison — initial aligned layout vs optimized staggered layout at hub height" />
+          <figcaption>Wake comparison — initial aligned layout (left) shows significant wake overlap in downstream columns. Optimized staggered layout (right) positions downstream turbines in wake gaps, reducing speed deficit.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/wake-optimized.png" alt="Wake flow comparison for 18-turbine layout — initial clustered vs optimized spaced arrangement" />
+          <figcaption>18-turbine wake comparison — initial clustered layout (left) with heavy wake overlap (black ellipses). Optimized layout (right) increases spacing, allowing wake recovery before downstream turbines.</figcaption>
         </figure>
       </div>
 
