@@ -105,7 +105,8 @@
     var cards = document.querySelectorAll('[data-category]');
 
     function filterProjects() {
-      var cat = filterBar ? (filterBar.querySelector('.filter-btn[aria-pressed="true"]') || {}).getAttribute('data-filter') || 'all' : 'all';
+      var activeBtn = filterBar && filterBar.querySelector('.filter-btn[aria-pressed="true"]');
+      var cat = (activeBtn && activeBtn.getAttribute('data-filter')) || 'all';
       var query = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
       cards.forEach(function (card) {
@@ -189,35 +190,14 @@
     }
   });
 
-  // ---- Skill bar animation on scroll -------------------------------------
-  var skillBars = document.querySelectorAll('.skill-bar-fill');
-  if (skillBars.length && 'IntersectionObserver' in window) {
-    var skillObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          var bar = entry.target;
-          var level = bar.parentElement.parentElement.classList.contains('skill-expert') ? 100 :
-                      bar.parentElement.parentElement.classList.contains('skill-advanced') ? 90 :
-                      bar.parentElement.parentElement.classList.contains('skill-intermediate') ? 65 : 40;
-          bar.style.width = level + '%';
-          skillObserver.unobserve(bar);
-        }
-      });
-    }, { threshold: 0.5 });
-    skillBars.forEach(function (bar) { skillObserver.observe(bar); });
-  }
-
-  // ---- Reading time calculator -------------------------------------------
-  function calcReadingTime() {
-    var readingTimeEls = document.querySelectorAll('[data-reading-time]');
-    readingTimeEls.forEach(function (el) {
-      var text = el.textContent || '';
-      var words = text.trim().split(/\s+/).length;
-      var minutes = Math.max(1, Math.round(words / 200));
-      el.textContent = minutes + ' min read';
-    });
-  }
-  calcReadingTime();
+  // ---- Reading time ------------------------------------------------------
+  // Measures the article body, not the badge's own text.
+  document.querySelectorAll('[data-reading-time]').forEach(function (el) {
+    var article = el.closest('.case') || document.querySelector('main');
+    if (!article) return;
+    var words = (article.textContent || '').trim().split(/\s+/).length;
+    el.textContent = Math.max(1, Math.round(words / 200)) + ' min read';
+  });
 
   // ---- Share buttons -----------------------------------------------------
   document.querySelectorAll('.share-btn').forEach(function (btn) {

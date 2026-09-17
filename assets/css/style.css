@@ -1076,17 +1076,6 @@ img[loading="lazy"][data-loaded="true"] {
   100% { background-position: -200% 0; }
 }
 
-/* --- Skill bars animate on scroll -------------------------------------- */
-.skill-bar-fill {
-  width: 0 !important;
-  transition: width 0.8s ease;
-}
-
-.is-visible .skill-bar-fill,
-.skill-bar-fill.animate {
-  width: var(--skill-level, 0%) !important;
-}
-
 /* --- Project connections ------------------------------------------------ */
 .project-connections {
   display: flex;
