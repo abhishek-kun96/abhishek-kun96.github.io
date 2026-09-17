@@ -675,10 +675,11 @@ code, pre {
 
 /* --- About page --------------------------------------------------------- */
 /* Single prose column — the photo this grid was built for was removed. */
+.about-page .page-header { margin-bottom: 1.5rem; }
 .bio-grid {
-  max-width: 68ch;
   margin-bottom: 3rem;
 }
+.bio-prose { max-width: 100%; }
 .bio-prose p {
   font-size: 1.05rem;
   color: var(--text-muted);
