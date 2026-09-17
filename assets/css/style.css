@@ -674,26 +674,10 @@ code, pre {
 .skill-basics .skill-bar-fill { width: 40%; }
 
 /* --- About page --------------------------------------------------------- */
+/* Single prose column — the photo this grid was built for was removed. */
 .bio-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.5rem;
+  max-width: 68ch;
   margin-bottom: 3rem;
-}
-@media (min-width: 768px) {
-  .bio-grid { grid-template-columns: 220px 1fr; }
-}
-.bio-photo {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  background: var(--bg-muted);
-  border: 1px dashed var(--border-strong);
-  border-radius: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-faint);
-  font-size: 0.85rem;
 }
 .bio-prose p {
   font-size: 1.05rem;
@@ -1373,7 +1357,6 @@ img[loading="lazy"][data-loaded="true"] {
   .filter-bar { gap: 0.4rem; }
   .filter-btn { font-size: 0.75rem; padding: 0.3rem 0.7rem; }
   .project-grid { grid-template-columns: 1fr; }
-  .bio-grid { grid-template-columns: 1fr; }
 }
 
 /* --- Tablet ------------------------------------------------------------- */
