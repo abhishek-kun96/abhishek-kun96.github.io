@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      var t = null;
+      try { t = localStorage.getItem('ak-theme'); } catch (e) {}
+      if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hydrofoil wakes with LBM and FTLE — Abhishek Kuntal</title>
+  <link rel="canonical" href="https://abhishek-kun96.github.io/projects/auraflow-lbm.html" />
+  <meta name="description" content="A C++/CUDA/Qt desktop app that simulates flow around a NACA 0012 hydrofoil with a lattice-Boltzmann LES and draws live Lagrangian coherent structures (FTLE). Re 1000 polar checked against the literature." />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Real-time hydrofoil wakes with lattice Boltzmann and FTLE" />
+  <meta property="og:url" content="https://abhishek-kun96.github.io/projects/auraflow-lbm.html" />
+  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/og-image.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress-bar" data-scroll-progress></div>
+  <button class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav-brand" href="../index.html">AK.</a>
+      <ul class="nav-links">
+        <li><a href="../work.html">Work</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../resume.html">Résumé</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme" data-theme-toggle>
+        <span class="theme-toggle-icon" aria-hidden="true">◐</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <header class="page-header">
+      <div class="container">
+        <p class="eyebrow">Own GPU solver, 2026</p>
+        <h1>Real-time hydrofoil wakes with lattice Boltzmann and FTLE</h1>
+        <p>A native desktop app that simulates water flowing past a NACA 0012 hydrofoil and draws, frame by frame, where the flow separates and rolls up into vortices. It grew out of my thesis topic, underwater kites for tidal energy, where two foils fly one above the other.</p>
+      </div>
+    </header>
+
+    <section class="container case">
+      <dl class="case-meta">
+        <div><dt>Context</dt><dd>Personal project</dd></div>
+        <div><dt>Role</dt><dd>Sole developer</dd></div>
+        <div><dt>Stack</dt><dd>C++20, CUDA 13, Qt 6, CMake</dd></div>
+        <div><dt>Status</dt><dd>v13 released; v14 in development</dd></div>
+      </dl>
+
+      <figure class="video-hero">
+        <video controls muted loop playsinline preload="metadata" poster="../assets/images/hero-ftle.jpg">
+          <source src="../assets/videos/hero-ftle.mp4" type="video/mp4" />
+        </video>
+        <figcaption>NACA 0012 at 14° angle of attack. Bright ridges are high finite-time Lyapunov exponent: the material lines that bound the separated shear layers and each shed vortex.</figcaption>
+      </figure>
+
+      <div class="case-section">
+        <h2>Why FTLE instead of smoke</h2>
+        <p>Smoke tracers show where particles went. The finite-time Lyapunov exponent shows where the flow pulls neighbouring particles apart, so separation bubbles, shear layers and vortices appear as sharp curves instead of a diffuse cloud. The textbook method re-integrates every trajectory for every frame, which is why earlier tools offered a "calculate" button. This app instead advances the backward flow map with one semi-Lagrangian step per frame, so the field is live and its cost does not grow with the integration window.</p>
+      </div>
+
+      <div class="case-figures">
+        <figure>
+          <img src="../assets/images/lbm-aoa10.jpg" alt="FTLE field behind a NACA 0012 at 10 degrees: alternating vortex street" width="1400" height="629" loading="lazy" decoding="async" />
+          <figcaption>10°: a regular alternating vortex street.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/lbm-aoa0.jpg" alt="FTLE field behind a climbing kite: wake inclined downwards" width="1400" height="857" loading="lazy" decoding="async" />
+          <figcaption>A climbing kite. The climb is applied as an inclined inflow, so the wake leaves at an angle and the effective angle of attack changes.</figcaption>
+        </figure>
+      </div>
+
+      <div class="case-section">
+        <h2>How it works</h2>
+        <ul>
+          <li><strong>Solver.</strong> D2Q9 lattice Boltzmann with regularised collision and a Vreman LES subgrid model, exact-distance Bouzidi walls on the foil, and sponge layers that absorb outgoing waves.</li>
+          <li><strong>Forces.</strong> Lift and drag by momentum exchange, consistent with the Bouzidi wall, plotted live alongside the Strouhal number.</li>
+          <li><strong>Honest numbers.</strong> The on-screen readout gives the target Reynolds number of the real kite and the lower one the grid can actually resolve, instead of implying the two are the same.</li>
+          <li><strong>Checked against a CPU oracle.</strong> A double-precision CPU reference for the lattice-Boltzmann core and the FTLE, plus Couette, Poiseuille and Taylor–Green tests.</li>
+          <li><strong>Speed.</strong> One lattice step at 480 × 240 takes 0.14 ms on a laptop RTX 3070, about 800 million lattice updates per second.</li>
+          <li><strong>Output.</strong> H.264 recording, PNG and VTK export with JSON metadata, and saved presets.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Validation at Re 1000</h2>
+        <p>An automated polar sweep from 0° to 12°, compared with Kurtulus (2015). Drag at zero incidence is 0.125 against 0.12 in the literature. Alternating shedding starts at 8° (literature: 7–8°) with a Strouhal number of 0.878 against 0.88.</p>
+        <div class="chart-pair">
+          <figure class="chart-figure">
+<!-- chart:cd -->
+<svg class="chart" viewBox="0 0 460 270" role="img" aria-label="Drag coefficient against angle of attack, NACA 0012 at Re 1000">
+<rect class="chart-shade" x="307.3" y="14" width="140.7" height="220" /><text class="chart-note" x="311.3" y="26">shedding</text>
+<line class="chart-grid" x1="44" x2="448" y1="234.0" y2="234.0" /><text class="chart-tick" x="38" y="234.0" text-anchor="end" dominant-baseline="middle">0.10</text>
+<line class="chart-grid" x1="44" x2="448" y1="160.7" y2="160.7" /><text class="chart-tick" x="38" y="160.7" text-anchor="end" dominant-baseline="middle">0.14</text>
+<line class="chart-grid" x1="44" x2="448" y1="87.3" y2="87.3" /><text class="chart-tick" x="38" y="87.3" text-anchor="end" dominant-baseline="middle">0.18</text>
+<line class="chart-grid" x1="44" x2="448" y1="14.0" y2="14.0" /><text class="chart-tick" x="38" y="14.0" text-anchor="end" dominant-baseline="middle">0.22</text>
+<text class="chart-tick" x="44.0" y="250" text-anchor="middle">0°</text>
+<text class="chart-tick" x="111.3" y="250" text-anchor="middle">2°</text>
+<text class="chart-tick" x="178.7" y="250" text-anchor="middle">4°</text>
+<text class="chart-tick" x="246.0" y="250" text-anchor="middle">6°</text>
+<text class="chart-tick" x="313.3" y="250" text-anchor="middle">8°</text>
+<text class="chart-tick" x="380.7" y="250" text-anchor="middle">10°</text>
+<text class="chart-tick" x="448.0" y="250" text-anchor="middle">12°</text>
+<text class="chart-tick" x="246.0" y="268" text-anchor="middle">angle of attack</text>
+<polyline class="chart-line" points="44.0,188.9 77.7,188.8 111.3,186.5 145.0,182.9 178.7,177.7 212.3,171.2 246.0,162.2 279.7,157.4 313.3,141.7 347.0,110.0 380.7,98.9 414.3,64.6 448.0,27.7" />
+<circle class="chart-dot" cx="44.0" cy="188.9" r="4"><title>0°: Cd 0.125</title></circle>
+<circle class="chart-dot" cx="77.7" cy="188.8" r="4"><title>1°: Cd 0.125</title></circle>
+<circle class="chart-dot" cx="111.3" cy="186.5" r="4"><title>2°: Cd 0.126</title></circle>
+<circle class="chart-dot" cx="145.0" cy="182.9" r="4"><title>3°: Cd 0.128</title></circle>
+<circle class="chart-dot" cx="178.7" cy="177.7" r="4"><title>4°: Cd 0.131</title></circle>
+<circle class="chart-dot" cx="212.3" cy="171.2" r="4"><title>5°: Cd 0.134</title></circle>
+<circle class="chart-dot" cx="246.0" cy="162.2" r="4"><title>6°: Cd 0.139</title></circle>
+<circle class="chart-dot" cx="279.7" cy="157.4" r="4"><title>7°: Cd 0.142</title></circle>
+<circle class="chart-dot" cx="313.3" cy="141.7" r="4"><title>8°: Cd 0.150</title></circle>
+<circle class="chart-dot" cx="347.0" cy="110.0" r="4"><title>9°: Cd 0.168</title></circle>
+<circle class="chart-dot" cx="380.7" cy="98.9" r="4"><title>10°: Cd 0.174</title></circle>
+<circle class="chart-dot" cx="414.3" cy="64.6" r="4"><title>11°: Cd 0.192</title></circle>
+<circle class="chart-dot" cx="448.0" cy="27.7" r="4"><title>12°: Cd 0.213</title></circle>
+<g><title>literature 0.12</title><rect class="chart-ref" x="39.0" y="192.3" width="10" height="10" transform="rotate(45 44.0 197.3)" /><text class="chart-note" x="54.0" y="213.3">literature 0.12</text></g>
+</svg>
+<!-- /chart -->
+            <figcaption>Drag coefficient. Diamond: literature value at 0°.</figcaption>
+          </figure>
+          <figure class="chart-figure">
+<!-- chart:cl -->
+<svg class="chart" viewBox="0 0 460 270" role="img" aria-label="Lift coefficient against angle of attack, NACA 0012 at Re 1000">
+<rect class="chart-shade" x="307.3" y="14" width="140.7" height="220" /><text class="chart-note" x="311.3" y="26">shedding</text>
+<line class="chart-grid" x1="44" x2="448" y1="234.0" y2="234.0" /><text class="chart-tick" x="38" y="234.0" text-anchor="end" dominant-baseline="middle">0.0</text>
+<line class="chart-grid" x1="44" x2="448" y1="160.7" y2="160.7" /><text class="chart-tick" x="38" y="160.7" text-anchor="end" dominant-baseline="middle">0.2</text>
+<line class="chart-grid" x1="44" x2="448" y1="87.3" y2="87.3" /><text class="chart-tick" x="38" y="87.3" text-anchor="end" dominant-baseline="middle">0.4</text>
+<line class="chart-grid" x1="44" x2="448" y1="14.0" y2="14.0" /><text class="chart-tick" x="38" y="14.0" text-anchor="end" dominant-baseline="middle">0.6</text>
+<text class="chart-tick" x="44.0" y="250" text-anchor="middle">0°</text>
+<text class="chart-tick" x="111.3" y="250" text-anchor="middle">2°</text>
+<text class="chart-tick" x="178.7" y="250" text-anchor="middle">4°</text>
+<text class="chart-tick" x="246.0" y="250" text-anchor="middle">6°</text>
+<text class="chart-tick" x="313.3" y="250" text-anchor="middle">8°</text>
+<text class="chart-tick" x="380.7" y="250" text-anchor="middle">10°</text>
+<text class="chart-tick" x="448.0" y="250" text-anchor="middle">12°</text>
+<text class="chart-tick" x="246.0" y="268" text-anchor="middle">angle of attack</text>
+<polyline class="chart-line" points="44.0,234.0 77.7,214.8 111.3,193.5 145.0,176.4 178.7,160.7 212.3,144.3 246.0,133.2 279.7,127.9 313.3,116.5 347.0,97.1 380.7,87.9 414.3,67.2 448.0,45.9" />
+<circle class="chart-dot" cx="44.0" cy="234.0" r="4"><title>0°: Cl -0.000</title></circle>
+<circle class="chart-dot" cx="77.7" cy="214.8" r="4"><title>1°: Cl 0.052</title></circle>
+<circle class="chart-dot" cx="111.3" cy="193.5" r="4"><title>2°: Cl 0.110</title></circle>
+<circle class="chart-dot" cx="145.0" cy="176.4" r="4"><title>3°: Cl 0.157</title></circle>
+<circle class="chart-dot" cx="178.7" cy="160.7" r="4"><title>4°: Cl 0.200</title></circle>
+<circle class="chart-dot" cx="212.3" cy="144.3" r="4"><title>5°: Cl 0.245</title></circle>
+<circle class="chart-dot" cx="246.0" cy="133.2" r="4"><title>6°: Cl 0.275</title></circle>
+<circle class="chart-dot" cx="279.7" cy="127.9" r="4"><title>7°: Cl 0.289</title></circle>
+<circle class="chart-dot" cx="313.3" cy="116.5" r="4"><title>8°: Cl 0.320</title></circle>
+<circle class="chart-dot" cx="347.0" cy="97.1" r="4"><title>9°: Cl 0.373</title></circle>
+<circle class="chart-dot" cx="380.7" cy="87.9" r="4"><title>10°: Cl 0.398</title></circle>
+<circle class="chart-dot" cx="414.3" cy="67.2" r="4"><title>11°: Cl 0.455</title></circle>
+<circle class="chart-dot" cx="448.0" cy="45.9" r="4"><title>12°: Cl 0.513</title></circle>
+</svg>
+<!-- /chart -->
+            <figcaption>Lift coefficient. Shaded: angles with alternating vortex shedding.</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="case-section">
+        <h2>Two kites, one above the other</h2>
+        <p>In the tidal-kite concept two foils fly stacked on one tether system. The app places two NACA 0012 kites 3 m apart (15 chords) and shows how the upper kite's wake reaches the lower one while both climb.</p>
+        <figure>
+          <img src="../assets/images/lbm-app-two-kites.jpg" alt="The desktop app showing two stacked kites at 20 degrees with their FTLE wakes, control panel and force readout" width="1600" height="914" loading="lazy" decoding="async" />
+          <figcaption>The app: two stacked kites at 20° while climbing at 1 m/s in a 1 m/s current, with live lift and drag for each kite.</figcaption>
+        </figure>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons</h2>
+        <ul>
+          <li>A frozen reference pays for itself. Porting a browser prototype to CUDA was tractable because the core kernels could be compared with a CPU version; the gaps in that oracle are the next thing on the list.</li>
+          <li>Resolution limits belong on screen. A 64-cells-per-chord grid cannot reach a full-scale Reynolds number, and saying so up front avoids over-reading the pictures.</li>
+        </ul>
+      </div>
+
+      <nav class="case-nav" aria-label="Project navigation">
+        <a class="btn btn-ghost" href="../work.html">All projects</a>
+        <a class="btn btn-primary" href="turbomachinery-cfd.html">Next: Turbomachinery CFD</a>
+      </nav>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated September 2026.</p>
+      <p class="footer-links">
+        <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
+        <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+  <script src="../assets/js/main.js" defer></script>
+  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close lightbox">×</button>
+    <img alt="" id="lightbox-img">
+  </div>
+</body>
+</html>

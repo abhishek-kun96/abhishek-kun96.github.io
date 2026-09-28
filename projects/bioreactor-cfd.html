@@ -10,17 +10,17 @@
   </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Bioreactor CFD — Passion Project — Abhishek Kuntal</title>
+  <title>Stirred-tank bioreactor CFD — Abhishek Kuntal</title>
   <link rel="canonical" href="https://abhishek-kun96.github.io/projects/bioreactor-cfd.html" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Bioreactor CFD — Passion Project — Abhishek Kuntal" />
   <meta property="og:url" content="https://abhishek-kun96.github.io/projects/bioreactor-cfd.html" />
-  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/poster-bioreactor.jpg" />
+  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/bio-rs-kla.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="description" content="Stirred-tank bioreactor CFD passion project — oxygen mass transfer (kLa), shear-stress mapping, DOE on impeller speed and sparger layout, surrogate response-surface optimisation, and a transient impeller animation." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
   <link rel="stylesheet" href="../assets/css/style.css" />
 
@@ -66,29 +66,23 @@
   <main id="main">
     <header class="page-header">
       <div class="container">
-        <p class="eyebrow">Passion project · CFD · Bioprocess engineering</p>
-        <h1>Stirred-tank bioreactor CFD.</h1>
-        <p>An applied-bioprocess CFD demo built as a passion project — oxygen mass-transfer mapping, cell-damaging shear-stress prediction, a DOE over impeller speed and sparger layout, and a surrogate response-surface that makes the design trade directly visible.</p>
-        <div class="reading-time" data-reading-time>This page contains detailed methodology, results, and lessons learned from a comprehensive bioprocess CFD study including multiphase flow simulation, oxygen mass transfer modeling, shear stress mapping, design of experiments, surrogate response surface optimization, and transient visualization.</div>
+        <p class="eyebrow">Self-directed, 2025</p>
+        <h1>Stirred-tank bioreactor CFD</h1>
+        <p>A bioprocess CFD study built for an interview: gas–liquid flow in a stirred tank, oxygen mass transfer and shear mapped as fields, a four-input design of experiments, and a multi-objective optimisation over the resulting response surfaces.</p>
       </div>
     </header>
 
     <section class="container case">
       <dl class="case-meta">
-        <div><dt>Context</dt><dd>Self-directed — interview demo for Differential Bio</dd></div>
+        <div><dt>Context</dt><dd>Self-directed; prepared for a bioprocess-CFD interview</dd></div>
         <div><dt>Role</dt><dd>CFD engineer</dd></div>
-        <div><dt>Stack</dt><dd>ANSYS Fluent (Euler–Euler), Python, response-surface methodology</dd></div>
+        <div><dt>Stack</dt><dd>Ansys CFX (Euler–Euler), Ansys Fluent (population balance), DesignXplorer</dd></div>
       </dl>
-
-      <figure class="case-poster">
-        <img src="../assets/images/poster-bioreactor.jpg" alt="Stirred-tank bioreactor CFD — oxygen mass transfer, shear stress mapping, and design optimisation poster" width="1200" height="800" loading="eager" fetchpriority="high" decoding="async" />
-        <figcaption>Case study poster — Stirred-tank bioreactor CFD (Self-directed, 2024–2025)</figcaption>
-      </figure>
 
       <figure class="video-hero">
         <video
           src="../assets/videos/bioreactor-pulse.mp4"
-          poster="../assets/images/bioreactor-pulse-thumb.png"
+          poster="../assets/images/thumbs/bioreactor.jpg"
           autoplay
           muted
           loop
@@ -96,7 +90,7 @@
           preload="metadata">
           Your browser does not support embedded video. <a href="../assets/videos/bioreactor-pulse.mp4">Download the clip</a>.
         </video>
-        <figcaption>Pulse animation — fluid particles traced from the impeller, colored by velocity magnitude. Looping continuously to convey the transient mixing field the DOE was optimising against.</figcaption>
+        <figcaption>Pulse animation — fluid particles traced from the impeller, colored by velocity magnitude. </figcaption>
       </figure>
 
       <figure class="video-solo">
@@ -139,68 +133,48 @@
       <div class="case-section">
         <h2>Approach</h2>
         <ul>
-          <li><strong>Multiphase CFD</strong> — Euler–Euler two-phase formulation for gas–liquid; Rushton-class impeller in a baffled tank geometry; moving reference frame / sliding mesh for rotation.</li>
-          <li><strong>Mass transfer closure</strong> — Higbie-penetration-style k<sub>L</sub> with interfacial area computed from bubble-size distribution at the sparger — i.e., k<sub>L</sub>a computed spatially, not as a single reactor-average number.</li>
-          <li><strong>Shear-stress mapping</strong> — computed the strain-rate scalar (and optionally the Camp-number-style time-integrated exposure) so that shear was visualised as a field, not just a max value.</li>
-          <li><strong>Design of Experiments</strong> — swept impeller RPM, sparger ring diameter, and gas flow rate. For each DOE point, post-processed reactor-average k<sub>L</sub>a and a cell-exposure shear metric.</li>
-          <li><strong>Surrogate response surface</strong> — fit response surfaces for k<sub>L</sub>a and shear; used them to locate the operating window that maximised k<sub>L</sub>a under a shear-stress cap, i.e., a constrained optimisation, not a single-objective maximisation.</li>
-          <li><strong>Transient visualisation</strong> — rendered multi-angle animations of the mixing field to make the CFD output inspectable by non-CFD reviewers. The embedded clip above is the representative run.</li>
+          <li><strong>Gas–liquid flow in CFX.</strong> Euler–Euler two-phase model of a baffled stirred tank, with the impeller in a rotating domain.</li>
+          <li><strong>Bubble sizes and mixing in Fluent.</strong> A separate case with a bubble population-balance model and a transient species tracer to measure mixing time.</li>
+          <li><strong>Mass transfer as a field.</strong> The liquid-side coefficient k<sub>L</sub> from a Higbie penetration-type expression, k<sub>L</sub> ∝ √(D·|u<sub>slip</sub>|/d<sub>b</sub>), evaluated per cell with CEL expressions and then volume-averaged.</li>
+          <li><strong>Design of experiments.</strong> Four inputs: impeller speed 20–50 rad/s, liquid viscosity 1–10 mPa·s, bubble diameter about 2–9 mm and gas flow 0.2–0.6 vvm. Five responses: k<sub>L</sub>, gas holdup, bubble uniformity, mean shear and shear uniformity.</li>
+          <li><strong>Optimisation.</strong> Response surfaces from the DOE, then a multi-objective genetic algorithm (MOGA, an NSGA-II variant) that converged after 9,113 surrogate evaluations.</li>
         </ul>
       </div>
 
       <div class="case-figures">
         <figure>
-          <img src="../assets/images/bioreactor-mixing.jpg" alt="Bioreactor mixing field — velocity vectors and gas holdup around impeller" width="1800" height="1012" loading="lazy" decoding="async" />
-          <figcaption>Mixing field snapshot — velocity and gas holdup around a Rushton-class impeller.</figcaption>
+          <img src="../assets/images/bio-rs-kla.jpg" alt="Response surface of volume-averaged mass-transfer coefficient over impeller speed and viscosity" width="775" height="743" loading="lazy" decoding="async" />
+          <figcaption>Volume-averaged k<sub>L</sub> (×10<sup>-4</sup> m/s) over impeller speed and viscosity: it rises with speed and peaks at low-to-mid viscosity.</figcaption>
         </figure>
         <figure>
-          <img src="../assets/images/bioreactor-optimization.png" alt="Response-surface optimum — maximise kLa under a shear-stress cap" width="2000" height="1125" loading="lazy" decoding="async" />
-          <figcaption>Response-surface optimum — the highest-k<sub>L</sub>a operating point that still respects the shear-stress cap.</figcaption>
+          <img src="../assets/images/bio-rs-shear.jpg" alt="Response surface of mean shear over impeller speed and viscosity" width="959" height="832" loading="lazy" decoding="async" />
+          <figcaption>Mean shear over the same plane: the cost of the higher k<sub>L</sub>, strongest at high speed and low viscosity.</figcaption>
+        </figure>
+      </div>
+
+      <figure>
+        <img src="../assets/images/bio-mixing-time.jpg" alt="Tank geometry with two monitor points and tracer mass fraction against time" width="1654" height="633" loading="lazy" decoding="async" />
+        <figcaption>Mixing time: tracer mass fraction at two monitor points after a pulse. Both settle to the same value after about 4–5 s.</figcaption>
+      </figure>
+
+      <div class="case-section">
+        <h2>Results</h2>
+        <div class="results-grid">
+          <div class="result"><div class="result-value">4.45 × 10<sup>-4</sup> m/s</div><div class="result-label">Best volume-averaged k<sub>L</sub> among the optimised candidates</div></div>
+          <div class="result"><div class="result-value">45–46 rad/s</div><div class="result-label">Impeller speed of the optimum, with 3 mm bubbles at about 0.23 vvm</div></div>
+          <div class="result"><div class="result-value">4–5 s</div><div class="result-label">Mixing time from the tracer pulse</div></div>
+        </div>
+        <figure>
+          <img src="../assets/images/bio-sensitivity.jpg" alt="Sensitivity of each response to the four inputs" width="1862" height="386" loading="lazy" decoding="async" />
+          <figcaption>Sensitivities. Speed drives mean shear; bubble diameter dominates bubble uniformity; k<sub>L</sub> falls with viscosity and bubble size and rises with gas flow.</figcaption>
         </figure>
       </div>
 
       <div class="case-section">
-        <h2>Tools &amp; setup</h2>
+        <h2>Limits</h2>
         <ul>
-          <li><strong>ANSYS Fluent</strong> — multiphase Euler–Euler for the DOE sweep and sliding-mesh transient for the hero animation.</li>
-          <li><strong>Python</strong> — DOE scripting, result extraction, response-surface fits, and optimisation.</li>
-          <li><strong>ffmpeg</strong> — rendered Fluent animations to web-friendly H.264 MP4 for embedding.</li>
-        </ul>
-      </div>
-
-      <div class="case-section">
-        <h2>Outcomes</h2>
-        <ul>
-          <li><strong>Design-objective surface</strong> — k<sub>L</sub>a and shear stress surfaces over impeller-speed / sparger-geometry / gas-flow space, enabling a constrained optimum rather than a rule-of-thumb operating point.</li>
-          <li><strong>Pareto trade visualised</strong> — for a given shear-stress cap, a clear best-available k<sub>L</sub>a; moving the cap moved the recommendation in a traceable way.</li>
-          <li><strong>Digital-twin pattern</strong> — the pipeline (geometry + DOE + surrogate + shear-capped optimisation) is reusable for other vessels/media. Swapping the geometry changes the surrogate, not the workflow.</li>
-        </ul>
-
-        <div class="callout">
-          <p>Bioprocess scale-up lives in the same physical territory as aero-CFD but the units are different —
-          "don't shear the cells" instead of "don't separate the boundary layer". The math for getting there is
-          largely the same: a cheap surrogate over a DOE is worth more than a single high-fidelity run.</p>
-        </div>
-      </div>
-
-      <div class="case-section">
-        <h2>Lessons learned</h2>
-        <ul>
-          <li>k<sub>L</sub>a is deceptively simple as a scalar, and deceptively information-poor — the <em>spatial</em> picture matters because bubble-coalescence zones drive averages upward while leaving dead zones at the walls.</li>
-          <li>Shear-stress caps make the optimisation feel like aero — it is literally a constrained response-surface problem, and the bioprocess community often under-uses the tooling.</li>
-          <li>Rendered animations are not decoration. A biologist reviewer will believe the CFD faster from a mixing-field clip than from a k<sub>L</sub>a table, which is why one is embedded at the top of this page.</li>
-        </ul>
-      </div>
-
-      <div class="case-section">
-        <h2>Verification &amp; limitations</h2>
-        <ul>
-          <li><strong>Mesh independence</strong> — three mesh densities tested (coarse/medium/fine); reported k<sub>L</sub>a values converged within 5% between medium and fine grids.</li>
-          <li><strong>Convergence criteria</strong> — all DOE runs converged to residuals below 10<sup>-4</sup> for continuity and momentum, with imbalances monitored at sparger and outlet boundaries.</li>
-          <li><strong>Model choice rationale</strong> — Euler–Euler selected over VOF for computational tractability across 72 DOE points; mixture model validated against literature bubble-rise correlations.</li>
-          <li><strong>Surrogate validation</strong> — response surfaces cross-validated against held-out CFD points; Random Forest R² = 0.93 for k<sub>L</sub>a prediction.</li>
-          <li><strong>Boundary of validity</strong> — results are specific to the Rushton-class impeller and baffled tank geometry studied; extrapolation to other configurations requires re-validation.</li>
-          <li><strong>Experimental validation</strong> — this is a demonstration model; full experimental validation is planned for future work.</li>
+          <li><strong>No experimental validation.</strong> The model shows design trends; absolute k<sub>L</sub> values would need a measured k<sub>L</sub>a to calibrate against.</li>
+          <li><strong>One geometry.</strong> Results hold for this impeller and tank; another vessel means a new DOE, though the workflow carries over.</li>
         </ul>
       </div>
 
@@ -214,7 +188,7 @@
 
       <nav class="case-nav" aria-label="Project navigation">
         <a class="btn btn-ghost" href="../work.html">← All projects</a>
-        <a class="btn btn-primary" href="turbomachinery-cfd.html">Back to start: Turbomachinery CFD →</a>
+        <a class="btn btn-primary" href="shell-tube-barc.html">Next: Shell-and-tube HX</a>
       </nav>
 
       <div class="share-bar">
@@ -241,12 +215,10 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© <span data-year></span> Abhishek Kuntal · Munich · Updated <span data-last-updated></span></p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated September 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
-        <span aria-hidden="true">·</span>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
-        <span aria-hidden="true">·</span>
         <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
       </p>
     </div>
@@ -254,7 +226,7 @@
   <script src="../assets/js/main.js" defer></script>
   <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
     <button class="lightbox-close" aria-label="Close lightbox">×</button>
-    <img src="" alt="" id="lightbox-img">
+    <img alt="" id="lightbox-img">
   </div>
 </body>
 </html>

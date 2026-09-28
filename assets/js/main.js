@@ -4,7 +4,6 @@
    - scroll progress indicator
    - back-to-top button
    - project filter (work page)
-   - set current year
    - mark active nav item
 */
 (function () {
@@ -38,14 +37,11 @@
     });
   }
 
-  // ---- Year in footer + last updated -------------------------------------
-  var yearEl = document.querySelector('[data-year]');
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
-  var lastUpdated = document.querySelector('[data-last-updated]');
-  if (lastUpdated) {
-    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    var now = new Date();
-    lastUpdated.textContent = months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+  // ---- Hero video: respect reduced motion ------------------------------
+  var heroVideo = document.querySelector('[data-hero-video]');
+  if (heroVideo && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    heroVideo.removeAttribute('autoplay');
+    heroVideo.pause();
   }
 
   // ---- Mark active nav link ---------------------------------------------
@@ -120,6 +116,8 @@
 
         card.classList.toggle('is-hidden', !(matchCat && matchQuery));
       });
+      var empty = document.querySelector('[data-filter-empty]');
+      if (empty) empty.hidden = document.querySelectorAll('.project-card:not(.is-hidden)').length > 0;
     }
 
     if (filterBar) {
@@ -178,18 +176,6 @@
     });
   });
 
-  // ---- Lazy loading with fade-in -----------------------------------------
-  var lazyImages = document.querySelectorAll('img[loading="lazy"]');
-  lazyImages.forEach(function (img) {
-    img.addEventListener('load', function () {
-      img.classList.add('loaded');
-    });
-    // If already loaded (cached)
-    if (img.complete) {
-      img.classList.add('loaded');
-    }
-  });
-
   // ---- Reading time ------------------------------------------------------
   // Measures the article body, not the badge's own text.
   document.querySelectorAll('[data-reading-time]').forEach(function (el) {
@@ -216,8 +202,9 @@
           shareUrl = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(title);
           break;
         case 'copy':
+          var btn = this;
           navigator.clipboard.writeText(url).then(function () {
-            alert('Link copied to clipboard!');
+            btn.textContent = 'Link copied';
           });
           return;
       }
