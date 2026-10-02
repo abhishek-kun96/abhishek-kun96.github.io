@@ -47,7 +47,7 @@
   <main id="main">
     <header class="page-header">
       <div class="container">
-        <p class="eyebrow">Own GPU solver, 2026, in progress</p>
+        <p class="eyebrow">Own GPU solver, 2026</p>
         <h1>AuraFlow: a GPU SPH solver for violent free-surface flow</h1>
         <p>Weakly compressible smoothed-particle hydrodynamics in 2D and 3D, written on NVIDIA Warp and run on a laptop GPU. It is validated against two standard dam-break experiments, differentiable end to end, and fast enough to generate training data for surrogates and reinforcement learning.</p>
       </div>
@@ -58,7 +58,7 @@
         <div><dt>Context</dt><dd>Personal project</dd></div>
         <div><dt>Role</dt><dd>Sole developer</dd></div>
         <div><dt>Stack</dt><dd>Python, NVIDIA Warp, PyTorch, stable-baselines3, Blender</dd></div>
-        <div><dt>Status</dt><dd>v0.9 frozen; code goes public at v1.0</dd></div>
+        <div><dt>Status</dt><dd>v1.0 final, October 2026; code not yet public</dd></div>
       </dl>
 
       <figure class="video-hero">
@@ -70,7 +70,7 @@
 
       <div class="case-section">
         <h2>Why build it</h2>
-        <p>Commercial and open SPH codes are fast, but they are closed to the things I wanted to try: taking gradients through a simulation, generating thousands of consistent runs for a surrogate, and training a controller inside the solver. AuraFlow started in JAX; a benchmark showed NVIDIA Warp running the same kernels 162–375 times faster than the CPU path, so from v0.2 on it is a Warp-only GPU engine. Each version is frozen with its own audit and roadmap before the next one starts.</p>
+        <p>Commercial and open SPH codes are fast, but they are closed to the things I wanted to try: taking gradients through a simulation, generating thousands of consistent runs for a surrogate, and training a controller inside the solver. AuraFlow started in JAX; a benchmark showed NVIDIA Warp running the same kernels 162–375 times faster than the CPU path, so from v0.2 on it is a Warp-only GPU engine. It went through ten frozen versions, each with its own audit, before a final validation campaign on the frozen v1.0 engine.</p>
       </div>
 
       <div class="case-section">
@@ -87,14 +87,16 @@
 
       <div class="case-section">
         <h2>Validation</h2>
+        <p>The v1.0 engine was frozen and then validated once, with every tolerance declared before its run. All 21 campaign runs pass the conservation audit.</p>
         <div class="results-grid">
-          <div class="result"><div class="result-value">0.010</div><div class="result-label">Surge-front error x/H, Lobovsky 2014 2D dam break (tolerance 0.15)</div></div>
-          <div class="result"><div class="result-value">0.009–0.030</div><div class="result-label">Water-level RMSE h/H at gauges H1–H4 (tolerance 0.05–0.08)</div></div>
-          <div class="result"><div class="result-value">5 / 5</div><div class="result-label">Gates passed on SPHERIC Test 2, 3D, dx 0.01 m</div></div>
+          <div class="result"><div class="result-value">7 / 7</div><div class="result-label">Lobovsky 2014 2D dam break: front and gauge levels at three resolutions</div></div>
+          <div class="result"><div class="result-value">5 / 5</div><div class="result-label">SPHERIC Test 2, 3D dam break over a box, dx 0.01 m</div></div>
+          <div class="result"><div class="result-value">4 / 4</div><div class="result-label">Wave flume; and NACA 0012 in the stream tunnel (C<sub>D0</sub> 0.128, lift slope 0.95π)</div></div>
+          <div class="result"><div class="result-value">1.07</div><div class="result-label">Sphere drag at Re 100, against 1.087 in the literature</div></div>
         </div>
-        <p>Tolerances were declared before each run. The 2D case was checked at three resolutions and with five-member ensembles, which showed that levels and window-averaged pressures are robust while raw impact peaks are chaotic: a 10<sup>-4</sup> dx perturbation moves one peak by a factor of almost three.</p>
+        <p>Taylor–Green vortex decay passes 2/2, and impact <em>times</em> are right: all four sloshing impacts within 0.03 s.</p>
         <div class="callout">
-          <p><strong>What does not pass yet.</strong> Raw impact peak pressures are too high, a known weakly-compressible water-hammer effect; sloshing peaks come out 2–4× the experimental band although their timing is right. Cases added after v0.5 are correctness-tested but their full validation is scheduled for v1.0.</p>
+          <p><strong>What does not pass.</strong> Impact peak pressures are 5–20× the experimental bands and do not converge with time step, a limit of single-phase weakly compressible SPH, so this code's peak pressures are not for quantitative use. The cylinder's Strouhal number is 6% high at two resolutions, which points at tunnel confinement rather than resolution. A floating box in waves passes 4 of 6 gates.</p>
         </div>
       </div>
 
@@ -119,7 +121,7 @@
           <video controls muted loop playsinline preload="metadata" poster="../assets/images/sph-sphere-wake-poster.jpg">
             <source src="../assets/videos/sph-sphere-wake.mp4" type="video/mp4" />
           </video>
-          <figcaption>Wake behind a sphere in the stream tunnel: Q-criterion surfaces coloured by streamwise vorticity, 1.41 million fluid particles.</figcaption>
+          <figcaption>Wake behind a sphere in the stream tunnel: Q-criterion surfaces coloured by streamwise vorticity, 1.41 million fluid particles. A visual, not a quantitative result: at the resolution an 8 GB GPU allows, numerical dissipation dominates above Re 100.</figcaption>
         </figure>
       </div>
 
@@ -136,7 +138,7 @@
 <!-- /chart -->
           <figcaption>Sloshing suppression on held-out episodes: energy left relative to the start, lower is better. SAC result is the mean of five seeds (±0.003).</figcaption>
         </figure>
-        <p>On a rotating cylinder at Re 100 (HydroGym conventions), SAC trained on a coarse grid and fine-tuned at D/dx 20 reduced drag by 5.8% and lift by 50%. The published DRLinSPH forced-baffle benchmark is built but not reproduced yet; small-amplitude forced sloshing is a v1.0 item.</p>
+        <p>On a rotating cylinder at Re 100 (HydroGym conventions), SAC trained on a coarse grid and fine-tuned at D/dx 20 reduced drag by 5.8% and lift by 50%. Not everything worked. The published DRLinSPH forced-baffle benchmark was not reproduced (−1.4% against −68.8%), and model-based RL, gradient-based policies through the differentiable solver and a multi-agent wave array all missed their targets in v1.0.</p>
       </div>
 
       <div class="case-section">
