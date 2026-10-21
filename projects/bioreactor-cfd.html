@@ -3,7 +3,8 @@
 <head>
   <script>
     (function() {
-      var t = localStorage.getItem('ak-theme');
+      var t = null;
+      try { t = localStorage.getItem('ak-theme'); } catch (e) {}
       if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', t);
     })();
@@ -48,6 +49,8 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress-bar" data-scroll-progress></div>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
       <a class="nav-brand" href="../index.html">AK.</a>
@@ -65,14 +68,14 @@
 
   <main id="main">
     <header class="page-header">
-      <div class="container">
+      <div class="container reading">
         <p class="eyebrow">Self-directed, 2025</p>
         <h1>Stirred-tank bioreactor CFD</h1>
         <p>A bioprocess CFD study built for an interview: gas–liquid flow in a stirred tank, oxygen mass transfer and shear mapped as fields, a four-input design of experiments, and a multi-objective optimisation over the resulting response surfaces.</p>
       </div>
     </header>
 
-    <section class="container case">
+    <section class="container case reading">
       <dl class="case-meta">
         <div><dt>Context</dt><dd>Self-directed; prepared for a bioprocess-CFD interview</dd></div>
         <div><dt>Role</dt><dd>CFD engineer</dd></div>
@@ -84,6 +87,7 @@
           src="../assets/videos/bioreactor-pulse.mp4"
           poster="../assets/images/thumbs/bioreactor.jpg"
           autoplay
+          controls
           muted
           loop
           playsinline
@@ -97,6 +101,7 @@
         <video
           src="../assets/videos/bioreactor-bubbles.mp4"
           autoplay
+          controls
           muted
           loop
           playsinline
@@ -186,16 +191,16 @@
         </ul>
       </div>
 
+      <div class="share-bar">
+        <button type="button" class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button type="button" class="share-btn" data-share="twitter">Share on X</button>
+        <button type="button" class="share-btn" data-share="copy">Copy link</button>
+      </div>
+
       <nav class="case-nav" aria-label="Project navigation">
         <a class="btn btn-ghost" href="../work.html">← All projects</a>
         <a class="btn btn-primary" href="shell-tube-barc.html">Next: Shell-and-tube HX</a>
       </nav>
-
-      <div class="share-bar">
-        <button class="share-btn" data-share="linkedin">Share on LinkedIn</button>
-        <button class="share-btn" data-share="twitter">Share on X</button>
-        <button class="share-btn" data-share="copy">Copy link</button>
-      </div>
 
       <div class="related-projects">
         <h3>Related projects</h3>
@@ -215,7 +220,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 Abhishek Kuntal, Munich. Last updated September 2026.</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
@@ -224,9 +229,5 @@
     </div>
   </footer>
   <script src="../assets/js/main.js" defer></script>
-  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close lightbox">×</button>
-    <img alt="" id="lightbox-img">
-  </div>
 </body>
 </html>

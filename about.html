@@ -3,7 +3,8 @@
 <head>
   <script>
     (function() {
-      var t = localStorage.getItem('ak-theme');
+      var t = null;
+      try { t = localStorage.getItem('ak-theme'); } catch (e) {}
       if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', t);
     })();
@@ -13,6 +14,12 @@
   <link rel="canonical" href="https://abhishek-kun96.github.io/about.html" />
   <title>About — Abhishek Kuntal</title>
   <meta name="description" content="About Abhishek Kuntal — TUM M.Sc. Materials Science candidate, former Senior Mechanical Design Engineer at Honeywell, based in Munich. Seeking full-time roles in CFD, thermal analysis, or materials simulation." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="About — Abhishek Kuntal" />
+  <meta property="og:description" content="CFD engineer turned materials scientist: four years at Honeywell, M.Sc. at TUM, based in Munich." />
+  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/og-image.jpg" />
+  <meta property="og:url" content="https://abhishek-kun96.github.io/about.html" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet" />
@@ -23,7 +30,7 @@
   <a class="skip-link" href="#main">Skip to content</a>
 
   <div class="scroll-progress-bar" data-scroll-progress></div>
-  <button class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
 
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
@@ -42,14 +49,14 @@
 
   <main id="main">
     <header class="page-header">
-      <div class="container">
+      <div class="container reading">
         <p class="eyebrow">About</p>
         <h1>Bridging simulation fidelity and materials physics.</h1>
         <p>CFD engineer turned materials scientist. Currently at TUM, open to full-time and Hiwi/working-student roles in Munich.</p>
       </div>
     </header>
 
-    <section class="container">
+    <section class="container reading">
       <div class="bio-grid">
         <div class="bio-prose">
           <p>
@@ -60,7 +67,7 @@
           </p>
 
           <div class="current-work">
-            <h3><span class="current-work-status" aria-hidden="true"></span> Currently exploring</h3>
+            <h2>Currently exploring</h2>
             <p style="margin:0;font-size:0.95rem">
               <strong>Full-time roles</strong> in CFD automation, multiphysics simulation, or materials modelling · Hiwi/working-student positions in Munich · Particularly interested in roles that bridge simulation and experiment, or that need someone who can build tooling around existing solvers
             </p>
@@ -72,7 +79,7 @@
         </div>
       </div>
 
-      <h2 class="section-title">Trajectory</h2>
+      <h2 class="section-title" id="trajectory">Trajectory</h2>
       <ol class="timeline">
         <li>
         <div class="timeline-when">2023 – present</div>
@@ -116,7 +123,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 Abhishek Kuntal, Munich. Last updated September 2026.</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
@@ -126,9 +133,5 @@
   </footer>
 
   <script src="assets/js/main.js" defer></script>
-  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close lightbox">×</button>
-    <img alt="" id="lightbox-img">
-  </div>
 </body>
 </html>

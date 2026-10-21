@@ -13,7 +13,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AuraFlow GPU SPH solver — Abhishek Kuntal</title>
   <link rel="canonical" href="https://abhishek-kun96.github.io/projects/auraflow-sph.html" />
-  <meta name="description" content="AuraFlow: a weakly compressible SPH solver on NVIDIA Warp. Validated against Lobovsky 2014 and SPHERIC Test 2, 24.1 M particle-steps/s on a laptop GPU, differentiable, with surrogates and reinforcement learning built on top." />
+  <meta name="description" content="AuraFlow (v1.2.3): a weakly compressible SPH solver on NVIDIA Warp. Validated against Lobovsky 2014, SPHERIC Test 2, NACA 0012 and Re 100 cylinder flow, 24.1 M particle-steps/s on a laptop GPU, differentiable, with surrogates and reinforcement learning." />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="AuraFlow — GPU SPH solver for violent free-surface flow" />
   <meta property="og:url" content="https://abhishek-kun96.github.io/projects/auraflow-sph.html" />
@@ -24,11 +24,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
   <link rel="stylesheet" href="../assets/css/style.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "AuraFlow: a GPU SPH solver for violent free-surface flow — Abhishek Kuntal",
+    "description": "AuraFlow (v1.2.3): a weakly compressible SPH solver on NVIDIA Warp. Validated against Lobovsky 2014, SPHERIC Test 2, NACA 0012 and Re 100 cylinder flow, 24.1 M particle-steps/s on a laptop GPU, differentiable, with surrogates and reinforcement learning.",
+    "author": {
+      "@type": "Person",
+      "name": "Abhishek Kuntal",
+      "url": "https://abhishek-kun96.github.io/"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "Abhishek Kuntal"
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://abhishek-kun96.github.io/projects/auraflow-sph.html"
+    }
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="scroll-progress-bar" data-scroll-progress></div>
-  <button class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
       <a class="nav-brand" href="../index.html">AK.</a>
@@ -46,20 +68,29 @@
 
   <main id="main">
     <header class="page-header">
-      <div class="container">
+      <div class="container reading">
         <p class="eyebrow">Own GPU solver, 2026</p>
         <h1>AuraFlow: a GPU SPH solver for violent free-surface flow</h1>
-        <p>Weakly compressible smoothed-particle hydrodynamics in 2D and 3D, written on NVIDIA Warp and run on a laptop GPU. It is validated against two standard dam-break experiments, differentiable end to end, and fast enough to generate training data for surrogates and reinforcement learning.</p>
+        <p>Weakly compressible smoothed-particle hydrodynamics in 2D and 3D, written on NVIDIA Warp and run on a laptop GPU. It is validated against standard dam-break, wave–structure and stream-tunnel benchmarks, differentiable end to end, and fast enough to generate training data for surrogates and reinforcement learning.</p>
       </div>
     </header>
 
-    <section class="container case">
+    <section class="container case reading">
       <dl class="case-meta">
         <div><dt>Context</dt><dd>Personal project</dd></div>
         <div><dt>Role</dt><dd>Sole developer</dd></div>
         <div><dt>Stack</dt><dd>Python, NVIDIA Warp, PyTorch, stable-baselines3, Blender</dd></div>
-        <div><dt>Status</dt><dd>v1.0 final, October 2026; code not yet public</dd></div>
+        <div><dt>Status</dt><dd>v1.2.3 pre-release, October 2026 (145 regression tests); code not yet public</dd></div>
       </dl>
+
+      <aside class="tldr" aria-label="Summary">
+        <h2>In short</h2>
+        <ul>
+          <li><strong>What:</strong> a weakly compressible SPH solver in 2D and 3D on NVIDIA Warp, differentiable end to end, running 24.1 M particle-steps/s on a laptop GPU (DualSPHysics: 20.4 M on the same case and GPU).</li>
+          <li><strong>Validation:</strong> SPHERIC Test 2 5/5, Re 100 cylinder 2/2, NACA 0012 4/4, Lobovsky dam break 7/11 (raw impact peaks fail), floating box 5/6. Gates are declared before each run; the one later change (the floating-box metric) is logged on the page.</li>
+          <li><strong>On top:</strong> batched runs, a Gaussian-process surrogate with active learning, a Transolver-style field surrogate and SAC reinforcement learning.</li>
+        </ul>
+      </aside>
 
       <figure class="video-hero">
         <video controls muted loop playsinline preload="metadata" poster="../assets/images/sph-spheric-dambreak.jpg">
@@ -70,33 +101,60 @@
 
       <div class="case-section">
         <h2>Why build it</h2>
-        <p>Commercial and open SPH codes are fast, but they are closed to the things I wanted to try: taking gradients through a simulation, generating thousands of consistent runs for a surrogate, and training a controller inside the solver. AuraFlow started in JAX; a benchmark showed NVIDIA Warp running the same kernels 162–375 times faster than the CPU path, so from v0.2 on it is a Warp-only GPU engine. It went through ten frozen versions, each with its own audit, before a final validation campaign on the frozen v1.0 engine.</p>
+        <p>Commercial and open SPH codes are fast, but they are closed to the things I wanted to try: taking gradients through a simulation, generating thousands of consistent runs for a surrogate, and training a controller inside the solver. AuraFlow started in JAX; a benchmark showed NVIDIA Warp running the same kernels 162–375 times faster than the CPU path, so from v0.2 on it is a Warp-only GPU engine. After the frozen v1.0 campaign, versions v1.1 through v1.2.3 resolved open audit items on wall reaction forces, tunnel confinement, moving-body kinematics, and Mach &lt; 0.1 weakly-compressible scaling.</p>
       </div>
 
       <div class="case-section">
         <h2>What is in it</h2>
         <ul>
-          <li><strong>Physics chosen by validation.</strong> δ-SPH with modified dynamic boundary conditions in 2D; Riemann SPH with density re-initialisation and Adami walls in 3D, because that combination passed the 3D gates and the 2D one did not.</li>
+          <li><strong>Physics chosen by validation.</strong> δ-SPH with modified dynamic boundary conditions in 2D; Riemann SPH with density re-initialisation and Adami walls in 3D (still-water density drift +0.07%–0.09% with <code>reinit_relax = 0.3</code>), because that combination passed the 3D gates and the 2D one did not.</li>
+          <li><strong>Exact reaction wall forces (v1.1–v1.2.3).</strong> Booking both the kinematic clamp impulse (Δv<sub>clamp</sub>/Δt) and the Monaghan wall repulsion on rigid bodies closes the fluid–wall momentum balance to <strong>3 × 10<sup>−8</sup></strong> of the gravity impulse (down from 0.94% in v1.0). Moving Riemann/Adami walls include <strong>g − a<sub>wall</sub></strong> in the wall pressure projection and exact half-step free-body kicks.</li>
           <li><strong>Open boundaries.</strong> A stream tunnel with inflow and outflow buffers (after Tafuni 2018) holds a body in a steady stream for as long as needed. An empty tunnel stays uniform within 0.22% over ten flow-throughs.</li>
-          <li><strong>Speed work, measured.</strong> Own sorted cell lists, separate fluid and wall derivative passes and CUDA-graph step blocks cut the 3D step time 2.46×. A thermal guard keeps the laptop GPU under 87 °C.</li>
+          <li><strong>Speed &amp; memory work, measured.</strong> Own sorted cell lists (building the 3D cell list without stream compaction is a further 9% faster in v1.2 with bit-identical trajectories), fused fluid/wall force passes, out-of-domain particle parking (−30% GPU compute time on SPHERIC dx 0.01 m), and CUDA-graph step blocks cut the 3D step time 2.46×. A streaming conservation audit processes one frame at a time, cutting peak RAM from 11 GB to single-frame footprint (~200 MB). A thermal guard keeps the laptop GPU under 87 °C.</li>
           <li><strong>Differentiable.</strong> Gradients of a final-state quantity with respect to viscosity, δ, α, gravity and initial velocities. The forward pass is bit-identical to the production solver; gradients agree with finite differences within 5%, and an inverse run recovers gravity in four gradient evaluations.</li>
-          <li><strong>Batched runs.</strong> Sixteen small cases share one launch, each bit-identical to its solo run, for 9.3× the throughput. A data factory turns a YAML spec into a resumable dataset with provenance per row.</li>
-          <li><strong>Learning on top.</strong> A Gaussian-process surrogate with active learning and conformal 90% intervals; a Transolver-style field surrogate trained on 320 dam breaks that beats nearest-neighbour lookup by 36–47%; reinforcement learning with SAC.</li>
+          <li><strong>Batched runs &amp; learning on top.</strong> Sixteen small cases share one launch, each bit-identical to its solo run, for 9.3× the throughput. A Gaussian-process surrogate with active learning and conformal 90% intervals, a Transolver-style field surrogate trained on 320 dam breaks (beating nearest-neighbour lookup by 36–47%), and SAC reinforcement learning sit on top.</li>
         </ul>
       </div>
 
       <div class="case-section">
-        <h2>Validation</h2>
-        <p>The v1.0 engine was frozen and then validated once, with every tolerance declared before its run. All 21 campaign runs pass the conservation audit.</p>
+        <h2>Validation (v1.0 → v1.2.3)</h2>
+        <p>Tolerances were declared in each case's <code>validation/README.md</code> before the first run, with one explicitly logged post-hoc amendment on the floating-box metric in v1.2.1 (noted below). Since v1.2.2 every run records the gate declarations it started with and validators report <code>gates_changed_since_run</code>. Sound speeds <em>c</em><sub>0</sub> are set so the 99.9th-percentile Mach stays below 0.1 across SPHERIC Test 2 (Mach 0.097), Lobovsky (Mach 0.085–0.098 with Monaghan α scaled by <em>c</em><sub>0,old</sub>/<em>c</em><sub>0,new</sub>), NACA 0012 at 8° (Mach 0.096), and the 3D CAD pillar (Mach 0.095).</p>
         <div class="results-grid">
-          <div class="result"><div class="result-value">7 / 7</div><div class="result-label">Lobovsky 2014 2D dam break: front and gauge levels at three resolutions</div></div>
-          <div class="result"><div class="result-value">5 / 5</div><div class="result-label">SPHERIC Test 2, 3D dam break over a box, dx 0.01 m</div></div>
-          <div class="result"><div class="result-value">4 / 4</div><div class="result-label">Wave flume; and NACA 0012 in the stream tunnel (C<sub>D0</sub> 0.128, lift slope 0.95π)</div></div>
-          <div class="result"><div class="result-value">1.07</div><div class="result-label">Sphere drag at Re 100, against 1.087 in the literature</div></div>
+          <div class="result"><div class="result-value">7 / 11</div><div class="result-label">Lobovsky 2014 2D dam break: front, gauge levels and impact timing pass; raw impact peaks fail</div></div>
+          <div class="result"><div class="result-value">5 / 5</div><div class="result-label">SPHERIC Test 2, 3D dam break over a box (P<sub>1</sub> 3,679 Pa vs 3,459 Pa exp, Mach 0.097)</div></div>
+          <div class="result"><div class="result-value">2 / 2</div><div class="result-label">Tunnel cylinder Re 100 (40D wide, 10D inlet): C<sub>D</sub> 1.352 (+1.8%), St 0.1664 (+1.5%)</div></div>
+          <div class="result"><div class="result-value">4 / 4</div><div class="result-label">NACA 0012 at α = 0° &amp; 2° (Re 1000): C<sub>D0</sub> 0.127, C<sub>L0</sub> 6×10<sup>−5</sup>, lift slope 0.968π</div></div>
         </div>
-        <p>Taylor–Green vortex decay passes 2/2, and impact <em>times</em> are right: all four sloshing impacts within 0.03 s.</p>
+        <p>
+          Wave flume passes 4/4, Taylor–Green vortex decay passes 2/2, sphere drag at Re 100 is 1.07 against 1.087 in
+          the literature, and Biswal forced-baffle sloshing passes under both δ-SPH and Riemann once overlapping
+          fluid-on-baffle initial particles were fixed and scored against the linear potential-flow solution (1.143 s
+          period). On NACA 0012, the 4/4 gates apply to α = 0° and 2°; the α = 8° run is an ungated diagnostic
+          (C<sub>L</sub> 0.147, C<sub>D</sub> 0.378).
+        </p>
+        <p>
+          <strong>Tunnel cylinder confinement resolved (v1.1–v1.2.2).</strong> In v1.0, the Re 100 cylinder Strouhal
+          number sat +6% high (0.174) at both D/dx = 20 and 40. A domain-size matrix (20D vs 40D width, 5D vs 10D inlet)
+          proved the offset was tunnel blockage rather than resolution: in the 40D-wide, 10D-inlet domain at D/dx = 20,
+          both drag (+2.0%) and Strouhal (+1.9%) pass their gates.
+        </p>
         <div class="callout">
-          <p><strong>What does not pass.</strong> Impact peak pressures are 5–20× the experimental bands and do not converge with time step, a limit of single-phase weakly compressible SPH, so this code's peak pressures are not for quantitative use. The cylinder's Strouhal number is 6% high at two resolutions, which points at tunnel confinement rather than resolution. A floating box in waves passes 4 of 6 gates.</p>
+          <p>
+            <strong>What does not pass, and the floating-box gate amendment.</strong> Raw impact peak pressures in
+            Lobovsky and sloshing T10 are 5–20× the experimental bands and do not converge with time step — a known
+            limit of single-phase weakly compressible SPH. The Lobovsky front is not monotone in resolution: after the
+            v1.2.3 Mach &lt; 0.1 re-runs (artificial viscosity held fixed), front MAE is 0.016 / 0.014 / 0.037 at
+            dx 0.005 / 0.0025 / 0.00125 m, and the finest front leads the experiment by up to 0.068 x/H, so at that
+            resolution it depends on the artificial viscosity. At D/dx = 10 (the 8 GB GPU ceiling), the 3D sphere wake is
+            dominated by numerical dissipation between Re 100 and 300. On the <strong>Hadžić (2005) floating box in
+            waves</strong>, the original v1.0 mean zero-up-crossing metric misread small experimental roll wiggles near
+            zero as full cycles (halving apparent experimental roll to 11.6° vs actual ±21.5°) and averaged trailing
+            wave ripples after the packet. In v1.2.1, the gates were amended <em>after results were seen</em> to a
+            peak-to-peak metric over the packet: under those amended gates, v1.2.1 passes 4/6 (heave, sway, roll, and
+            phase lag pass; both wave gauges H<sub>N1</sub> and H<sub>N2</sub> fail), and v1.2.3 passes
+            <strong>5/6</strong> (H<sub>N2</sub> +9.4%, heave +13.9%, sway +9.4%, roll −22.3%, lag 0.018 s pass;
+            H<sub>N1</sub> −15.6% fails its ±10% gate).
+          </p>
         </div>
       </div>
 
@@ -144,15 +202,21 @@
       <div class="case-section">
         <h2>Lessons</h2>
         <ul>
-          <li>Declare the tolerance before the run. One early pressure "near miss" turned out to be a sensor that went dry; fixed gates made that visible.</li>
+          <li>Declare the tolerance before the run, and log any metric change. One early pressure "near miss" turned out to be a sensor that went dry; on the floating box, tracking <code>gates_changed_since_run</code> keeps the post-hoc peak-to-peak metric amendment transparent.</li>
+          <li>When an error does not move with resolution, check the domain. Doubling cylinder resolution from D/dx = 20 to 40 left Strouhal at +6%; widening the tunnel to 40D with a 10D inlet brought both drag and Strouhal within 2%.</li>
           <li>Chaotic quantities are not learnable targets. Post-impact pressure varies more between ensemble members than between designs, so the surrogates predict impact time and levels instead.</li>
-          <li>Measure before optimising. Memory reordering bought 7%; splitting the fluid and wall passes bought 2×.</li>
-          <li>Not every idea survives. A graded adaptive-resolution scheme was stable in a steady stream but not with a free surface near walls, and was removed in v0.9.</li>
+          <li>Measure before optimising. Memory reordering bought 7%; splitting the fluid and wall passes bought 2×; dropping stream compaction in the 3D cell list bought another 9% with bit-identical output.</li>
         </ul>
       </div>
 
+      <div class="share-bar">
+        <button type="button" class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button type="button" class="share-btn" data-share="twitter">Share on X</button>
+        <button type="button" class="share-btn" data-share="copy">Copy link</button>
+      </div>
+
       <nav class="case-nav" aria-label="Project navigation">
-        <a class="btn btn-ghost" href="../work.html">All projects</a>
+        <a class="btn btn-ghost" href="../work.html">← All projects</a>
         <a class="btn btn-primary" href="auraflow-lbm.html">Next: Hydrofoil wakes with LBM + FTLE</a>
       </nav>
     </section>
@@ -160,7 +224,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 Abhishek Kuntal, Munich. Last updated September 2026.</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
@@ -169,9 +233,5 @@
     </div>
   </footer>
   <script src="../assets/js/main.js" defer></script>
-  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close lightbox">×</button>
-    <img alt="" id="lightbox-img">
-  </div>
 </body>
 </html>

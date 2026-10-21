@@ -5,6 +5,7 @@
    - back-to-top button
    - project filter (work page)
    - mark active nav item
+   - optional cookie-free visitor counts (GoatCounter, off by default)
 */
 (function () {
   'use strict';
@@ -37,11 +38,24 @@
     });
   }
 
-  // ---- Hero video: respect reduced motion ------------------------------
+  // ---- Autoplaying videos: respect reduced motion ----------------------
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('video[autoplay]').forEach(function (v) {
+      v.removeAttribute('autoplay');
+      v.pause();
+    });
+  }
   var heroVideo = document.querySelector('[data-hero-video]');
-  if (heroVideo && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    heroVideo.removeAttribute('autoplay');
-    heroVideo.pause();
+  var heroPause = document.querySelector('[data-hero-pause]');
+  if (heroVideo && heroPause) {
+    var syncPause = function () { heroPause.textContent = heroVideo.paused ? 'Play animation' : 'Pause animation'; };
+    heroPause.addEventListener('click', function () {
+      if (heroVideo.paused) heroVideo.play(); else heroVideo.pause();
+      syncPause();
+    });
+    heroVideo.addEventListener('play', syncPause);
+    heroVideo.addEventListener('pause', syncPause);
+    syncPause();
   }
 
   // ---- Mark active nav link ---------------------------------------------
@@ -70,7 +84,6 @@
   // ---- Scroll progress indicator ----------------------------------------
   var scrollProgress = document.querySelector('[data-scroll-progress]');
   if (scrollProgress) {
-    var scrollBuffer = 60;
     window.addEventListener('scroll', function () {
       var scrollTop = window.scrollY;
       var docHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -96,94 +109,75 @@
   }
 
   // ---- Project filter (work page) ---------------------------------------
-    var filterBar = document.querySelector('[data-filter-bar]');
-    var searchInput = document.querySelector('[data-search]');
-    var cards = document.querySelectorAll('[data-category]');
+  var filterBar = document.querySelector('[data-filter-bar]');
+  var searchInput = document.querySelector('[data-search]');
+  var cards = document.querySelectorAll('[data-category]');
 
-    function filterProjects() {
-      var activeBtn = filterBar && filterBar.querySelector('.filter-btn[aria-pressed="true"]');
-      var cat = (activeBtn && activeBtn.getAttribute('data-filter')) || 'all';
-      var query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+  function filterProjects() {
+    var activeBtn = filterBar && filterBar.querySelector('.filter-btn[aria-pressed="true"]');
+    var cat = (activeBtn && activeBtn.getAttribute('data-filter')) || 'all';
+    var query = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-      cards.forEach(function (card) {
-        var categories = (card.getAttribute('data-category') || '').split(/\s+/);
-        var matchCat = cat === 'all' || categories.indexOf(cat) !== -1;
+    cards.forEach(function (card) {
+      var categories = (card.getAttribute('data-category') || '').split(/\s+/);
+      var matchCat = cat === 'all' || categories.indexOf(cat) !== -1;
 
-        var title = (card.querySelector('.project-title') || {}).textContent || '';
-        var summary = (card.querySelector('.project-summary') || {}).textContent || '';
-        var tools = Array.from(card.querySelectorAll('.tool')).map(function(t) { return t.textContent; }).join(' ');
-        var matchQuery = !query || title.toLowerCase().indexOf(query) !== -1 || summary.toLowerCase().indexOf(query) !== -1 || tools.toLowerCase().indexOf(query) !== -1;
+      var title = (card.querySelector('.project-title') || {}).textContent || '';
+      var summary = (card.querySelector('.project-summary') || {}).textContent || '';
+      var tools = Array.from(card.querySelectorAll('.tool')).map(function (t) { return t.textContent; }).join(' ');
+      var matchQuery = !query || title.toLowerCase().indexOf(query) !== -1 || summary.toLowerCase().indexOf(query) !== -1 || tools.toLowerCase().indexOf(query) !== -1;
 
-        card.classList.toggle('is-hidden', !(matchCat && matchQuery));
+      card.classList.toggle('is-hidden', !(matchCat && matchQuery));
+    });
+    var empty = document.querySelector('[data-filter-empty]');
+    if (empty) empty.hidden = document.querySelectorAll('.project-card:not(.is-hidden)').length > 0;
+  }
+
+  if (filterBar) {
+    filterBar.addEventListener('click', function (e) {
+      var btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      filterBar.querySelectorAll('.filter-btn').forEach(function (b) {
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
       });
-      var empty = document.querySelector('[data-filter-empty]');
-      if (empty) empty.hidden = document.querySelectorAll('.project-card:not(.is-hidden)').length > 0;
-    }
+      filterProjects();
+    });
+  }
 
-    if (filterBar) {
-      filterBar.addEventListener('click', function (e) {
-        var btn = e.target.closest('.filter-btn');
-        if (!btn) return;
-        filterBar.querySelectorAll('.filter-btn').forEach(function (b) {
-          b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
-        });
-        filterProjects();
-      });
-    }
-
-    if (searchInput) {
-      searchInput.addEventListener('input', filterProjects);
-    }
+  if (searchInput) {
+    searchInput.addEventListener('input', filterProjects);
+  }
 
   // ---- Lightbox ----------------------------------------------------------
-  var lightbox = document.getElementById('lightbox');
-  var lightboxImg = document.getElementById('lightbox-img');
-  var lightboxClose = lightbox ? lightbox.querySelector('.lightbox-close') : null;
-
-  function openLightbox(src, alt) {
-    if (!lightbox || !lightboxImg) return;
-    lightboxImg.src = src;
-    lightboxImg.alt = alt || '';
-    lightbox.classList.add('is-active');
-    lightbox.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeLightbox() {
-    if (!lightbox) return;
-    lightbox.classList.remove('is-active');
-    lightbox.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-  }
-
-  if (lightbox && lightboxClose) {
-    lightboxClose.addEventListener('click', closeLightbox);
-    lightbox.addEventListener('click', function (e) {
-      if (e.target === lightbox) closeLightbox();
+  // Each figure image is wrapped in a button that opens a native <dialog>,
+  // which gives Esc, focus trapping and focus return for free.
+  var zoomImgs = document.querySelectorAll('main figure img');
+  if (zoomImgs.length && typeof HTMLDialogElement === 'function') {
+    var dialog = document.createElement('dialog');
+    dialog.className = 'lightbox';
+    dialog.setAttribute('aria-label', 'Enlarged image');
+    dialog.innerHTML = '<button class="lightbox-close" type="button" aria-label="Close">×</button><img alt="">';
+    document.body.appendChild(dialog);
+    var bigImg = dialog.querySelector('img');
+    dialog.addEventListener('click', function (e) {
+      if (e.target !== bigImg) dialog.close();
     });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && lightbox.classList.contains('is-active')) {
-        closeLightbox();
-      }
+    dialog.addEventListener('close', function () { bigImg.removeAttribute('src'); });
+
+    zoomImgs.forEach(function (img) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'zoom';
+      btn.setAttribute('aria-label', 'Enlarge image' + (img.alt ? ': ' + img.alt : ''));
+      img.parentNode.insertBefore(btn, img);
+      btn.appendChild(img);
+      btn.addEventListener('click', function () {
+        bigImg.src = img.currentSrc || img.src;
+        bigImg.alt = img.alt;
+        dialog.showModal();
+      });
     });
   }
-
-  // Make project figures clickable for lightbox
-  document.querySelectorAll('figure img').forEach(function (img) {
-    img.style.cursor = 'zoom-in';
-    img.addEventListener('click', function () {
-      openLightbox(img.src, img.alt);
-    });
-  });
-
-  // ---- Reading time ------------------------------------------------------
-  // Measures the article body, not the badge's own text.
-  document.querySelectorAll('[data-reading-time]').forEach(function (el) {
-    var article = el.closest('.case') || document.querySelector('main');
-    if (!article) return;
-    var words = (article.textContent || '').trim().split(/\s+/).length;
-    el.textContent = Math.max(1, Math.round(words / 200)) + ' min read';
-  });
 
   // ---- Share buttons -----------------------------------------------------
   document.querySelectorAll('.share-btn').forEach(function (btn) {
@@ -202,9 +196,9 @@
           shareUrl = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(title);
           break;
         case 'copy':
-          var btn = this;
+          var selfBtn = this;
           navigator.clipboard.writeText(url).then(function () {
-            btn.textContent = 'Link copied';
+            selfBtn.textContent = 'Link copied';
           });
           return;
       }
@@ -214,4 +208,20 @@
       }
     });
   });
+
+  // ---- Visitor counts (GoatCounter, cookie-free) -------------------------
+  // Off until GOATCOUNTER_SITE is set. ?ref=cv style tags are appended to the
+  // counted path so CV and LinkedIn clicks show up as separate entries.
+  var GOATCOUNTER_SITE = '';
+  var isLocal = location.protocol === 'file:' || /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  var optedOut = navigator.doNotTrack === '1' || navigator.globalPrivacyControl === true;
+  if (GOATCOUNTER_SITE && !isLocal && !optedOut) {
+    var ref = (new URLSearchParams(location.search).get('ref') || '').replace(/[^\w.-]/g, '').slice(0, 48);
+    window.goatcounter = { no_events: true, path: function (p) { return ref ? p + '?ref=' + ref : p; } };
+    var gc = document.createElement('script');
+    gc.async = true;
+    gc.setAttribute('data-goatcounter', 'https://' + GOATCOUNTER_SITE + '.goatcounter.com/count');
+    gc.src = 'https://gc.zgo.at/count.js';
+    document.head.appendChild(gc);
+  }
 })();

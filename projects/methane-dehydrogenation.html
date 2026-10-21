@@ -3,7 +3,8 @@
 <head>
   <script>
     (function() {
-      var t = localStorage.getItem('ak-theme');
+      var t = null;
+      try { t = localStorage.getItem('ak-theme'); } catch (e) {}
       if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', t);
     })();
@@ -48,6 +49,8 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress-bar" data-scroll-progress></div>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
       <a class="nav-brand" href="../index.html">AK.</a>
@@ -65,14 +68,14 @@
 
   <main id="main">
     <header class="page-header">
-      <div class="container">
+      <div class="container reading">
         <p class="eyebrow">Case study · Reacting flow · Honeywell UOP</p>
-        <h1>Methane dehydrogenation reactor CFD.</h1>
+        <h1>Methane dehydrogenation reactor CFD</h1>
         <p>Reacting-flow CFD of a pressurised reactor — finite-rate chemical kinetics coupled with turbulent transport and species conversion in ANSYS Fluent.</p>
       </div>
     </header>
 
-    <section class="container case">
+    <section class="container case reading">
       <dl class="case-meta">
         <div><dt>Context</dt><dd>Industry — Honeywell UOP collaboration</dd></div>
         <div><dt>Role</dt><dd>Sr. Mechanical Design Engineer · reacting-flow CFD</dd></div>
@@ -103,7 +106,7 @@
         <h2>Approach</h2>
         <ul>
           <li><strong>Reacting-flow formulation</strong> — finite-rate chemical kinetics coupled with turbulent transport and species conservation in ANSYS Fluent. Multiple competing reaction pathways were modelled to capture the conversion–selectivity trade.</li>
-          <li><strong>Geometry & mesh</strong> — reactor inlet and distribution zone resolved to capture flow maldistribution; mesh independence confirmed for the target conversion metrics.</li>
+          <li><strong>Geometry &amp; mesh</strong> — reactor inlet and distribution zone resolved to capture flow maldistribution; mesh independence confirmed for the target conversion metrics.</li>
           <li><strong>Parametric sweep</strong> — inlet temperature, pressure, and residence time were varied systematically to map the operating envelope.</li>
           <li><strong>Results extraction</strong> — Python post-processing of species mass fractions, velocity fields, and temperature profiles to identify recirculation zones, hot spots, and conversion-limiting regions.</li>
         </ul>
@@ -143,9 +146,9 @@
       </div>
 
       <div class="share-bar">
-        <button class="share-btn" data-share="linkedin">Share on LinkedIn</button>
-        <button class="share-btn" data-share="twitter">Share on X</button>
-        <button class="share-btn" data-share="copy">Copy link</button>
+        <button type="button" class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button type="button" class="share-btn" data-share="twitter">Share on X</button>
+        <button type="button" class="share-btn" data-share="copy">Copy link</button>
       </div>
 
       <nav class="case-nav" aria-label="Project navigation">
@@ -157,7 +160,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 Abhishek Kuntal, Munich. Last updated September 2026.</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
@@ -166,9 +169,5 @@
     </div>
   </footer>
   <script src="../assets/js/main.js" defer></script>
-  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close lightbox">×</button>
-    <img alt="" id="lightbox-img">
-  </div>
 </body>
 </html>

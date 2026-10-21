@@ -3,21 +3,22 @@
 <head>
   <script>
     (function() {
-      var t = localStorage.getItem('ak-theme');
+      var t = null;
+      try { t = localStorage.getItem('ak-theme'); } catch (e) {}
       if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', t);
     })();
   </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CALPHAD Ni-Superalloy Workflow — Abhishek Kuntal</title>
+  <title>CALPHAD + ML Ni-Superalloy Validation Protocol — Abhishek Kuntal</title>
   <link rel="canonical" href="https://abhishek-kun96.github.io/projects/calphad-ni-workflow.html" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="CALPHAD Ni-Superalloy Workflow — Abhishek Kuntal" />
+  <meta property="og:title" content="Validation protocol for automated CALPHAD + ML screening of γ/γ′ Ni-base superalloys" />
   <meta property="og:url" content="https://abhishek-kun96.github.io/projects/calphad-ni-workflow.html" />
-  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/og-image.jpg" />
+  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/calphad-v2-composition-trends.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="description" content="Self-directed CALPHAD + machine-learning workflow for Ni-base superalloy composition screening — pycalphad thermodynamics, Latin Hypercube sampling, surrogate ML with bootstrap UQ, and a top-candidate ranking by γ/γ′ stability and TCP phase avoidance." />
+  <meta name="description" content="A four-stage validation protocol for automated CALPHAD + machine-learning superalloy screening pipelines: order–disorder invariant testing, database–solver compatibility guards, provenance auditing, and 50-point experimental benchmarking on MatCalc mc_ni v2.036." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet" />
@@ -28,8 +29,8 @@
   {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": "CALPHAD Ni-Superalloy Workflow — Abhishek Kuntal",
-    "description": "Self-directed CALPHAD + machine-learning workflow for Ni-base superalloy composition screening — pycalphad thermodynamics, Latin Hypercube sampling, surrogate ML with bootstrap UQ, and a top-candidate ranking by γ/γ′ stability and TCP phase avoidance.",
+    "headline": "Validation protocol for automated CALPHAD + ML screening of γ/γ′ Ni-base superalloys — Abhishek Kuntal",
+    "description": "A four-stage validation protocol for automated CALPHAD + machine-learning superalloy screening pipelines: order–disorder invariant testing, database–solver compatibility guards, provenance auditing, and 50-point experimental benchmarking on MatCalc mc_ni v2.036.",
     "author": {
       "@type": "Person",
       "name": "Abhishek Kuntal",
@@ -48,6 +49,8 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress-bar" data-scroll-progress></div>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
       <a class="nav-brand" href="../index.html">AK.</a>
@@ -65,119 +68,192 @@
 
   <main id="main">
     <header class="page-header">
-      <div class="container">
-        <p class="eyebrow">Case study · CALPHAD + ML · Self-directed</p>
-        <h1>CALPHAD Ni-superalloy composition workflow.</h1>
-        <p>A self-directed project to learn CALPHAD end-to-end: thermodynamic equilibrium calculations in pycalphad, Latin-Hypercube composition sweeps, machine-learning surrogates with bootstrap uncertainty, and a candidate-ranking rule for γ/γ′ superalloys.</p>
+      <div class="container reading">
+        <p class="eyebrow">Case study · CALPHAD + ML · Methodological audit</p>
+        <h1>Validation protocol for automated CALPHAD + ML superalloy screening</h1>
+        <p>What started as a script coupling pycalphad with a Gaussian Process surrogate and Bayesian optimisation to screen γ/γ′ Ni-base superalloys turned into a four-stage validation protocol after a code and data audit uncovered silent thermodynamic and surrogate failure modes.</p>
       </div>
     </header>
 
-    <section class="container case">
+    <section class="container case reading">
       <dl class="case-meta">
-        <div><dt>Context</dt><dd>Self-directed — learning CALPHAD &amp; surrogate modelling</dd></div>
-        <div><dt>Role</dt><dd>Modeller</dd></div>
-        <div><dt>Stack</dt><dd>pycalphad, scikit-learn, SciPy, NumPy, Pandas, Matplotlib</dd></div>
+        <div><dt>Context</dt><dd>Self-directed study (v2.1, October 2026)</dd></div>
+        <div><dt>Role</dt><dd>Sole author &amp; developer</dd></div>
+        <div><dt>Stack</dt><dd>pycalphad 0.11.1, MatCalc mc_ni v2.036, scheil, scikit-learn, SciPy, pytest (47 tests)</dd></div>
       </dl>
 
+      <aside class="tldr" aria-label="Summary">
+        <h2>In short</h2>
+        <ul>
+          <li><strong>What:</strong> an automated alloy-screening pipeline (pycalphad with the open MatCalc mc_ni database, a Gaussian-process surrogate and constrained Bayesian optimisation) for γ/γ′ Ni superalloys over six alloying elements.</li>
+          <li><strong>What went wrong:</strong> two silent failures. Every γ′ fraction came out as 1.000 because of a phase-label error, and the database–solver pair produced a spurious Al-poor γ′ phase in 25 of 45 alloys. Tests and a chemistry guard now catch both.</li>
+          <li><strong>Outcome:</strong> a four-stage validation protocol. Against 50 measurements from six papers the corrected model shows three resolved offsets, and the GP is no better than linear regression and over-confident (51 % of residuals inside ±1σ instead of 68 %).</li>
+        </ul>
+      </aside>
+
+      <figure class="case-poster">
+        <img src="../assets/images/calphad-v2-workflow.svg" alt="Four-stage validation protocol for automated CALPHAD and machine learning screening pipelines" width="1200" height="420" loading="lazy" decoding="async" />
+        <figcaption>The four-stage validation protocol sitting ahead of and around the 45-alloy CALPHAD + constrained Bayesian optimisation loop.</figcaption>
+      </figure>
+
       <div class="case-section">
-        <h2>Problem</h2>
+        <h2>Why the original pipeline had to be audited</h2>
         <p>
-          Ni-base superalloys are designed around a two-phase γ (FCC disordered) matrix / γ′ (L1<sub>2</sub>-ordered Ni<sub>3</sub>Al-type)
-          structure. Alloying elements partition between the two phases; some stabilise γ′, some raise the solvus,
-          some form unwanted topologically-close-packed (TCP) phases like σ, μ, or Laves at high operating
-          temperatures. The design question — which composition windows keep γ/γ′ stable at service temperature
-          without unlocking TCP phases — is a multi-variable thermodynamic problem. CALPHAD is the standard tool for
-          it, but evaluating enough compositions to map the window directly is slow. The goal here was pedagogical
-          and practical: build the end-to-end workflow from thermodynamic equilibria to a machine-learning surrogate
-          that can rank composition candidates by a design-relevant score.
+          Automated alloy-design workflows couple an equilibrium thermodynamic solver (here <code>pycalphad</code>
+          with the open MatCalc <code>mc_ni v2.036</code> database across six alloying elements — Al, Cr, Co, Mo, W, Ti,
+          with Ni balance) to a machine-learning surrogate and a Bayesian optimiser. Because every downstream layer sees
+          only numbers, a silent error in phase identification or database–solver compatibility passes straight through:
+          the Gaussian Process fits smoothly, the acquisition function proposes candidates, and the ranking table looks
+          plausible.
+        </p>
+        <p>
+          A line-by-line audit of my initial workflow exposed four distinct failure classes that invalidated the
+          earlier results. Correcting them and building regression guards produced a transferable four-stage validation
+          checklist that costs minutes of compute compared with the equilibrium sweep it protects.
         </p>
       </div>
 
       <div class="case-section">
-        <h2>Approach</h2>
+        <h2>The four failure classes &amp; protocol stages</h2>
         <ul>
-          <li><strong>pycalphad equilibrium calculations</strong> — multicomponent Ni-Al-Cr-Co-Mo-Ti-W-Re-Ta system (subset depending on database availability). For each composition, computed equilibrium phase fractions of γ, γ′, and TCP families at a representative service temperature.</li>
-          <li><strong>Latin Hypercube Sampling</strong> — LHS across the composition space rather than a full factorial grid, which gives good space-filling at a fraction of the evaluation cost. A few hundred CALPHAD calls gave enough samples to train a surrogate.</li>
-          <li><strong>Feature engineering</strong> — composition-level features plus cheap derived quantities (electron-hole number N<sub>v</sub>, average atomic radius, γ′-former vs γ-stabiliser balance) known from the metallurgy literature to correlate with phase stability.</li>
-          <li><strong>Surrogate ML</strong> — regressors (Random Forest, Gaussian Process) trained on the CALPHAD output to predict γ′ fraction and TCP presence directly from composition. The surrogate is what makes composition ranking tractable at screening scale.</li>
-          <li><strong>Bootstrap UQ</strong> — resampled-training-set bootstrap to produce prediction intervals, not point predictions. Candidates with uncertain predictions were flagged rather than ranked.</li>
-          <li><strong>Ranking rule</strong> — score each candidate by predicted γ′ fraction within a target band and a heavy penalty on predicted TCP presence; surface the top-N for inspection.</li>
+          <li>
+            <strong>Stage 1 — Invariant test at the thermodynamic layer (order–disorder classification).</strong>
+            In a partitioned two-sublattice L1<sub>2</sub> model (<code>FCC_A1#2</code> / <code>GAMMA_PRIME</code>),
+            the disordered FCC matrix and the ordered precipitate share the same phase label when disorder is allowed.
+            Label-based extraction returned a γ′ mole fraction of <code>1.000</code> for every evaluated alloy —
+            including Al-free <code>Ni–5Cr</code>. Replacing label matching with a quantitative sublattice site-fraction
+            ordering criterion, η = max<sub>i</sub> |y<sub>i</sub><sup>(1)</sup> − y<sub>i</sub><sup>(2)</sup>| &gt; 0.01,
+            restores physical γ/γ′ separation and is locked in by unit tests on known γ-only and two-phase anchors.
+          </li>
+          <li>
+            <strong>Stage 2 — Database–solver compatibility guard (the Al-poor GAMMA_PRIME artefact).</strong>
+            The open <code>mc_ni v2.036</code> assessment was fitted for MatCalc's local minimiser with explicit phase
+            flags. When evaluated under <code>pycalphad</code>'s global convex-hull minimiser, the solver finds a
+            spurious, ordered, Cr/Co/Mo-rich <code>GAMMA_PRIME</code> minimum (&lt; 10 at.% γ′-formers Al + Ti + Ta + Nb)
+            in <strong>25 of the 45</strong> evaluated design-space alloys — and in <strong>80% of alloys with ≥ 3 at.% Co</strong>.
+            Within the sampled design space it appears as a minority phase (median 7.5 mol.%, with the γ matrix surviving
+            at 0.17–0.79 mole fraction), whereas in Co-rich commercial alloys (Nimonic 115 and Udimet 720 at 14–15 wt.% Co)
+            it replaces the γ matrix completely above ~800 °C (0.36 and 0.51 mole fraction at 1000 °C). A chemistry guard
+            (<code>min_gp_former = 0.10</code>) detects and flags every affected equilibrium set.
+          </li>
+          <li>
+            <strong>Stage 3 — Provenance audit of inputs and citations.</strong>
+            Checking every input file and DOI in the initial repository revealed that 13 of 20 validation DOIs and 14 of
+            20 reference DOIs did not resolve, and that earlier summary plots had been generated from a four-element test
+            database (<code>alcocrni.tdb</code>) or a hand-coded formula rather than the trained surrogate. All unverified
+            tables were quarantined and replaced by a curated dataset with page- and table-level provenance.
+          </li>
+          <li>
+            <strong>Stage 4 — Benchmark against 50 primary experimental values &amp; baseline-calibrated surrogate checks.</strong>
+            The corrected thermodynamic layer was benchmarked against 50 primary measurements from six verified experimental
+            sources, and the Gaussian Process surrogate was scored against a plain linear regression baseline and checked
+            for out-of-fold uncertainty calibration before interpreting the Bayesian optimisation trace.
+          </li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Benchmarking mc_ni v2.036 against 50 primary measurements</h2>
+        <p>
+          Fifty experimental values were compiled with page-level provenance from six primary sources:
+          <strong>Ma &amp; Ardell (2003)</strong> for the binary Ni–Al (γ + γ′)/γ′ boundary (600–1200 °C),
+          <strong>Kitajima, Hayashi &amp; Narita (2006)</strong> for ternary Ni–Al–Cr EPMA tie-lines at 1150 °C,
+          <strong>Pícha, Brož &amp; Buršík (2004)</strong> for quaternary Ni–Al–Cr–Ti phase compositions and phase
+          assemblages at 1000 and 1100 °C, <strong>Monajati et al. (2004)</strong> for Udimet 720,
+          <strong>Pike (2008)</strong> for Haynes 282, and <strong>Awais et al. (2023)</strong> for Nimonic 115
+          (two further candidate papers, Ortiz-de-Zárate et al. 2025 and Hawk et al. 2015, were read and excluded
+          because their γ′ fractions/phase diagrams were calculated rather than measured).
+        </p>
+        <div class="results-grid">
+          <div class="result"><div class="result-value">+0.93 at.%</div><div class="result-label">Binary Ni–Al γ′ boundary offset (95% CI 0.83–1.03, p<sub>Holm</sub> &lt; 0.001)</div></div>
+          <div class="result"><div class="result-value">−2.36 at.%</div><div class="result-label">Ni–Al–Cr γ Al bias (95% CI 1.29–3.43, p<sub>Holm</sub> = 0.014)</div></div>
+          <div class="result"><div class="result-value">−0.83 at.%</div><div class="result-label">γ′ Cr bias across ternary/quaternary tie-lines (95% CI 0.43–1.22, p<sub>Holm</sub> = 0.020)</div></div>
+          <div class="result"><div class="result-value">7 / 16</div><div class="result-label">Ni–Al–Cr–Ti phase assemblages matched by mc_ni (vs 13 / 16 for a commercial database)</div></div>
+        </div>
+        <div class="callout">
+          <p>
+            <strong>Statistical caveat.</strong> Because multiple points within a source come from a single
+            phase-diagram section (for example eight points along the Ni–Al boundary of Ma &amp; Ardell, or five tie-lines
+            at 1150 °C in Kitajima et al.), residuals within a source are not independent samples. The confidence
+            intervals and Holm-adjusted p-values across the five tested quantities (n ≥ 4) are therefore reported as
+            <em>screening statistics</em> that separate resolved database offsets from scatter, not as formal
+            independent significance tests. On the commercial alloys, the Haynes 282 γ′ solvus is exceeded by +20 K
+            (single developer-stated value), while the Udimet 720 comparison (+67 K nominal) is artefact-affected and
+            hits a non-monotonic liquid/solid solver sequence between 1200 and 1300 °C.
+          </p>
+        </div>
+      </div>
+
+      <div class="case-section">
+        <h2>Surrogate baseline &amp; uncertainty calibration</h2>
+        <p>
+          In a six-element design space with 45 evaluated alloys (a 24-point Latin-hypercube initial design, a 10-alloy independent random test set, and the constrained Bayesian
+          optimisation proposals), reporting a Gaussian Process surrogate without a simple baseline hides whether the
+          model learnt anything beyond a linear trend. Using repeated 5-fold cross-validation (10 repeats, 45 alloys):
+        </p>
+        <ul>
+          <li>
+            <strong>Linear regression matches the GP on γ′ at 1000 °C.</strong> The Matérn-5/2 GP achieves
+            <code>RMSE = 0.0445</code> (s.d. <code>0.0053</code>, <code>MAE = 0.0316</code>, <code>R² = 0.940</code>),
+            which does not beat plain linear regression on the six element fractions
+            (<code>RMSE = 0.0427</code>, s.d. <code>0.0018</code>, <code>MAE = 0.0325</code>, <code>R² = 0.946</code>;
+            Random Forest gives <code>RMSE = 0.0803</code>, <code>R² = 0.806</code>, and the mean predictor
+            <code>0.1855</code>). For TCP fraction at 900 °C, the GP is only marginally ahead of linear regression
+            (<code>RMSE = 0.0240</code> vs <code>0.0252</code>).
+          </li>
+          <li>
+            <strong>GP uncertainty is over-confident.</strong> Out-of-fold calibration shows that only
+            <strong>51.1%</strong> of held-out γ′ residuals fall inside the GP's ±1σ band (against 68.3% expected for a
+            calibrated Gaussian) and <strong>73.3%</strong> fall within ±2σ (against 95.4% expected). The GP remains
+            useful because the acquisition function requires predictive variance, but its intervals are too narrow.
+          </li>
         </ul>
       </div>
 
       <div class="case-figures">
         <figure>
-          <img src="../assets/images/calphad-phase-fraction.png" alt="Equilibrium phase fraction vs temperature for Ni-superalloy candidates" width="1378" height="1029" loading="lazy" decoding="async" />
-          <figcaption>Phase fraction vs temperature — CALPHAD equilibrium calculations for 4 candidate Ni-superalloy compositions showing γ′ stability at 1200°C service temperature.</figcaption>
+          <img src="../assets/images/calphad-v2-surrogate-parity.png" alt="GP surrogate parity on the independent test set for gamma prime at 1000 C and TCP at 900 C" width="1087" height="446" loading="lazy" decoding="async" />
+          <figcaption>GP surrogate parity on the independent test set (left: γ′ mole fraction at 1000 °C; right: TCP mole fraction at 900 °C; error bars ±2σ).</figcaption>
         </figure>
         <figure>
-          <img src="../assets/images/calphad-pareto.jpg" alt="Pareto front showing tradeoff between γ′ fraction and density for Ni-superalloy candidates" width="1800" height="1432" loading="lazy" decoding="async" />
-          <figcaption>Pareto front — optimal tradeoff between γ′ fraction (strengthening) and density (weight) for Ni-superalloy candidates.</figcaption>
-        </figure>
-        <figure>
-          <img src="../assets/images/calphad-feature-importance.jpg" alt="Random-forest feature importance highlighting Al, Ti, Cr, Co as top drivers of γ′ fraction" width="1241" height="1754" loading="lazy" decoding="async" />
-          <figcaption>Feature importance — γ′-forming and γ-stabilising elements dominate as expected from the metallurgy.</figcaption>
+          <img src="../assets/images/calphad-v2-composition-trends.png" alt="Composition trends across all 45 evaluated alloys showing gamma prime vs Al and TCP vs Cr+Mo+W" width="1080" height="439" loading="lazy" decoding="async" />
+          <figcaption>Composition trends across all evaluated alloys: γ′ at 1000 °C versus Al coloured by Cr (left), and TCP fraction at 900 °C versus Cr + Mo + W coloured by Ti (right).</figcaption>
         </figure>
       </div>
 
       <div class="case-section">
-        <h2>Tools &amp; setup</h2>
-        <ul>
-          <li><strong>pycalphad</strong> — open-source multicomponent thermodynamic equilibrium solver with CALPHAD databases.</li>
-          <li><strong>scikit-learn</strong> — Random Forest and Gaussian Process regressors; cross-validation and bootstrap routines.</li>
-          <li><strong>SciPy</strong> — Latin Hypercube sampling via <code>scipy.stats.qmc</code>.</li>
-          <li><strong>NumPy / Pandas / Matplotlib</strong> — vectorised feature engineering, bookkeeping, and visualisation of the surrogate, bootstrap intervals, and ranked candidates.</li>
-        </ul>
-      </div>
-
-      <div class="case-section">
-        <h2>Outcomes</h2>
-        <ul>
-          <li><strong>End-to-end workflow</strong> — a reusable pipeline (LHS → pycalphad → feature engineering → ML surrogate → bootstrap UQ → ranking) that replaces a by-hand composition search.</li>
-          <li><strong>Surrogate quality</strong> — Random Forest and GP surrogates both tracked the CALPHAD-predicted γ′ fraction closely on held-out compositions; the GP additionally gave calibrated uncertainty.</li>
-          <li><strong>Ranked shortlist</strong> — top-candidate compositions identified with predicted γ′ in the target band and predicted TCP presence below threshold, each with a bootstrap interval on the prediction.</li>
-        </ul>
-
-        <div class="callout">
-          <p>The workflow is the deliverable, not the ranked list. A published commercial alloy was not the point —
-          the point was to establish that "CALPHAD + ML surrogate + bootstrap UQ" is a practical screening pattern
-          and to build the muscle to apply it to a real composition search.</p>
-        </div>
-      </div>
-
-      <div class="case-section">
-        <h2>Validation</h2>
+        <h2>Constrained Bayesian optimisation in context</h2>
         <p>
-          The surrogate was cross-validated against held-out pycalphad equilibrium calculations. Feature-importance
-          rankings were checked against known superalloy metallurgy — Al and Ti drove γ′ formation in the expected
-          direction; Cr and Co partitioned into γ consistent with the literature; TCP predictions flagged the usual
-          heavy-element-rich combinations. When the surrogate's bootstrap interval was wider than the γ′ band width,
-          that composition was kept <em>out</em> of the ranked shortlist — uncertainty was treated as a filter, not
-          a cosmetic.
+          Running 12 iterations of constrained Expected Improvement (requiring <code>TCP<sub>900 °C</sub> &lt; 0.01</code>
+          and <code>artefact<sub>1000 °C</sub> &lt; 0.01</code>) raises the best feasible γ′ mole fraction at 1000 °C
+          from <code>0.48</code> in the initial design to <strong><code>0.642</code></strong>. Almost all of that gain
+          arrived by <strong>iteration 2 (<code>0.63</code>)</strong>; the later improvement at iteration 7 added less
+          than 0.01, and 8 of the 12 proposals violated either the TCP or the artefact constraint.
+        </p>
+        <figure>
+          <img src="../assets/images/calphad-v2-best-candidate.png" alt="Phase fractions versus temperature for the best feasible candidate alloy" width="689" height="440" loading="lazy" decoding="async" />
+          <figcaption>Phase fractions versus temperature for the highest-γ′ feasible candidate (Ni–13.1Al–7.2Cr–1.2Co–0.1Mo–3.0W–2.0Ti, at.%; γ′ = 0.642 at 1000 °C, ρ = 8.35 g/cm³, equilibrium solidus 1383 °C, Scheil solidus 1280 °C, model γ′ solvus ≈ 1350 °C).</figcaption>
+        </figure>
+        <p>
+          All top feasible candidates sit at low Co (≤ 1.2 at.%) and high Al. That is not a metallurgical discovery —
+          low Co is where <code>mc_ni</code> is free of the Al-poor <code>GAMMA_PRIME</code> artefact under global
+          minimisation, so the feasibility constraint steers the optimiser into the subspace where the database works.
         </p>
       </div>
 
       <div class="case-section">
         <h2>Lessons learned</h2>
         <ul>
-          <li>The ML surrogate is only useful if the CALPHAD evaluations behind it are physically right. Most of the project's time went into getting the thermodynamic database and phase selection correct, not into the ML layer.</li>
-          <li>Latin Hypercube gives you 80% of the value of a full factorial at a small fraction of the evaluation cost. For composition screening it's the correct default.</li>
-          <li>Point-predictions without UQ are not good enough for design. Bootstrap intervals let the surrogate admit what it does not know, which is the only honest way to rank.</li>
-        </ul>
-      </div>
-
-      <div class="case-section">
-        <h2>Artifacts</h2>
-        <ul>
-          <li>Self-study report — "CALPHAD Ni-Superalloy Workflow: equilibrium, surrogate, UQ, ranking".</li>
-          <li>Python workflow notebook (pycalphad + sklearn), shareable on request.</li>
+          <li><strong>Test invariants before fitting surrogates.</strong> A single regression test asserting that <code>Ni–5Cr</code> has zero γ′ catches label-based misidentification immediately; checking after the surrogate is trained only measures how well a GP fits a constant.</li>
+          <li><strong>A database and a solver are a pair.</strong> An assessment tuned for a local minimiser can develop spurious global minima in unassessed composition corners when driven by a convex-hull solver.</li>
+          <li><strong>Always score surrogates against a linear baseline and check coverage.</strong> With 45 points in 6 dimensions, linear regression is as accurate as a Matérn GP on γ′, and out-of-fold coverage exposes over-confident uncertainty bars.</li>
         </ul>
       </div>
 
       <div class="share-bar">
-        <button class="share-btn" data-share="linkedin">Share on LinkedIn</button>
-        <button class="share-btn" data-share="twitter">Share on X</button>
-        <button class="share-btn" data-share="copy">Copy link</button>
+        <button type="button" class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button type="button" class="share-btn" data-share="twitter">Share on X</button>
+        <button type="button" class="share-btn" data-share="copy">Copy link</button>
       </div>
 
       <nav class="case-nav" aria-label="Project navigation">
@@ -189,7 +265,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 Abhishek Kuntal, Munich. Last updated September 2026.</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
@@ -198,9 +274,5 @@
     </div>
   </footer>
   <script src="../assets/js/main.js" defer></script>
-  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close lightbox">×</button>
-    <img alt="" id="lightbox-img">
-  </div>
 </body>
 </html>

@@ -17,18 +17,40 @@
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Real-time hydrofoil wakes with lattice Boltzmann and FTLE" />
   <meta property="og:url" content="https://abhishek-kun96.github.io/projects/auraflow-lbm.html" />
-  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/og-image.jpg" />
+  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/hero-ftle.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
   <link rel="stylesheet" href="../assets/css/style.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Real-time hydrofoil wakes with lattice Boltzmann and FTLE — Abhishek Kuntal",
+    "description": "A C++/CUDA/Qt desktop app that simulates flow around a NACA 0012 hydrofoil with a lattice-Boltzmann LES and draws live Lagrangian coherent structures (FTLE). Re 1000 polar checked against the literature.",
+    "author": {
+      "@type": "Person",
+      "name": "Abhishek Kuntal",
+      "url": "https://abhishek-kun96.github.io/"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "Abhishek Kuntal"
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://abhishek-kun96.github.io/projects/auraflow-lbm.html"
+    }
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="scroll-progress-bar" data-scroll-progress></div>
-  <button class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
       <a class="nav-brand" href="../index.html">AK.</a>
@@ -46,19 +68,19 @@
 
   <main id="main">
     <header class="page-header">
-      <div class="container">
+      <div class="container reading">
         <p class="eyebrow">Own GPU solver, 2026</p>
         <h1>Real-time hydrofoil wakes with lattice Boltzmann and FTLE</h1>
         <p>A native desktop app that simulates water flowing past a NACA 0012 hydrofoil and draws, frame by frame, where the flow separates and rolls up into vortices. It grew out of my thesis topic, underwater kites for tidal energy, where two foils fly one above the other.</p>
       </div>
     </header>
 
-    <section class="container case">
+    <section class="container case reading">
       <dl class="case-meta">
         <div><dt>Context</dt><dd>Personal project</dd></div>
         <div><dt>Role</dt><dd>Sole developer</dd></div>
         <div><dt>Stack</dt><dd>C++20, CUDA 13, Qt 6, CMake</dd></div>
-        <div><dt>Status</dt><dd>v13 released; v14 in development</dd></div>
+        <div><dt>Status</dt><dd>v13 released; v14 active</dd></div>
       </dl>
 
       <figure class="video-hero">
@@ -98,7 +120,7 @@
 
       <div class="case-section">
         <h2>Validation at Re 1000</h2>
-        <p>An automated polar sweep from 0° to 12°, compared with Kurtulus (2015). Drag at zero incidence is 0.125 against 0.12 in the literature. Alternating shedding starts at 8° (literature: 7–8°) with a Strouhal number of 0.878 against 0.88.</p>
+        <p>An automated polar sweep from 0° to 12°, compared with <a href="https://doi.org/10.1260/1756-8293.7.3.301" rel="noopener">Kurtulus (2015)</a>. Drag at zero incidence is 0.125 against 0.12 in the literature. Alternating shedding starts at 8°, the angle where that paper first reports it, with a chord-based Strouhal number St = f c / U of 0.878 against the 0.876 reported there (0.888 and 0.883 at 9° and 10°).</p>
         <div class="chart-pair">
           <figure class="chart-figure">
 <!-- chart:cd -->
@@ -189,16 +211,22 @@
         </ul>
       </div>
 
+      <div class="share-bar">
+        <button type="button" class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button type="button" class="share-btn" data-share="twitter">Share on X</button>
+        <button type="button" class="share-btn" data-share="copy">Copy link</button>
+      </div>
+
       <nav class="case-nav" aria-label="Project navigation">
-        <a class="btn btn-ghost" href="../work.html">All projects</a>
-        <a class="btn btn-primary" href="turbomachinery-cfd.html">Next: Turbomachinery CFD</a>
+        <a class="btn btn-ghost" href="../work.html">← All projects</a>
+        <a class="btn btn-primary" href="physics-informed-mesher.html">Next: Physics-informed CFD mesher</a>
       </nav>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 Abhishek Kuntal, Munich. Last updated September 2026.</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
@@ -207,9 +235,5 @@
     </div>
   </footer>
   <script src="../assets/js/main.js" defer></script>
-  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close lightbox">×</button>
-    <img alt="" id="lightbox-img">
-  </div>
 </body>
 </html>

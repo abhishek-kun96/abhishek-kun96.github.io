@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      var t = null;
+      try { t = localStorage.getItem('ak-theme'); } catch (e) {}
+      if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Physics-Informed 2D/3D CFD Mesher &amp; Metric Adaptation — Abhishek Kuntal</title>
+  <link rel="canonical" href="https://abhishek-kun96.github.io/projects/physics-informed-mesher.html" />
+  <meta name="description" content="A physics-scaled 2D/3D hybrid multiblock mesh generator and anisotropic metric adaptation tool in Python (gmsh OCC/HXT + MMG2D/3D), validated in ANSYS Fluent 26.1 and SU2 v8.5.0 on DFG 2D-1/2D-2, NASA TMR NACA 0012, and 3D sphere benchmarks." />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Physics-informed 2D/3D CFD mesh generation &amp; anisotropic adaptation" />
+  <meta property="og:url" content="https://abhishek-kun96.github.io/projects/physics-informed-mesher.html" />
+  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/mesher-cgrid-zooms.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Physics-informed 2D/3D CFD mesh generation & anisotropic adaptation — Abhishek Kuntal",
+    "description": "A physics-scaled 2D/3D hybrid multiblock mesh generator and anisotropic metric adaptation tool in Python (gmsh OCC/HXT + MMG2D/3D), validated in ANSYS Fluent 26.1 and SU2 v8.5.0 on DFG 2D-1/2D-2, NASA TMR NACA 0012, and 3D sphere benchmarks.",
+    "author": {
+      "@type": "Person",
+      "name": "Abhishek Kuntal",
+      "url": "https://abhishek-kun96.github.io/"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "Abhishek Kuntal"
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://abhishek-kun96.github.io/projects/physics-informed-mesher.html"
+    }
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress-bar" data-scroll-progress></div>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav-brand" href="../index.html">AK.</a>
+      <ul class="nav-links">
+        <li><a href="../work.html">Work</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../resume.html">Résumé</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme" data-theme-toggle>
+        <span class="theme-toggle-icon" aria-hidden="true">◐</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <header class="page-header">
+      <div class="container reading">
+        <p class="eyebrow">Own meshing &amp; adaptation toolkit, 2026</p>
+        <h1>Physics-informed 2D/3D CFD mesh generation &amp; anisotropic adaptation</h1>
+        <p>A deterministic hybrid multiblock mesh generator and metric-adaptation tool in Python that sizes boundary layers, transition rings, and wakes directly from Reynolds/Peclet scaling laws and refines them with MMG2D/3D — validated in ANSYS Fluent 26.1 and SU2 v8.5.0.</p>
+      </div>
+    </header>
+
+    <section class="container case reading">
+      <dl class="case-meta">
+        <div><dt>Context</dt><dd>Personal project (October 2026)</dd></div>
+        <div><dt>Role</dt><dd>Sole developer</dd></div>
+        <div><dt>Stack</dt><dd>Python, gmsh OCC/HXT, MMG2D/3D (mmgpy), ANSYS Fluent 26.1, SU2 v8.5.0, Tkinter, pytest (155 tests)</dd></div>
+      </dl>
+
+      <aside class="tldr" aria-label="Summary">
+        <h2>In short</h2>
+        <ul>
+          <li><strong>What:</strong> a Python mesh generator that sizes boundary layers, transition rings and wakes from Reynolds/Péclet scaling, exports to Fluent, SU2, CGNS and VTU, and refines meshes with MMG metric adaptation (155 automated tests).</li>
+          <li><strong>Accuracy:</strong> on the DFG 2D-1 cylinder benchmark, drag converges at second order to within −0.009 % of the reference in Fluent, cross-checked in SU2 (−0.054 % on the 110k-cell level).</li>
+          <li><strong>Adaptation:</strong> on the NASA TMR NACA 0012 case at 10°, metric adaptation cuts the drag error from +9.1 % to +3.1 % for 2 % more cells. What did not work (dynamic AMR, curved wake cuts) is reported at the end.</li>
+        </ul>
+      </aside>
+
+      <figure class="case-poster">
+        <img src="../assets/images/mesher-cgrid-zooms.webp" alt="Six-panel view of the physics-scaled C-grid airfoil mesh: leading-edge boundary layer and transition ring, trailing-edge C-grid splice, boundary-layer close-up, and initial vs metric-adapted wake corridor" width="1600" height="882" loading="eager" fetchpriority="high" decoding="async" />
+        <figcaption>Conformal C-grid aerofoil mesh and metric-adapted wake: leading-edge boundary layer + aspect-capped transition ring (blue/cyan), trailing-edge C-grid splice into the wake corridor, and MMG2D anisotropic wake refinement (7,456 → 34,363 cells).</figcaption>
+      </figure>
+
+      <div class="case-section">
+        <h2>Why build a physics-scaled mesher</h2>
+        <p>
+          Standard unstructured mesh generators take geometric sizes in metres and leave boundary-layer thickness,
+          first-cell height, wake spreading, and transition-ring aspect ratios to hand-tuned sizing boxes. When a
+          refinement family fails to converge in a finite-volume solver, the defect is usually a block interface or an
+          outer transition layer that stopped refining with the surface.
+        </p>
+        <p>
+          <code>nextgen_mesher</code> builds conformal 2D and 3D hybrid meshes directly from dimensionless flow
+          parameters (flow vector <strong>b</strong>, kinematic viscosity ν, target cell Peclet <em>Pe</em>, and
+          turbulent wall <em>y</em><sup>+</sup>), enforces per-cell quality gates (signed area/volume, equiangular skew,
+          and Fluent orthogonal quality), exports native ANSYS Fluent <code>.msh</code>, SU2 <code>.su2</code>, CGNS,
+          VTU, and curved P2 meshes, and closes the loop with anisotropic solution-Hessian and flux-weighted metric adaptation via
+          <code>MMG2D</code> / <code>MMG3D</code>.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>What is in it</h2>
+        <ul>
+          <li>
+            <strong>Unit-invariant physics sizing laws.</strong> Outer gradient length
+            <em>L</em><sub>grad</sub> = <em>L</em> / √<em>Pe<sub>L</sub></em>, laminar boundary-layer thickness
+            δ<sub>BL</sub> = min(5<em>L</em> / √<em>Pe<sub>L</sub></em>, 0.1<em>L</em>), and an analytic parabolic wake
+            corridor aligned with arbitrary inflow angles. For turbulent RANS (<em>y</em><sup>+</sup> target),
+            Schlichting flat-plate skin friction sets first-layer height <em>h</em><sub>1</sub> and wake eddy viscosity
+            ν<sub>t</sub>, augmented by <strong>streamwise <em>y</em><sup>+</sup>(<em>s</em>) modulation</strong> from an
+            a-priori Hess–Smith vortex-panel solver (<code>panel.py</code>) and leading-edge pressure-gradient spacing
+            (<code>h ≤ ε / |dC<sub>p</sub>/ds|</code>). Rescaling geometry and velocity by ×1024 produces bit-identical
+            meshes up to the scale factor.
+          </li>
+          <li>
+            <strong>Conformal multiblock topologies (O-grid, C-grid, multi-element).</strong> Bluff bodies receive a
+            structured quad O-grid boundary layer and transition ring. Sharp trailing edges (wedge angle &lt; 45°)
+            automatically switch to a conformal <strong>C-grid</strong> whose structured layers extend into the wake,
+            cutting wake-corridor cell Peclet from <strong>73.8 → 10.6</strong> and trailing-edge skew
+            from <strong>0.908 → 0.175</strong> with zero interior degree-3 vertices (first C-grid study; the figure below uses the current defaults). Multi-element aerofoils
+            (<code>make_naca_flap</code>) and multi-body STEP CAD sections (<code>load_section(allow_multi=True)</code>)
+            cap each ring to 0.35× the local inter-body gap.
+          </li>
+          <li>
+            <strong>3D hybrid prism + tet volume meshing &amp; P2 curved boundaries.</strong> In 3D
+            (<code>volume3d.py</code>, <code>cad3d.py</code>), surface triangles are extruded along smoothed inward
+            normals with iterative concave-fold repair, capped at 0.4× narrow gaps, and filled with <code>gmsh</code> HXT
+            tetrahedra. For high-order export (<code>highorder.py</code>), periodic cubic-spline wall midpoints propagate
+            with linear decay through the structured boundary-layer stack so curved P2 elements maintain positive
+            Jacobians (det <em>J</em> &gt; 0) even at <em>y</em><sup>+</sup> = 1.
+          </li>
+          <li>
+            <strong>Metric adaptation with local bad-cell repair.</strong> Multi-component solution Hessians and convective-flux-weighted Hessians (Loseille, Dervieux &amp; Alauzet 2010) drive <code>MMG2D</code> / <code>MMG3D</code>
+            remeshing while equidistributing free domain boundaries in the metric and locally isotropizing around any
+            cell that violates Fluent's orthogonal-quality floor.
+          </li>
+        </ul>
+      </div>
+
+      <figure>
+        <img src="../assets/images/mesher-cgrid-wake.webp" alt="O-grid versus C-grid trailing-edge topology and cell Peclet maps on NACA 0012" width="1600" height="808" loading="lazy" decoding="async" />
+        <figcaption>Trailing-edge O-grid (top) vs conformal C-grid (bottom) on NACA 0012: replacing the O-grid fan at the sharp trailing edge cuts the maximum wake-corridor cell Péclet from 75.7 to 10.6 (cells above 2× target 60 → 0); trailing-edge skew falls from 0.91 to 0.25 with the current leading-edge sizing default.</figcaption>
+      </figure>
+
+      <div class="case-figures">
+        <figure>
+          <img src="../assets/images/mesher-mesh-compare.webp" alt="DFG 2D-1 mesh family L0 to L3 showing structured cylinder boundary layer, channel-wall layers, aspect-capped transition ring, and far field" width="1537" height="701" loading="lazy" decoding="async" />
+          <figcaption>DFG 2D-1 mesh family (refined together by r = 1.5 from L0 10,018 to L3 109,685 cells): body boundary-layer and channel-wall quad layers (orange), aspect-capped transition block (purple), and Delaunay far field (blue).</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/mesher-adaptation.webp" alt="Ring and far-field metric-adapted meshes on DFG 2D-1 across steps 0, 3, and 6" width="1600" height="934" loading="lazy" decoding="async" />
+          <figcaption>Solver-in-the-loop metric adaptation on DFG 2D-1 (steps 0 → 3 → 6; 10,018 → 22,385 → 84,196 cells): surface stations (120 → 290), ring layers (19 → 72), and MMG2D far-field triangles track the stagnation gradient and wake shear layers together.</figcaption>
+        </figure>
+      </div>
+
+      <figure>
+        <img src="../assets/images/mesher-dfg-convergence.png" alt="DFG 2D-1 drag convergence against cell count for uncapped transition, aspect-capped transition, and independent gmsh family against Nabh reference" width="1584" height="537" loading="lazy" decoding="async" />
+        <figcaption>Diagnosing and fixing transition-layer stretching on DFG 2D-1: the uncapped transition block drifted +0.16% past the Nabh reference (5.57954), whereas capping transition aspect ratio (<code>trans_max_aspect = 1.0</code>) restores monotonic second-order convergence to −0.009% at L4.</figcaption>
+      </figure>
+
+      <div class="case-section">
+        <h2>External solver validation (ANSYS Fluent 26.1 &amp; SU2 v8.5.0)</h2>
+        <div class="results-grid">
+          <div class="result"><div class="result-value">−0.009%</div><div class="result-label">DFG 2D-1 (Re 20) C<sub>D</sub> error at L4 (247k cells; Richardson p = 2.1, limit 5.5795 vs 5.57954 ref)</div></div>
+          <div class="result"><div class="result-value">−0.054%</div><div class="result-label">DFG 2D-1 L3 (110k cells) C<sub>D</sub> error in SU2 v8.5.0 (Δp error −0.03%)</div></div>
+          <div class="result"><div class="result-value">+9.1% → +3.1%</div><div class="result-label">NASA TMR NACA 0012 (α = 10°, Re 6×10<sup>6</sup>) C<sub>D</sub> error cut by Hessian + ring adapt (+2% cells)</div></div>
+          <div class="result"><div class="result-value">+1.0%</div><div class="result-label">3D Sphere at Re 100 (655k prism+tet cells): Fluent C<sub>D</sub> 1.1013 vs 1.09 reference</div></div>
+        </div>
+        <ul>
+          <li>
+            <strong>DFG 2D-1 laminar cylinder (Re = 20, Schäfer–Turek benchmark).</strong> An initial refinement study
+            drifted +0.16% on drag at L4 because the transition block grew at a fixed ratio to a fixed extent, leaving an
+            unrefined outer annulus whose aspect ratio reached 10 at L4. Capping each transition layer at the local
+            tangential width (<code>MeshConfig.trans_max_aspect = 1.0</code>) restored second-order convergence across
+            L0–L4 (<strong>10,018 to about 247,000 cells</strong>): Fluent <em>C<sub>D</sub></em> error decreases monotonically from
+            below on L0–L3 (<code>0.272% → 0.088% → 0.052% → 0.022%</code>) and reaches <strong>−0.009%</strong> at L4
+            (<em>C<sub>D</sub></em> = 5.5790 vs Nabh spectral reference 5.57954; Richardson order 2.1, extrapolated
+            5.5795). At L4, Δ<em>p</em> error is <strong>−0.080%</strong> (L3 −0.133%) and <em>C<sub>L</sub></em> error
+            is <strong>−0.47%</strong> (L1–L3 within 3.7%; L0 is 11.8%, outside its 10% gate). In <strong>SU2
+            v8.5.0</strong>, L3 (110k cells) gives <em>C<sub>D</sub></em> = 5.57651 (<strong>−0.054%</strong>),
+            <em>C<sub>L</sub></em> −0.8%, and Δ<em>p</em> <strong>−0.03%</strong>.
+          </li>
+          <li>
+            <strong>Diagnosing the frozen-inlet midpoint flux bias in metric remeshing.</strong> Adapted DFG 2D-1 meshes
+            initially plateaued +0.075% high on <em>C<sub>D</sub></em>. Bisection across nine mesh variants proved the
+            cause was not anisotropy or ring height: <code>MMG2D</code> froze boundary edges at the initial L0 spacing
+            (<em>h</em> ≈ 0.02), and Fluent's midpoint-rule integration of the parabolic inlet profile carried
+            <strong>~0.1% (0.12%) extra mass flow</strong> (~<em>h</em><sup>2</sup> / 2<em>H</em><sup>2</sup>).
+            Equidistributing free boundary edges in the metric removed the bias; after the fix, flux-weighted metric adaptation
+            (42k cells, <em>C<sub>D</sub></em> −0.057%, Δ<em>p</em> 0.225%) matches systematic refinement (L2 48k cells,
+            −0.052% / 0.261%).
+          </li>
+          <li>
+            <strong>DFG 2D-2 unsteady vortex shedding (Re = 100).</strong> On the fixed multiblock family (L3, 106k
+            cells) and an independent <code>gmsh</code> triangle family (91k cells), Fluent converges to
+            <em>C</em><sub><em>D</em>,max</sub> ≈ 3.227–3.228 (inside the [3.22, 3.24] reference band),
+            <em>St</em> ≈ 0.301, Δ<em>p</em> ≈ 2.48–2.49, and <strong><em>C</em><sub><em>L</em>,max</sub> ≈ 0.987 — a
+            documented near miss just below the 0.99 lower edge of the [0.99, 1.01] band</strong> (halving Δ<em>t</em>
+            changes <em>C</em><sub><em>L</em>,max</sub> by 0.03%).
+          </li>
+          <li>
+            <strong>NASA TMR 2D NACA 0012 (Re = 6 × 10<sup>6</sup>, M = 0.15, k–ω SST, ±500c domain).</strong> On the
+            baseline physics mesh (<code>n = 450, turn = 2°</code>, <strong>104,050 cells</strong>): α = 0° gives
+            <em>C<sub>D</sub></em> = 0.00818 (<strong>+1.2%</strong> vs TMR), <em>C<sub>L</sub></em> = −0.0002,
+            <em>y</em><sup>+</sup><sub>max</sub> = 0.74; α = 10° gives <em>C<sub>L</sub></em> = 1.0744
+            (<strong>−0.47%</strong>), <em>C<sub>D</sub></em> = 0.01360 (+9.1%), <em>y</em><sup>+</sup><sub>max</sub> =
+            1.62 (SU2 v8.5.0 on the same 104k mesh gives <em>C<sub>L</sub></em> = 1.0710, −0.79%,
+            <em>C<sub>D</sub></em> = 0.01336, +7.2%); α = 15° gives <em>C<sub>L</sub></em> = 1.5020
+            (<strong>−0.48%</strong>), <em>C<sub>D</sub></em> = 0.02472 (+11.0%). With the stagnation-<em>C<sub>p</sub></em>
+            leading-edge law (<code>cp_eps = 0.2</code>) at the default 8° turn angle (103.9k cells), the coarse-LE stall
+            at α = 15° (<em>C<sub>L</sub></em> = 0.815) is eliminated (<em>C<sub>L</sub></em> = 1.4971–1.4997, ≈ −0.8%),
+            and streamwise <em>y</em><sup>+</sup>(<em>s</em>) modulation lowers <em>y</em><sup>+</sup><sub>max</sub> from
+            1.62 → <strong>0.92</strong> at α = 10° and 2.01 → <strong>1.01</strong> at α = 15°. With Hessian + adaptive
+            C-grid ring adaptation at α = 10° (<code>104,050 → 105,392 → 106,102 → 108,161</code> cells),
+            <em>C<sub>L</sub></em> error narrows from <strong>−0.47% → −0.33% → −0.18%</strong> and
+            <em>C<sub>D</sub></em> error drops from <strong>+9.07% → +3.05%</strong> at 106,102 cells (+2% cells).
+          </li>
+        </ul>
+      </div>
+
+      <figure>
+        <img src="../assets/images/mesher-volume3d-slice.webp" alt="3D hybrid prismatic boundary layer and tetrahedral volume mesh slice" width="1600" height="665" loading="lazy" decoding="async" />
+        <figcaption>3D hybrid volume meshing: prismatic boundary-layer stack extruded from the surface mesh with concave-fold repair, coupled to a Delaunay tetrahedral outer volume.</figcaption>
+      </figure>
+
+      <div class="case-section">
+        <h2>What did not work &amp; open limits</h2>
+        <ul>
+          <li><strong>Unsteady mesh switching and native dynamic AMR failed their gates on DFG 2D-2.</strong> Switching between sub-interval meshes in a single Fluent session (or restarting from <code>.ip</code> interpolation files) produces a transient force jolt at every switch, and Fluent's native dynamic AMR freezes once its cell cap is hit (giving <em>C</em><sub><em>L</em>,max</sub> = 0.972 at 20k cells against 1.000 on a static metric-adapted mesh at 19k cells).</li>
+          <li><strong>Curved C-grid wake cuts fold the leading-edge boundary layer.</strong> Tilting the wake cut along the trailing-edge bisector interacts with the arc-length row rescaling in the C-grid block and slides leading-edge nodes by ~300 first-cell heights; the option stays off by default.</li>
+          <li><strong>3D cross-solver sensitivity &amp; large-mesh Coupled stall.</strong> On the 655k-cell 3D sphere at Re 100, Fluent 3ddp gives <em>C<sub>D</sub></em> = 1.1013 (+1.0%), whereas SU2 v8.5.0 shifts from +8.1% (Green–Gauss gradients) to −2.2% (weighted least squares) on the same tetrahedral outer mesh. Above ~200k cells in 2D, Fluent's Coupled solver stalls near continuity 0.1 and requires a SIMPLEC fallback to reach 10<sup>−10</sup>.</li>
+        </ul>
+      </div>
+
+      <div class="share-bar">
+        <button type="button" class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button type="button" class="share-btn" data-share="twitter">Share on X</button>
+        <button type="button" class="share-btn" data-share="copy">Copy link</button>
+      </div>
+
+      <nav class="case-nav" aria-label="Project navigation">
+        <a class="btn btn-ghost" href="../work.html">← All projects</a>
+        <a class="btn btn-primary" href="turbomachinery-cfd.html">Next: Turbomachinery CFD</a>
+      </nav>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
+      <p class="footer-links">
+        <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
+        <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+  <script src="../assets/js/main.js" defer></script>
+</body>
+</html>

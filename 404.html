@@ -3,7 +3,8 @@
 <head>
   <script>
     (function() {
-      var t = localStorage.getItem('ak-theme');
+      var t = null;
+      try { t = localStorage.getItem('ak-theme'); } catch (e) {}
       if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', t);
     })();
@@ -64,9 +65,5 @@
     </div>
   </main>
   <script src="assets/js/main.js" defer></script>
-  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close lightbox">×</button>
-    <img alt="" id="lightbox-img">
-  </div>
 </body>
 </html>

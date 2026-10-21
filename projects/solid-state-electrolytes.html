@@ -3,7 +3,8 @@
 <head>
   <script>
     (function() {
-      var t = localStorage.getItem('ak-theme');
+      var t = null;
+      try { t = localStorage.getItem('ak-theme'); } catch (e) {}
       if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', t);
     })();
@@ -48,6 +49,8 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress-bar" data-scroll-progress></div>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
       <a class="nav-brand" href="../index.html">AK.</a>
@@ -65,14 +68,14 @@
 
   <main id="main">
     <header class="page-header">
-      <div class="container">
+      <div class="container reading">
         <p class="eyebrow">Case study · Thin-film materials · TUM Internship</p>
-        <h1>GDC thin films via spray pyrolysis.</h1>
+        <h1>GDC thin films via spray pyrolysis</h1>
         <p>Processing-parameter study of nanostructured gadolinium-doped ceria films for solid-oxide fuel-cell electrolytes — correlating substrate temperature, solvent chemistry, and flow rate with dense, crack-free microstructure.</p>
       </div>
     </header>
 
-    <section class="container case">
+    <section class="container case reading">
       <dl class="case-meta">
         <div><dt>Context</dt><dd>Academic — TUM Research Internship, Development of Nanostructured GDC Thin Films</dd></div>
         <div><dt>Role</dt><dd>Research Intern · deposition &amp; characterisation</dd></div>
@@ -173,9 +176,9 @@
       </div>
 
       <div class="share-bar">
-        <button class="share-btn" data-share="linkedin">Share on LinkedIn</button>
-        <button class="share-btn" data-share="twitter">Share on X</button>
-        <button class="share-btn" data-share="copy">Copy link</button>
+        <button type="button" class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button type="button" class="share-btn" data-share="twitter">Share on X</button>
+        <button type="button" class="share-btn" data-share="copy">Copy link</button>
       </div>
 
       <nav class="case-nav" aria-label="Project navigation">
@@ -187,7 +190,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 Abhishek Kuntal, Munich. Last updated September 2026.</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
@@ -196,9 +199,5 @@
     </div>
   </footer>
   <script src="../assets/js/main.js" defer></script>
-  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close lightbox">×</button>
-    <img alt="" id="lightbox-img">
-  </div>
 </body>
 </html>

@@ -3,7 +3,8 @@
 <head>
   <script>
     (function() {
-      var t = localStorage.getItem('ak-theme');
+      var t = null;
+      try { t = localStorage.getItem('ak-theme'); } catch (e) {}
       if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', t);
     })();
@@ -13,17 +14,23 @@
   <link rel="canonical" href="https://abhishek-kun96.github.io/contact.html" />
   <title>Contact — Abhishek Kuntal</title>
   <meta name="description" content="Get in touch with Abhishek Kuntal — email, LinkedIn, and GitHub." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Contact — Abhishek Kuntal" />
+  <meta property="og:description" content="Open to full-time roles in CFD, thermal analysis or materials simulation in Munich." />
+  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/og-image.jpg" />
+  <meta property="og:url" content="https://abhishek-kun96.github.io/contact.html" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
-<body>
+<body class="contact-page">
   <a class="skip-link" href="#main">Skip to content</a>
 
   <div class="scroll-progress-bar" data-scroll-progress></div>
-  <button class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
 
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
@@ -42,14 +49,14 @@
 
   <main id="main">
     <header class="page-header">
-      <div class="container">
+      <div class="container reading">
         <p class="eyebrow">Contact</p>
         <h1>Let&#39;s talk.</h1>
         <p>Open to <strong>full-time roles</strong> in CFD, thermal analysis, or materials simulation in Munich. Also available for Hiwi/working-student positions. Happy to discuss research collaborations, turbomachinery simulation workflows, or how to make your solver output actually useful.</p>
       </div>
     </header>
 
-    <section class="container">
+    <section class="container reading">
       <div class="contact-grid">
         <a class="contact-card" href="mailto:kuntal.abhishek@gmail.com">
           <div class="label">Email</div>
@@ -65,14 +72,17 @@
         </a>
         <a class="contact-card" href="tel:+491636272126">
           <div class="label">Phone</div>
-          <div class="value">+49 163 627 2126</div>
+          <div class="value">+49&nbsp;163&nbsp;627&nbsp;2126</div>
         </a>
       </div>
 
-      <div class="focus-card" style="max-width:56ch">
-        <h3 style="margin-top:0">Location &amp; availability</h3>
+      <div class="focus-card">
+        <h2 class="focus-card-title">Location &amp; availability</h2>
         <p style="margin:0">
           Based in Munich. Available for full-time roles from December 2026, and for working-student roles before then. English C1; German A1.2, A2 in progress.
+        </p>
+        <p style="margin:0.85rem 0 0;font-size:0.82rem;color:var(--text-muted)">
+          Privacy note: this site sets no cookies and runs no analytics of its own. It is hosted on GitHub Pages, which may log visitor IP addresses for security purposes (see GitHub’s privacy statement).
         </p>
       </div>
     </section>
@@ -80,7 +90,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 Abhishek Kuntal, Munich. Last updated September 2026.</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
@@ -90,9 +100,5 @@
   </footer>
 
   <script src="assets/js/main.js" defer></script>
-  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close lightbox">×</button>
-    <img alt="" id="lightbox-img">
-  </div>
 </body>
 </html>

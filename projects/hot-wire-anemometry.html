@@ -3,7 +3,8 @@
 <head>
   <script>
     (function() {
-      var t = localStorage.getItem('ak-theme');
+      var t = null;
+      try { t = localStorage.getItem('ak-theme'); } catch (e) {}
       if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', t);
     })();
@@ -28,7 +29,7 @@
   {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": "Pipe-Flow Boundary Layers &amp; Mesh Pressure-Drop — Abhishek Kuntal",
+    "headline": "Pipe-Flow Boundary Layers & Mesh Pressure-Drop — Abhishek Kuntal",
     "description": "Hot-wire anemometry study of entrance-length boundary-layer development in pipe flow and pressure drop across wire meshes of varying density — TUM practical course.",
     "author": {
       "@type": "Person",
@@ -48,6 +49,8 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress-bar" data-scroll-progress></div>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
       <a class="nav-brand" href="../index.html">AK.</a>
@@ -65,14 +68,14 @@
 
   <main id="main">
     <header class="page-header">
-      <div class="container">
+      <div class="container reading">
         <p class="eyebrow">Case study · Experimental fluid dynamics · TUM</p>
-        <h1>Pipe-flow boundary layers &amp; mesh pressure-drop.</h1>
+        <h1>Pipe-flow boundary layers &amp; mesh pressure-drop</h1>
         <p>Hot-wire CTA profiling of entrance-length boundary-layer development in a pipe, and pressure-drop characterisation across wire meshes of varying density — measured, modelled, and cross-validated.</p>
       </div>
     </header>
 
-    <section class="container case">
+    <section class="container case reading">
       <dl class="case-meta">
         <div><dt>Context</dt><dd>Academic — TUM Practical Course, Experimental Fluid Dynamics</dd></div>
         <div><dt>Role</dt><dd>Experimentalist</dd></div>
@@ -196,9 +199,9 @@
       </div>
 
       <div class="share-bar">
-        <button class="share-btn" data-share="linkedin">Share on LinkedIn</button>
-        <button class="share-btn" data-share="twitter">Share on X</button>
-        <button class="share-btn" data-share="copy">Copy link</button>
+        <button type="button" class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button type="button" class="share-btn" data-share="twitter">Share on X</button>
+        <button type="button" class="share-btn" data-share="copy">Copy link</button>
       </div>
 
       <nav class="case-nav" aria-label="Project navigation">
@@ -210,7 +213,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 Abhishek Kuntal, Munich. Last updated September 2026.</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
@@ -219,9 +222,5 @@
     </div>
   </footer>
   <script src="../assets/js/main.js" defer></script>
-  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close lightbox">×</button>
-    <img alt="" id="lightbox-img">
-  </div>
 </body>
 </html>

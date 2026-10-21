@@ -12,7 +12,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="canonical" href="https://abhishek-kun96.github.io/" />
-  <title>Abhishek Kuntal — CFD & Simulation Engineer</title>
+  <title>Abhishek Kuntal — CFD &amp; Simulation Engineer</title>
   <meta name="description" content="Abhishek Kuntal — CFD and thermal-simulation engineer in Munich. Four years of gas-turbine CFD at Honeywell, M.Sc. Materials Science at TUM, own GPU SPH and lattice-Boltzmann solvers. Available from December 2026." />
   <meta name="author" content="Abhishek Kuntal" />
 
@@ -50,7 +50,7 @@
   <a class="skip-link" href="#main">Skip to content</a>
 
   <div class="scroll-progress-bar" data-scroll-progress></div>
-  <button class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
 
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
@@ -76,14 +76,14 @@
       </div>
       <div class="container">
         <h1 class="hero-title">Abhishek<br />Kuntal</h1>
-        <p class="hero-lede">CFD and thermal-simulation engineer. Four years of gas-turbine CFD at Honeywell; now finishing an M.Sc. in Materials Science at TUM, with a thesis on tidal-energy hydrofoils.</p>
+        <p class="hero-lede">CFD and thermal-simulation engineer. Four years of gas-turbine CFD at Honeywell; now finishing an M.Sc. in Materials Science at TUM, with a thesis on tidal-energy hydrofoil kites.</p>
         <p class="hero-availability">Open to full-time roles in Munich from December 2026.</p>
         <div class="hero-row">
           <div class="hero-ctas">
             <a class="btn btn-primary" href="work.html">See projects</a>
             <a class="btn btn-ghost" href="contact.html">Get in touch</a>
           </div>
-          <p class="hero-caption">In the background: flow separating from a NACA 0012 hydrofoil at 14°, drawn as a finite-time Lyapunov exponent field by my own GPU lattice-Boltzmann code. <a href="projects/auraflow-lbm.html">How it works</a></p>
+          <p class="hero-caption">In the background: flow separating from a NACA 0012 hydrofoil at 14°, drawn as a finite-time Lyapunov exponent field by my own GPU lattice-Boltzmann code. <a href="projects/auraflow-lbm.html">How it works</a> <button type="button" class="hero-pause" data-hero-pause>Pause animation</button></p>
         </div>
       </div>
     </section>
@@ -119,23 +119,16 @@
       <div class="container">
         <div class="section-head">
           <h2 class="section-title">Selected work</h2>
-          <a class="section-link" href="work.html">All 13 projects</a>
+          <a class="section-link" href="work.html">All 15 projects</a>
         </div>
         <div class="project-grid project-grid--featured">
         <!-- cards:start -->
         <a class="project-card" href="projects/auraflow-sph.html" data-category="cfd automation">
           <img class="project-thumb" src="assets/images/thumbs/auraflow-sph.jpg" alt="" width="800" height="500" loading="lazy" decoding="async" />
-          <p class="project-tag">Own GPU solver · 2026</p>
-          <h3 class="project-title">AuraFlow — GPU SPH solver for violent free-surface flow</h3>
-          <p class="project-summary">Weakly compressible SPH on NVIDIA Warp: dam breaks validated against Lobovsky 2014 and SPHERIC Test 2, 24.1 M particle-steps/s on a laptop GPU, differentiable, with a surrogate and RL control built on top.</p>
+          <p class="project-tag">Own GPU solver · v1.2.3 · 2026</p>
+          <h3 class="project-title">AuraFlow — GPU SPH solver for violent free-surface &amp; bluff-body flows</h3>
+          <p class="project-summary">Weakly compressible SPH on NVIDIA Warp (δ-SPH in 2D, Riemann SPH in 3D): SPHERIC Test 2 (5/5 gates), Re 100 cylinder (2/2), NACA 0012 (4/4 at α = 0°, 2°) and Lobovsky 2014 dam break; 24.1 M particle-steps/s on a laptop GPU, with a Transolver-style field surrogate and SAC RL control.</p>
           <div class="project-tools"><span class="tool">NVIDIA Warp</span><span class="tool">Python</span><span class="tool">PyTorch</span><span class="tool">Blender</span></div>
-        </a>
-        <a class="project-card" href="projects/auraflow-lbm.html" data-category="cfd automation">
-          <img class="project-thumb" src="assets/images/thumbs/auraflow-lbm.jpg" alt="" width="800" height="500" loading="lazy" decoding="async" />
-          <p class="project-tag">Own GPU solver · 2026</p>
-          <h3 class="project-title">Real-time hydrofoil wakes with lattice Boltzmann + FTLE</h3>
-          <p class="project-summary">C++/CUDA/Qt desktop app: D2Q9 LES around a NACA 0012 with live Lagrangian coherent structures. Re 1000 polar matches the literature: Cd(0°) 0.125 vs 0.12, shedding from 8°, St 0.88.</p>
-          <div class="project-tools"><span class="tool">C++20</span><span class="tool">CUDA</span><span class="tool">Qt 6</span><span class="tool">LBM</span></div>
         </a>
         <a class="project-card" href="projects/turbomachinery-cfd.html" data-category="cfd automation">
           <img class="project-thumb" src="assets/images/thumbs/turbomachinery.jpg" alt="" width="800" height="500" loading="lazy" decoding="async" />
@@ -144,19 +137,33 @@
           <p class="project-summary">RANS stage simulations with mesh morphing and uncertainty quantification; Python pipelines that cut analysis time by 26% and save $33K a year.</p>
           <div class="project-tools"><span class="tool">ANSYS CFX</span><span class="tool">ICEM</span><span class="tool">Python</span><span class="tool">VBA</span></div>
         </a>
-        <a class="project-card" href="projects/bioreactor-cfd.html" data-category="cfd">
-          <img class="project-thumb" src="assets/images/thumbs/bioreactor.jpg" alt="" width="800" height="500" loading="lazy" decoding="async" />
-          <p class="project-tag">Self-directed · 2025</p>
-          <h3 class="project-title">Stirred-tank bioreactor CFD</h3>
-          <p class="project-summary">Euler–Euler gas–liquid CFD of a stirred tank (CFX) plus a Fluent population-balance case; a 4-input DOE and MOGA optimisation of k<sub>L</sub>, holdup and shear.</p>
-          <div class="project-tools"><span class="tool">ANSYS CFX</span><span class="tool">ANSYS Fluent</span><span class="tool">DesignXplorer</span></div>
+        <a class="project-card" href="projects/physics-informed-mesher.html" data-category="cfd automation">
+          <img class="project-thumb" src="assets/images/thumbs/mesher.jpg" alt="" width="800" height="500" loading="lazy" decoding="async" />
+          <p class="project-tag">Own CFD toolchain · 2026</p>
+          <h3 class="project-title">Physics-informed 2D/3D CFD mesher &amp; solver-in-the-loop adaptation</h3>
+          <p class="project-summary">Automated y⁺ boundary-layer sizing, C-grid wake topology, and Fluent-in-the-loop metric adaptation via gmsh and MMG, cross-checked in SU2: DFG 2D-1 cylinder C<sub>D</sub> within −0.009% of reference; 155 automated tests.</p>
+          <div class="project-tools"><span class="tool">gmsh</span><span class="tool">MMG2D/3D</span><span class="tool">ANSYS Fluent</span><span class="tool">SU2</span></div>
+        </a>
+        <a class="project-card" href="projects/auraflow-lbm.html" data-category="cfd automation">
+          <img class="project-thumb" src="assets/images/thumbs/auraflow-lbm.jpg" alt="" width="800" height="500" loading="lazy" decoding="async" />
+          <p class="project-tag">Own GPU solver · 2026</p>
+          <h3 class="project-title">Real-time hydrofoil wakes with lattice Boltzmann + FTLE</h3>
+          <p class="project-summary">C++/CUDA/Qt desktop app: D2Q9 LES around a NACA 0012 with live Lagrangian coherent structures. Re 1000 polar against Kurtulus (2015): Cd(0°) 0.125 vs 0.12; shedding from 8° at chord-based St 0.878 vs 0.876.</p>
+          <div class="project-tools"><span class="tool">C++20</span><span class="tool">CUDA</span><span class="tool">Qt 6</span><span class="tool">LBM</span></div>
+        </a>
+        <a class="project-card" href="projects/calphad-ni-workflow.html" data-category="materials automation">
+          <img class="project-thumb" src="assets/images/thumbs/calphad.jpg" alt="" width="800" height="500" loading="lazy" decoding="async" />
+          <p class="project-tag">Self-directed · 2026</p>
+          <h3 class="project-title">CALPHAD Ni-superalloy screening &amp; four-stage validation</h3>
+          <p class="project-summary">Six-element (Al–Cr–Co–Mo–W–Ti) pycalphad pipeline on mc_ni v2.036 benchmarked against 50 primary measurements from six sources; GP surrogate scored against a linear baseline (10 × 5-fold CV) before constrained Bayesian optimisation.</p>
+          <div class="project-tools"><span class="tool">pycalphad</span><span class="tool">scikit-learn</span><span class="tool">SciPy</span></div>
         </a>
         <a class="project-card" href="projects/thermomechanical-modeling.html" data-category="materials">
           <img class="project-thumb" src="assets/images/thumbs/thermomechanical.jpg" alt="" width="800" height="500" loading="lazy" decoding="async" />
           <p class="project-tag">TUM lab · grade 1.0</p>
-          <h3 class="project-title">Weld HAZ: Gleeble experiments + Python model</h3>
-          <p class="project-summary">Single- and multi-cycle HAZ simulation of S355 steel on a Gleeble 3800: hardness falls from 232 to 208 HV1 with multi-cycling; a Python transformation model reproduces the trends.</p>
-          <div class="project-tools"><span class="tool">Gleeble 3800</span><span class="tool">Microscopy</span><span class="tool">Python</span></div>
+          <h3 class="project-title">Weld HAZ: Gleeble 3500 experiments &amp; quantitative model audit</h3>
+          <p class="project-summary">Single-cycle, 8-peak multi-cycle and heat-treated HAZ specimens of S355J2C+C on a Gleeble 3500 (t<sub>8/5</sub> = 6.90 s; 232.1 ± 8.4, 208.4 ± 15.4 and 164.3 ± 2.4 HV1); a Kirkaldy–Li model audit and a model-free Gladman–Pickering hardness bound.</p>
+          <div class="project-tools"><span class="tool">Gleeble 3500</span><span class="tool">Microscopy</span><span class="tool">Python</span></div>
         </a>
         <!-- cards:end -->
         </div>
@@ -173,7 +180,7 @@
               <li>RANS turbomachinery: k-ω SST, sliding mesh, mixing plane</li>
               <li>Conjugate heat transfer and thermal stress</li>
               <li>Multiphase, reacting and particle-laden flow</li>
-              <li>Structured meshing in ICEM CFD and TurboGrid</li>
+              <li>Structured &amp; metric-adaptive meshing (ICEM CFD, TurboGrid, gmsh, MMG2D/3D)</li>
               <li>Own GPU solvers: SPH (NVIDIA Warp), LBM (CUDA)</li>
             </ul>
           </div>
@@ -190,7 +197,7 @@
           <div class="focus-card">
             <h3>Materials and experiment</h3>
             <ul>
-              <li>Gleeble 3800 thermal cycling, Vickers hardness</li>
+              <li>Gleeble 3500 thermal cycling, Vickers hardness (HV1)</li>
               <li>Optical and scanning electron microscopy</li>
               <li>Hot-wire anemometry with LabVIEW acquisition</li>
               <li>CALPHAD with pycalphad</li>
@@ -204,7 +211,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 Abhishek Kuntal, Munich. Last updated September 2026.</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
@@ -214,9 +221,5 @@
   </footer>
 
   <script src="assets/js/main.js" defer></script>
-  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close lightbox">×</button>
-    <img alt="" id="lightbox-img">
-  </div>
 </body>
 </html>

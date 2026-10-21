@@ -3,7 +3,8 @@
 <head>
   <script>
     (function() {
-      var t = localStorage.getItem('ak-theme');
+      var t = null;
+      try { t = localStorage.getItem('ak-theme'); } catch (e) {}
       if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', t);
     })();
@@ -15,7 +16,7 @@
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Turbomachinery CFD &amp; Aerodynamic Development — Abhishek Kuntal" />
   <meta property="og:url" content="https://abhishek-kun96.github.io/projects/turbomachinery-cfd.html" />
-  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/og-image.jpg" />
+  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/thumbs/turbomachinery.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="description" content="Honeywell turbomachinery CFD case study — RANS, CHT, mesh morphing, UQ, and Python automation that cut analysis time 26% and saved $33K/yr." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -28,7 +29,7 @@
   {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": "Turbomachinery CFD &amp; Aerodynamic Development — Abhishek Kuntal",
+    "headline": "Turbomachinery CFD & Aerodynamic Development — Abhishek Kuntal",
     "description": "Honeywell turbomachinery CFD case study — RANS, CHT, mesh morphing, UQ, and Python automation that cut analysis time 26% and saved $33K/yr.",
     "author": {
       "@type": "Person",
@@ -48,6 +49,8 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress-bar" data-scroll-progress></div>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
 
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
@@ -66,14 +69,14 @@
 
   <main id="main">
     <header class="page-header">
-      <div class="container">
+      <div class="container reading">
         <p class="eyebrow">Case study · CFD &amp; automation</p>
-        <h1>Turbomachinery CFD &amp; aerodynamic development.</h1>
+        <h1>Turbomachinery CFD &amp; aerodynamic development</h1>
         <p>Four years of RANS, CHT, and transient stage simulations for Honeywell gas-turbine components — plus the Python and VBA pipelines that made the results decision-ready.</p>
       </div>
     </header>
 
-    <section class="container case">
+    <section class="container case reading">
       <dl class="case-meta">
         <div><dt>Context</dt><dd>Industry — Honeywell Technology Solutions</dd></div>
         <div><dt>Role</dt><dd>Sr. Mechanical Design Engineer</dd></div>
@@ -168,16 +171,14 @@
       <div class="case-section">
         <h2>Artifacts</h2>
         <ul>
-          <li>Technical brief PDFs (anonymised — available on request).</li>
-          <li>Python post-processing snippet — drop at <code>assets/code/cfx_parser.py</code> and link here.</li>
-          <li>Performance dashboard screenshots (add to <code>assets/images/</code>).</li>
+          <li>Technical brief PDFs and automated CFX post-processing workflows (Honeywell proprietary — anonymised summary available on request).</li>
         </ul>
       </div>
 
       <div class="share-bar">
-        <button class="share-btn" data-share="linkedin">Share on LinkedIn</button>
-        <button class="share-btn" data-share="twitter">Share on X</button>
-        <button class="share-btn" data-share="copy">Copy link</button>
+        <button type="button" class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button type="button" class="share-btn" data-share="twitter">Share on X</button>
+        <button type="button" class="share-btn" data-share="copy">Copy link</button>
       </div>
 
       <nav class="case-nav" aria-label="Project navigation">
@@ -189,7 +190,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© <span data-year></span> Abhishek Kuntal · Munich</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
@@ -199,9 +200,5 @@
   </footer>
 
   <script src="../assets/js/main.js" defer></script>
-  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close lightbox">×</button>
-    <img alt="" id="lightbox-img">
-  </div>
 </body>
 </html>

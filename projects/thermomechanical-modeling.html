@@ -3,7 +3,8 @@
 <head>
   <script>
     (function() {
-      var t = localStorage.getItem('ak-theme');
+      var t = null;
+      try { t = localStorage.getItem('ak-theme'); } catch (e) {}
       if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', t);
     })();
@@ -13,11 +14,11 @@
   <title>Thermomechanical Behaviour &amp; HAZ Modelling — Abhishek Kuntal</title>
   <link rel="canonical" href="https://abhishek-kun96.github.io/projects/thermomechanical-modeling.html" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Thermomechanical Behaviour &amp; HAZ Modelling — Abhishek Kuntal" />
+  <meta property="og:title" content="Thermal cycles, microstructure &amp; hardness bounds in simulated S355J2C+C weld HAZ" />
   <meta property="og:url" content="https://abhishek-kun96.github.io/projects/thermomechanical-modeling.html" />
-  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/og-image.jpg" />
+  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/gleeble-v2-consistency-grid.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="description" content="Gleeble thermal-cycling study of S355J2C+C weld/AM HAZ with Vickers hardness mapping and an extended open-source Python model for TTT-curve and hardness prediction." />
+  <meta name="description" content="Gleeble 3500 physical simulation of S355J2C+C heat-affected zones, oracle-validated quantitative metallography, a critical audit of Kirkaldy–Li austenite-decomposition modelling, and an independent Gladman–Pickering hardness bound." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet" />
@@ -28,8 +29,8 @@
   {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": "Thermomechanical Behaviour &amp; HAZ Modelling — Abhishek Kuntal",
-    "description": "Gleeble thermal-cycling study of S355J2C+C weld/AM HAZ with Vickers hardness mapping and an extended open-source Python model for TTT-curve and hardness prediction.",
+    "headline": "Thermal cycles, microstructure & hardness bounds in simulated S355J2C+C weld HAZ — Abhishek Kuntal",
+    "description": "Gleeble 3500 physical simulation of S355J2C+C heat-affected zones, oracle-validated quantitative metallography, a critical audit of Kirkaldy–Li austenite-decomposition modelling, and an independent Gladman–Pickering hardness bound.",
     "author": {
       "@type": "Person",
       "name": "Abhishek Kuntal",
@@ -48,6 +49,8 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress-bar" data-scroll-progress></div>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
       <a class="nav-brand" href="../index.html">AK.</a>
@@ -65,131 +68,194 @@
 
   <main id="main">
     <header class="page-header">
-      <div class="container">
-        <p class="eyebrow">Case study · Thermomechanical materials behaviour · TUM</p>
-        <h1>Weld / AM HAZ behaviour — experiment + extended Python model.</h1>
-        <p>Gleeble thermal-cycling study of S355J2C+C heat-affected zones with Vickers hardness mapping, and an extended open-source Python model that predicts hardness and TTT-curve behaviour directly from the imposed thermal cycle.</p>
+      <div class="container reading">
+        <p class="eyebrow">Case study · Gleeble 3500 + Quantitative metallography · TUM</p>
+        <h1>Thermal cycles, microstructure &amp; the limits of Kirkaldy–Li HAZ models</h1>
+        <p>Gleeble 3500 simulation of S355J2C+C heat-affected zones, quantitative metallography validated against synthetic Voronoi oracles, an audit of semi-empirical austenite-decomposition modelling, and a model-free microstructural hardness bound.</p>
       </div>
     </header>
 
-    <section class="container case">
+    <section class="container case reading">
       <dl class="case-meta">
-        <div><dt>Context</dt><dd>Academic — TUM Practical Course, Thermomechanical Material Behaviour in Additive Manufacturing &amp; Welding</dd></div>
-        <div><dt>Role</dt><dd>Experimentalist + modelling extension (beyond course scope)</dd></div>
-        <div><dt>Stack</dt><dd>Gleeble thermal simulator, Vickers HV1, metallography, Python</dd></div>
+        <div><dt>Context</dt><dd>TUM lab experiments + independent v2.1 modelling &amp; metallography audit (October 2026)</dd></div>
+        <div><dt>Role</dt><dd>Analysis, software, quantitative metallography &amp; model validation. The Gleeble cycles were run by the lab-course group (“Thermomechanical material behaviour”, TUM), and some micrographs were contributed by fellow course members.</dd></div>
+        <div><dt>Stack</dt><dd>Gleeble 3500, Vickers HV1, Leica optical microscopy, Python, scikit-image, SciPy, pytest (29 tests)</dd></div>
       </dl>
 
-      <figure class="case-poster">
-        <img src="../assets/images/thermo-haz-workflow.jpg" alt="HAZ modeling workflow — TTT/CCT, phase fractions, hardness prediction, and micrographs" width="1735" height="969" loading="lazy" decoding="async" />
-        <figcaption>HAZ modeling workflow — TTT/CCT diagrams (top left), predicted phase fractions vs cooling rate (top middle-left), predicted Vickers hardness (top middle-right), optical micrographs at 500x (top right) and 1000x (bottom).</figcaption>
-      </figure>
+      <aside class="tldr" aria-label="Summary">
+        <h2>In short</h2>
+        <ul>
+          <li><strong>What:</strong> three Gleeble 3500 weld-HAZ cycles on S355J2C+C steel (232.1, 208.4 and 164.3 HV1), re-analysed from the raw instrument files, with automated, oracle-tested metallography.</li>
+          <li><strong>What went wrong before:</strong> an earlier “model within 10 %” match came from two input errors cancelling out. With the measured cooling curve, the same model predicts 286–323 HV.</li>
+          <li><strong>Outcome:</strong> a model-free bound shows no ferrite–pearlite structure in this steel reaches 232 HV at the measured grain size (≈ 200 HV for grains ≥ 3 µm), so the light phase is not polygonal ferrite; and a ±39 HV Monte Carlo spread shows one hardness value cannot validate such a model.</li>
+        </ul>
+      </aside>
 
       <div class="case-section">
-        <h2>Problem</h2>
+        <h2>The validation question</h2>
         <p>
-          The heat-affected zone (HAZ) next to a weld or along an additively-manufactured deposit line is not a single
-          microstructure — it's a gradient driven by peak temperature and cooling rate that change with distance from
-          the heat source. In S355J2C+C structural steel, that gradient runs from untransformed base metal, through
-          partially-transformed intercritical zones, to fully austenitised and then quenched grain-coarsened zones
-          where the final microstructure can be anything from ferrite/pearlite to bainite to fully martensitic
-          depending on the cooling trajectory. The practical course set out to measure that gradient. The modelling
-          extension I built on top of it set out to <em>predict</em> it from the thermal cycle alone.
+          Semi-empirical Kirkaldy–Li austenite-decomposition models coupled with Maynier hardness relations are widely
+          used to predict weld heat-affected-zone (HAZ) hardness from a thermal history <em>T(t)</em> and steel
+          composition. Yet in practice they are almost always checked against a single scalar — bulk Vickers hardness —
+          while key inputs (exact heat carbon content, prior-austenite grain size) are only known within standard
+          brackets.
+        </p>
+        <p>
+          Using three Gleeble 3500 cycles on cold-drawn <strong>S355J2C+C</strong> structural steel (DIN EN 10277), this
+          study asks what validation a Kirkaldy-type model actually requires before its output can be trusted, and what
+          an independent, model-free microstructural bound says about the phase identity of a rapidly cooled fine-grained
+          HAZ.
         </p>
       </div>
 
       <div class="case-section">
-        <h2>Approach</h2>
-        <ul>
-          <li><strong>Gleeble thermal cycling</strong> — a range of weld/AM-representative cycles programmed on Gleeble specimens, spanning peak temperatures from sub-critical through full austenitisation and cooling rates from slow-air to quench.</li>
-          <li><strong>Metallography + SEM</strong> — cross-section preparation, Nital etch, and optical/SEM imaging to classify microstructure zone-by-zone: ferrite/pearlite, bainite, martensite, plus grain-coarsened austenite-origin structures.</li>
-          <li><strong>Vickers microhardness mapping</strong> — HV1 traverses across each cycled specimen; the hardness trace is the scalar that integrates the microstructural change.</li>
-          <li><strong>Open-source model extension</strong> — started from a published open-source Python implementation of Maynier-family hardness predictions and Kirkaldy-style TTT-curve calculations; extended it to accept arbitrary thermal cycles (not just isothermal holds) and fitted it against this experiment's measurements so it could predict hardness and phase fractions for unseen cycles.</li>
-          <li><strong>Stress–strain check</strong> — representative Gleeble tensile pulls at chosen points in the cycle to anchor the model's constitutive side and to show that the hardness prediction implied a sensible flow-stress story.</li>
-        </ul>
-      </div>
-
-      <div class="case-figures">
-        <figure>
-          <img src="../assets/images/thermo-ttt-diagrams.jpg" alt="TTT and CCT diagrams for S355 steel" width="1200" height="600" loading="lazy" decoding="async" />
-          <figcaption>TTT/CCT diagrams — predicted phase transformation kinetics for S355 steel.</figcaption>
-        </figure>
-        <figure>
-          <img src="../assets/images/thermo-phase-fraction.jpg" alt="Phase fractions vs cooling rate" width="1200" height="600" loading="lazy" decoding="async" />
-          <figcaption>Phase fractions — ferrite, pearlite, bainite, martensite as functions of cooling rate.</figcaption>
-        </figure>
-        <figure>
-          <img src="../assets/images/thermo-hardness-cooling.png" alt="Hardness vs cooling rate" width="1200" height="596" loading="lazy" decoding="async" />
-          <figcaption>Hardness prediction — Vickers hardness as a function of cooling rate.</figcaption>
-        </figure>
-        <figure>
-          <img src="../assets/images/thermo-micrograph-500x.jpg" alt="Optical micrograph of HAZ microstructure at 500x magnification" width="2560" height="1920" loading="lazy" decoding="async" />
-          <figcaption>HAZ microstructure — optical micrograph at 500x showing grain structure across the heat-affected zone.</figcaption>
-        </figure>
-        <figure>
-          <img src="../assets/images/thermo-micrograph-1000x.jpg" alt="Optical micrograph of HAZ microstructure at 1000x magnification" width="2560" height="1920" loading="lazy" decoding="async" />
-          <figcaption>HAZ microstructure — optical micrograph at 1000x showing detailed phase morphology.</figcaption>
-        </figure>
-      </div>
-
-      <div class="case-section">
-        <h2>Tools &amp; setup</h2>
-        <ul>
-          <li><strong>Gleeble thermal simulator</strong> — resistance-heated specimens with closed-loop peak-temperature and cooling-rate control.</li>
-          <li><strong>Vickers HV1 microhardness</strong> — cross-section traverses, indent spacing per ISO 6507.</li>
-          <li><strong>Optical microscopy + SEM</strong> — Nital-etched cross sections, grain-size and constituent identification.</li>
-          <li><strong>Python</strong> — forked open-source Maynier/Kirkaldy-style implementation, extended to accept non-isothermal cycles, and re-fit using the course measurements. Predicts hardness, phase fractions, and TTT-curve shifts for arbitrary compositions.</li>
-        </ul>
-      </div>
-
-      <div class="case-section">
-        <h2>Outcomes</h2>
-        <ul>
-          <li><strong>Experimental HAZ map</strong> — microstructure and hardness gradients as a function of peak temperature and cooling rate, anchored against S355J2C+C reference data.</li>
-          <li><strong>Extended predictive model</strong> — a Python tool that takes a thermal cycle and returns predicted phase fractions, hardness, and a recomputed TTT diagram. The extension was beyond the course scope; the starting point was an open-source repository that only did isothermal holds.</li>
-          <li><strong>Reasonable agreement</strong> — the extended model reproduced the measured hardness trend across cooling rates and flagged the martensite-transition band at approximately the right cooling-rate threshold.</li>
-        </ul>
-
-        <div class="callout">
-          <p>The point of the model was not to replace a CCT chart — it was to turn the HAZ gradient into something
-          <em>scriptable</em>. With a thermal-cycle input from an FEA weld simulation, the extension can predict a
-          through-thickness hardness map without doing another experiment, which is the correct place to use a
-          model of this fidelity.</p>
+        <h2>Measured thermal histories &amp; HV1 hardness</h2>
+        <p>
+          Thermocouple logs (<code>.d0x</code>, 100 Hz) and raw Vickers HV1 indents (22–23 indents per specimen across
+          four cross-section positions) were re-analysed directly from the instrument files:
+        </p>
+        <div class="results-grid">
+          <div class="result"><div class="result-value">232.1 ± 8.4</div><div class="result-label">Single Cycle A (HV1, n = 22): peak 1025.5 °C (FGHAZ), t<sub>8/5</sub> = 6.90 s, φ<sub>700</sub> = 51.5 °C/s</div></div>
+          <div class="result"><div class="result-value">208.4 ± 15.4</div><div class="result-label">Multi Cycle (HV1, n = 23): 8 peaks (1358 → 596 °C, CGHAZ → SCHAZ), t<sub>8/5</sub> = 6.3 → 13.6 s</div></div>
+          <div class="result"><div class="result-value">164.3 ± 2.4</div><div class="result-label">Single A + HT (HV1, n = 23): 900 °C / 600 s hold, slow cool t<sub>8/5</sub> ≈ 150 s, φ<sub>700</sub> = 2.0 °C/s</div></div>
+          <div class="result"><div class="result-value">p = 0.0017</div><div class="result-label">Multi Cycle spatial position effect (Holm-adjusted ANOVA, Δ = 25.3 HV across HAZ sub-zones)</div></div>
         </div>
-      </div>
-
-      <div class="case-section">
-        <h2>Validation</h2>
         <p>
-          Predicted HV values were cross-checked against the Vickers traverse data and against published
-          Maynier-formulation hardness predictions for S355-family steels. The predicted martensite-start cooling
-          rate was cross-checked against classical CCT diagrams in the steels literature. Where the model
-          under-predicted hardness (slow-cool bainitic zone), the discrepancy was traced to the Kirkaldy
-          nose-shape assumption for this specific composition rather than to measurement error — reported honestly
-          as a known limitation.
+          Pairwise Welch <em>t</em>-tests confirm large differences between the three specimens (|<em>d</em>| ≥ 1.9,
+          <em>p</em><sub>Holm</sub> &lt; 10<sup>−6</sup>). Within a specimen, indent position is statistically
+          significant only for the Multi Cycle (<em>p</em><sub>Holm</sub> = 0.0017; Single A and A+HT both give
+          <em>p</em><sub>Holm</sub> = 1.0), consistent with a spatial superposition of differently re-austenitised and
+          tempered zones.
         </p>
       </div>
 
       <div class="case-section">
-        <h2>Lessons learned</h2>
+        <h2>Exposing a compensating error in the prior model application</h2>
+        <p>
+          An earlier application of the open-source Li (1998) / Maynier (1978) code reported <strong>208 HV</strong> for
+          Single Cycle A — seemingly within 10% of the measured 232.1 HV1. Re-examining the inputs revealed two errors
+          acting in opposite directions: the cooling branch had been entered as a constant linear ramp of
+          <strong>7.37 °C/s</strong> (the average from peak to 80 °C, giving t<sub>8/5</sub> = 40.7 s instead of the
+          measured 6.90 s) alongside the DIN EN 10277 maximum composition (0.20 wt% C).
+        </p>
+        <p>
+          Replacing only the linear ramp with the measured Gleeble cooling curve moves the uncorrected prediction from
+          208 HV to <strong>286–323 HV</strong> (78–92% bainite across ASTM G 8–12). The earlier agreement was
+          compensating error, not validation.
+        </p>
+        <figure>
+          <img src="../assets/images/gleeble-v2-cooling-audit.png" alt="Measured Gleeble Single Cycle A cooling curve compared with the linear 7.37 C/s ramp used in the original analysis" width="1334" height="737" loading="lazy" decoding="async" />
+          <figcaption>Single Cycle A cooling branch: measured TC1 (solid, t<sub>8/5</sub> = 6.90 s) versus the linear 7.37 °C/s input of the prior analysis (dashed, t<sub>8/5</sub> = 40.7 s). In the 800–500 °C transformation window (shaded), actual cooling is roughly six times faster.</figcaption>
+        </figure>
+      </div>
+
+      <div class="case-section">
+        <h2>Code audit, numerical sensitivity &amp; Monte Carlo propagation</h2>
         <ul>
-          <li>An open-source model is a starting point, not an answer. The course deliverable could have stopped at the measurements; wiring the measurements into a model turned a descriptive study into a predictive one.</li>
-          <li>Extending a published tool is a better learning move than writing a new one. Reading and modifying working code for non-isothermal cycles taught more about the Kirkaldy/Scheil framework than implementing it from scratch would have.</li>
-          <li>Hardness is a surprisingly faithful integrator of thermal history — a single scalar that carries enough information to validate a multi-phase predictor in most structural-steel regimes.</li>
+          <li>
+            <strong>Two solver corrections.</strong> Auditing the open-source implementation against Li et al. (1998)
+            identified and fixed two deviations: (1) ferrite reaction progress <em>X<sub>F</sub></em> is now capped by
+            the lever-rule equilibrium fraction <em>F</em><sub>eq</sub>(<em>T</em>) so slow cooling forms pearlite
+            (84% ferrite / 16% pearlite on A+HT at 0.14 wt% C, whereas the uncorrected code consumed 100% of austenite
+            as ferrite and never formed pearlite); and (2) the 700 °C cooling rate φ<sub>700</sub> is extracted by a
+            least-squares slope over 650–750 °C rather than ill-posed inverse interpolation on noisy thermocouple data.
+          </li>
+          <li>
+            <strong>Discretisation uncertainty.</strong> Sweeping the cooling-curve sampling stride from 10 to 100
+            samples changes the corrected model's predicted hardness by <strong>9.2 HV peak-to-peak</strong>
+            (σ = 3.1 HV) — comparable to the experimental indent scatter (8.4 HV).
+          </li>
+          <li>
+            <strong>Monte Carlo over admissible input brackets (N = 250).</strong> Because no mill certificate or
+            spark-OES analysis was available, propagating the admissible brackets (C 0.08–0.15, Mn 1.00–1.60,
+            Si 0.10–0.55, Cu 0–0.55 wt%, prior-austenite ASTM G 9–12) yields
+            <strong>182 ± 39 HV</strong> for Single Cycle A (5th–95th percentile <strong>134–246 HV</strong>,
+            <em>z</em> = −1.28 against 232.1 HV) and <strong>145 ± 20 HV</strong> for A+HT. Standardised regression
+            coefficients rank Mn (β = 0.72) and C (β = 0.45) ahead of grain size (β = −0.31). When the model's output
+            spread over unconstrained inputs is ±39 HV, matching a single hardness number within 10% does not test the
+            kinetics.
+          </li>
         </ul>
       </div>
 
       <div class="case-section">
-        <h2>Artifacts</h2>
+        <h2>Two-observable consistency test</h2>
+        <p>
+          Adding a second observable from quantitative metallography changes the test completely. Across all 32 points of
+          the admissible (C, G, Mn/Si/Cu) grid on Single Cycle A, if the optically dark constituent
+          (<code>0.103 ± 0.086</code>) is identified with the model's non-ferrite fraction, <strong>0 of 32
+          combinations fall within 1σ of both hardness and dark fraction</strong> (minimum Mahalanobis distance
+          <strong>5.3</strong>, used as a screening statistic with the dark-fraction threshold band; the model is
+          <strong>80 HV too soft</strong> at the measured dark fraction).
+        </p>
+        <figure>
+          <img src="../assets/images/gleeble-v2-consistency-grid.png" alt="Contour maps of predicted Vickers hardness and non-ferrite fraction across carbon content and ASTM grain size" width="1592" height="1204" loading="lazy" decoding="async" />
+          <figcaption>Corrected model over carbon content and prior-austenite ASTM G for lean and EN-max alloy sets. White contours: measured HV1 (solid = mean, dashed = ±1 s.d.); black contours: optically measured dark-fraction band (0.07–0.11). The two contour bands do not intersect in any panel.</figcaption>
+        </figure>
+      </div>
+
+      <div class="case-section">
+        <h2>Quantitative metallography &amp; model-free Gladman–Pickering bound</h2>
+        <p>
+          Optical micrographs (2% nital, calibrated from Leica <code>.xlif</code> pixel metadata at 500× and 1000×) were
+          measured with an automated pipeline: Otsu thresholding with a 0.4 µm morphological opening for the dark
+          constituent (±0.04 grey-level sensitivity band) and black top-hat filtering + skeletonisation for ASTM E112
+          lineal intercepts. Before touching real micrographs, both routines were verified against synthetic
+          Poisson–Voronoi tessellations clipped with the Liang–Barsky algorithm (analytic stereological intercept
+          ℓ̄ = πA / 2L<sub>total</sub> recovered within 10%; dark-disc area recovered within 0.02). The measured mean
+          intercepts are <strong>7.8 µm</strong> (ASTM G ≈ 10.7) in the base metal, <strong>7.0 µm</strong> in Single
+          Cycle A, and <strong>6.3 µm</strong> in A+HT (magnification-invariant within 7–8% between 500× and 1000×).
+        </p>
+        <figure>
+          <img src="../assets/images/gleeble-v2-gp-bound.png" alt="Gladman-Pickering ferrite-pearlite hardness envelope as a function of ferrite grain size" width="1333" height="738" loading="lazy" decoding="async" />
+          <figcaption>Model-free ferrite–pearlite hardness envelope from the Gladman–Pickering relation and ISO 18265 conversion (R<sub>m</sub> ≈ 3.2 HV), spanning Mn 1.00–1.60, Si 0.10–0.55 wt%, 8–22% pearlite, and ±31 MPa scatter. The A+HT specimen (164.3 HV1) sits inside the envelope; Single Cycle A (232.1 HV1 at 7.0 µm) lies well above it.</figcaption>
+        </figure>
+        <p>
+          Without invoking Li kinetics or Maynier relations, the Gladman–Pickering + Hall–Petch relation bounds any
+          near-equilibrium ferrite–pearlite aggregate in this steel to <strong>158 ± 11 HV</strong> (5th–95th percentile
+          139–178 HV) at the measured grain size (6.0–8.1 µm), and to <strong>≈ 200 HV for all grain sizes d ≥ 3 µm</strong>
+          (reaching 232 HV only at the 1.0 µm range edge under maximum Mn, Si, and pearlite). This independently rules
+          out polygonal ferrite as the light-etching matrix in Single Cycle A. Published data — Gyura et al. (2021) on
+          flame-straightened S355J2+N and Górka (2016) on simulated HAZs at t<sub>8/5</sub> &lt; 10 s (230–265 HV1) —
+          are <em>consistent with, but do not demonstrate</em>, a bainitic transformation product. Because granular
+          bainite and polygonal ferrite have nearly indistinguishable nano-hardness (2.7 vs 2.6 GPa, Jentner et al.
+          2023), <strong>EBSD kernel-average misorientation (KAM &gt; 3°)</strong> is identified as the decisive
+          discriminating test.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Model-free carbon bound, austenite homogenisation &amp; negative result</h2>
         <ul>
-          <li>TUM practical course paper — "Thermomechanical Material Behaviour in Additive Manufacturing &amp; Welding" (final draft).</li>
-          <li>Extended Python model — fork of an open-source TTT/hardness predictor (available on request).</li>
+          <li>
+            <strong>Two independent model-free routes to carbon content.</strong> On the equilibrium A+HT specimen,
+            inverting the optical dark fraction via the lever rule gives a 90% interval of
+            <strong>0.067–0.123 wt% C</strong> (central 0.090 wt%), while inverting the measured hardness through the
+            Gladman–Pickering relation gives 0.048–0.268 wt% C (central 0.159 wt%). Their overlap
+            (<code>0.067–0.123 wt%</code>) bounds the unmeasured heat carbon well below the 0.20 wt% DIN EN 10277
+            maximum without using the transformation model.
+          </li>
+          <li>
+            <strong>1D Ågren carbon homogenisation check.</strong> Solving the non-isothermal 1D finite-volume diffusion
+            equation with Ågren's concentration-dependent diffusivity along the measured Single Cycle A ramp (419 °C/s
+            heating) shows that for the observed <strong>ferrite/pearlite island repeat distance λ = 15–25 µm</strong>,
+            austenite is homogeneous to within a few hundredths of a wt% C before cooling below Ae<sub>3</sub>
+            (significant inhomogeneity requires λ ≥ 40 µm). Incomplete homogenisation is therefore rejected as the cause
+            of the Single Cycle A hardness.
+          </li>
+          <li>
+            <strong>Negative result reported in full.</strong> A purely optical morphology discriminator based on the
+            structure-tensor coherence of grain-boundary skeletons was tested as a zero-cost substitute for a tint etch
+            or EBSD, but failed its own synthetic Voronoi equiaxed control (coherence 0.41–0.91 across seed densities;
+            Welch <em>p</em> = 0.20 between Single A and polygonal controls) and was rejected.
+          </li>
         </ul>
       </div>
 
       <div class="share-bar">
-        <button class="share-btn" data-share="linkedin">Share on LinkedIn</button>
-        <button class="share-btn" data-share="twitter">Share on X</button>
-        <button class="share-btn" data-share="copy">Copy link</button>
+        <button type="button" class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button type="button" class="share-btn" data-share="twitter">Share on X</button>
+        <button type="button" class="share-btn" data-share="copy">Copy link</button>
       </div>
 
       <nav class="case-nav" aria-label="Project navigation">
@@ -201,7 +267,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 Abhishek Kuntal, Munich. Last updated September 2026.</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
@@ -210,9 +276,5 @@
     </div>
   </footer>
   <script src="../assets/js/main.js" defer></script>
-  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close lightbox">×</button>
-    <img alt="" id="lightbox-img">
-  </div>
 </body>
 </html>
