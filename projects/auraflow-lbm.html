@@ -84,8 +84,8 @@
       </dl>
 
       <figure class="video-hero">
-        <video controls muted loop playsinline preload="metadata" poster="../assets/images/hero-ftle.jpg">
-          <source src="../assets/videos/hero-ftle.mp4" type="video/mp4" />
+        <video controls muted loop playsinline preload="metadata" poster="../assets/images/lbm-aoa14.jpg">
+          <source src="../assets/videos/lbm-aoa14.mp4" type="video/mp4" />
         </video>
         <figcaption>NACA 0012 at 14° angle of attack. Bright ridges are high finite-time Lyapunov exponent: the material lines that bound the separated shear layers and each shed vortex.</figcaption>
       </figure>
@@ -197,9 +197,11 @@
       <div class="case-section">
         <h2>Two kites, one above the other</h2>
         <p>In the tidal-kite concept two foils fly stacked on one tether system. The app places two NACA 0012 kites 3 m apart (15 chords) and shows how the upper kite's wake reaches the lower one while both climb.</p>
-        <figure>
-          <img src="../assets/images/lbm-app-two-kites.jpg" alt="The desktop app showing two stacked kites at 20 degrees with their FTLE wakes, control panel and force readout" width="1600" height="914" loading="lazy" decoding="async" />
-          <figcaption>The app: two stacked kites at 20° while climbing at 1 m/s in a 1 m/s current, with live lift and drag for each kite.</figcaption>
+        <figure class="figure-narrow">
+          <video controls muted loop playsinline preload="metadata" poster="../assets/images/lbm-two-kites.jpg" width="720" height="1010" aria-label="FTLE field of two stacked kites climbing; the wake of each kite sweeps down past the kite below">
+            <source src="../assets/videos/lbm-two-kites.mp4" type="video/mp4" />
+          </video>
+          <figcaption>Two stacked kites at 0° pitch, climbing at 3 m/s in a 1 m/s current, so the relative flow arrives from above at about 72° and each wake sweeps down towards the kite below. The top and bottom edges are periodic, which makes the pair repeat as an endless column 3 m apart. Frames where the solver paused to let the GPU cool have been cut, so playback is continuous.</figcaption>
         </figure>
       </div>
 
