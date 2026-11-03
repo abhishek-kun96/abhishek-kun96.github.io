@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      var t = null;
+      try { t = localStorage.getItem('ak-theme'); } catch (e) {}
+      if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Divergence-free spline CFD (QIHTC) — Abhishek Kuntal</title>
+  <link rel="canonical" href="https://abhishek-kun96.github.io/projects/qihtc-framework.html" />
+  <meta name="description" content="An open divergence-conforming isogeometric Navier–Stokes solver, audited down to a verified core, validated on seven 2D and 3D benchmarks, and measured for cost at equal accuracy against ESI OpenFOAM and DOLFINx finite elements." />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Divergence-free spline CFD: what exact incompressibility costs" />
+  <meta property="og:url" content="https://abhishek-kun96.github.io/projects/qihtc-framework.html" />
+  <meta property="og:image" content="https://abhishek-kun96.github.io/assets/images/qihtc-cylinder_ogrid.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Divergence-free spline CFD: what exact incompressibility costs — Abhishek Kuntal",
+    "description": "An open divergence-conforming isogeometric Navier–Stokes solver, audited down to a verified core, validated on seven 2D and 3D benchmarks, and measured for cost at equal accuracy against ESI OpenFOAM and DOLFINx finite elements.",
+    "author": {
+      "@type": "Person",
+      "name": "Abhishek Kuntal",
+      "url": "https://abhishek-kun96.github.io/"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "Abhishek Kuntal"
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://abhishek-kun96.github.io/projects/qihtc-framework.html"
+    }
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress-bar" data-scroll-progress></div>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">↑</button>
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav-brand" href="../index.html">AK.</a>
+      <ul class="nav-links">
+        <li><a href="../work.html">Work</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../resume.html">Résumé</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme" data-theme-toggle>
+        <span class="theme-toggle-icon" aria-hidden="true">◐</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <header class="page-header">
+      <div class="container reading">
+        <p class="eyebrow">Own research code, 2026</p>
+        <h1>Divergence-free spline CFD: what exact incompressibility costs</h1>
+        <p>A Navier–Stokes solver on divergence-conforming B-splines whose velocity is divergence-free to round-off, rebuilt from an audit, validated on seven benchmarks and measured against OpenFOAM and high-order finite elements at equal accuracy.</p>
+      </div>
+    </header>
+
+    <section class="container case reading">
+      <dl class="case-meta">
+        <div><dt>Context</dt><dd>Personal research project, October–November 2026</dd></div>
+        <div><dt>Role</dt><dd>Sole developer and author</dd></div>
+        <div><dt>Stack</dt><dd>Python, NumPy/SciPy, MKL PARDISO, ESI OpenFOAM v2512 and DOLFINx 0.10 (comparisons), pytest (93 tests)</dd></div>
+        <div><dt>Status</dt><dd>Manuscript prepared for <em>Computers &amp; Fluids</em>; code not yet public</dd></div>
+      </dl>
+
+      <aside class="tldr" aria-label="Summary">
+        <h2>In short</h2>
+        <ul>
+          <li><strong>Question:</strong> divergence-conforming B-splines give a velocity that is exactly divergence-free and unaffected by pressure errors. The theory is known. What do they actually cost against the codes engineers use?</li>
+          <li><strong>What I did:</strong> audited an over-claimed prototype down to its sound core, rebuilt it into a working 2D/3D solver, validated it on seven benchmarks, and measured cost at equal accuracy against OpenFOAM and high-order finite elements (DOLFINx).</li>
+          <li><strong>Answer:</strong> per unknown, cubic splines were the most accurate of six discretisations tested. Per CPU second my Python code is 7–16× cheaper than OpenFOAM at moderate accuracy but 7–119× more expensive than compiled finite elements. The method is efficient; the implementation is the bottleneck.</li>
+        </ul>
+      </aside>
+
+      <figure class="case-poster">
+        <img src="../assets/images/qihtc-shear.webp" alt="Vorticity of the double shear layer at t = 1: spectral reference and three spline discretisations" width="1236" height="340" loading="eager" fetchpriority="high" decoding="async" />
+        <figcaption>Double shear layer at t = 1: a 256² pseudo-spectral reference I computed (checked against 512² to 5 × 10<sup>−5</sup>) next to three spline discretisations. The thin braids between the vortices are where low numerical dissipation shows.</figcaption>
+      </figure>
+
+      <div class="case-section">
+        <h2>Why this method</h2>
+        <p>
+          Standard CFD codes solve incompressible flow with second-order finite volumes. Mass is conserved through face
+          fluxes, but the velocity they store and pass on to heat or particle transport is not divergence-free, and
+          upwind convection adds numerical dissipation that damps vortices. Taylor–Hood finite elements reach higher order
+          but satisfy incompressibility only weakly, so their velocity error grows with the pressure.
+        </p>
+        <p>
+          Divergence-conforming B-splines form a discrete de Rham complex: the divergence of the velocity space maps
+          exactly onto the pressure space. The discrete velocity is then divergence-free at every point, and its error does
+          not depend on the pressure. These properties are proven in the literature. What I could not find was a
+          measurement of what they cost and buy against the discretisations people actually use. That became the question
+          of this project.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Starting with an audit</h2>
+        <p>
+          The project began as a prototype I built quickly with AI coding agents, and its documents claimed far more:
+          turbulent channel flow, “QIHTC vs FVM” speed-ups, learned adaptive refinement, neuromorphic and quantum
+          back ends. When I audited it (October 2026), most of those results were hard-coded numbers or untrained
+          networks, the “GPU” package ran on the CPU, and the “C interface” was plain Python. The 2D de Rham core was
+          sound: it reproduced the cavity benchmark and converged at the theoretical order.
+        </p>
+        <p>
+          I withdrew every unsupported claim, archived the old documents so they cannot be cited by mistake, and rebuilt
+          from the verified core. Every result below is produced by a script in the repository, and the manuscript's
+          numbers, tables and figures are generated from those result files.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Verification first: does the code do what the maths says?</h2>
+        <p>
+          Before any benchmark, I checked the properties the method is supposed to have, on problems with exact answers:
+        </p>
+        <ul>
+          <li><strong>Order of accuracy.</strong> Taylor–Green vortex: order 2.04 at degree p = 2 and 3.06 at p = 3. Third-order time stepping (IMEX-BDF3) measures 3.01, once a three-part start-up was added; without it the order drops.</li>
+          <li><strong>Pressure robustness.</strong> In Taylor–Couette flow on a curved annulus, convection is balanced entirely by pressure. The velocity error with convection is identical to the Stokes error to 13 digits: the velocity does not see the pressure.</li>
+          <li><strong>Divergence.</strong> The largest pointwise divergence over every run in the paper is 1.8 × 10<sup>−13</sup>, round-off level, with no post-processing projection. Getting there needed Nitsche-imposed wall conditions (to avoid a rank deficiency at corners) and row scaling of the saddle-point system.</li>
+        </ul>
+      </div>
+
+      <div class="case-section">
+        <h2>Why these seven benchmarks</h2>
+        <p>Each one tests a different property, so together they cover what a flow solver has to get right:</p>
+        <ul>
+          <li><strong>Lid-driven cavity, Re 1000.</strong> The classic Ghia data have only three to four digits and cannot show errors below about 10<sup>−3</sup>, so I compared with the spectral values of Botella &amp; Peyret. The largest error in the velocity extrema falls from 3.8 × 10<sup>−2</sup> on 32² elements to 6.9 × 10<sup>−4</sup> on 256².</li>
+          <li><strong>Backward-facing step, Re 800.</strong> Separation, reattachment and an open outlet. Lower reattachment at 6.107 against Gartling's 6.10.</li>
+          <li><strong>Double shear layer.</strong> Thin braids that punish numerical dissipation. Cubic splines on 64² give nearly the error of quadratic splines on 128² with a quarter of the unknowns.</li>
+          <li><strong>Dipole–wall collision, Re 625.</strong> Vorticity generated at a no-slip wall. The collision time agrees on every mesh, but the enstrophy peak still grows with resolution, which made it the test case for local refinement.</li>
+          <li><strong>Cylinder wake, Re 100</strong> on a curved, Piola-mapped O-grid. Strouhal number 0.1653, inside the 0.164–0.166 reference band on every mesh; drag and lift approach the reference from below.</li>
+          <li><strong>3D Taylor–Green vortex, Re 1600</strong> up to 64³ elements (about 1 million unknowns) with an FFT-based implicit step. The scheme adds almost no numerical dissipation (total and viscous dissipation agree within 0.2 % at the peak), so without a subgrid model it overshoots the DNS peak by 17 %. RBVMS brings that to 6 % and WALE to 2 %, but WALE also dissipates about 1.6× too much during the earlier laminar phase, so its better peak is partly for the wrong reason.</li>
+        </ul>
+        <figure>
+          <img src="../assets/images/qihtc-cylinder_ogrid.webp" alt="Vorticity around a cylinder at Re 100 on a body-fitted O-grid" width="1066" height="511" loading="lazy" decoding="async" />
+          <figcaption>Cylinder at Re 100 on a 128 × 83 body-fitted O-grid (p = 2): vorticity at t = 200. St = 0.1653, mean C<sub>D</sub> = 1.324, lift amplitude 0.317.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/qihtc-tgv.webp" alt="Dissipation rate of the Taylor-Green vortex at Re 1600 on three meshes and with two subgrid models" width="1392" height="452" loading="lazy" decoding="async" />
+          <figcaption>Taylor–Green vortex at Re 1600: (a) no subgrid model on 32³–64³; (b) subgrid models on 64³. Squares mark the 512³ spectral DNS peak.</figcaption>
+        </figure>
+      </div>
+
+      <div class="case-section">
+        <h2>Adaptive refinement, and a learned version that lost</h2>
+        <p>
+          The dipole case needs resolution only near the wall. I added truncated hierarchical B-spline (THB) refinement
+          to the unsteady solver, with a solution transfer that keeps the velocity exactly divergence-free. Driven by a
+          residual-based (RBVMS) error indicator, it reaches 9 % vorticity error with 32 % of the unknowns of the uniform
+          fine mesh, where the uniform coarse mesh has 75 % error.
+        </p>
+        <p>
+          I also trained a graph-network refinement policy with reinforcement learning against that baseline. Across three
+          training seeds it did not beat classical Dörfler marking consistently, so it is not used and the paper says so.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>The main question: cost at equal accuracy</h2>
+        <p>
+          A fair comparison needs the same problems, the same error measure, one CPU core for everyone, and two
+          rivals: a finite-volume code (ESI OpenFOAM v2512) and a strong high-order code (DOLFINx with Taylor–Hood and
+          Scott–Vogelius elements). Comparing only against the second-order code would flatter the splines, so DOLFINx
+          is the one that keeps the result honest.
+        </p>
+        <figure>
+          <img src="../assets/images/qihtc-equal-cavity.webp" alt="Cavity at Re 1000: largest extremum error versus unknowns and versus CPU time for splines, OpenFOAM, Taylor-Hood and Scott-Vogelius elements" width="1392" height="614" loading="lazy" decoding="async" />
+          <figcaption>Cavity at Re 1000: error against (a) unknowns, a property of the discretisation, and (b) CPU time on one core, which also measures the implementation.</figcaption>
+        </figure>
+        <div class="results-grid">
+          <div class="result"><div class="result-value">33k vs 69k</div><div class="result-label">Unknowns to reach 10<sup>−4</sup> on the cavity: cubic splines vs Taylor–Hood (Scott–Vogelius: 1.04 M)</div></div>
+          <div class="result"><div class="result-value">7–16×</div><div class="result-label">Less CPU time than OpenFOAM at OpenFOAM's finest accuracy (cavity, step, shear layer)</div></div>
+          <div class="result"><div class="result-value">7–119×</div><div class="result-label">More CPU time than compiled DOLFINx at the tighter targets</div></div>
+          <div class="result"><div class="result-value">1.8 × 10<sup>−13</sup></div><div class="result-label">Largest pointwise divergence in any spline run; Taylor–Hood's L<sup>2</sup> divergence on the cavity is O(1)</div></div>
+        </div>
+        <p>
+          Per unknown, cubic splines were the most accurate discretisation in the range my runs cover, and their smoothness
+          allows a two- to four-times larger explicit time step than Taylor–Hood. Per CPU second the answer depends on
+          the code: OpenFOAM is cheapest at coarse accuracy, my Python code wins at moderate accuracy, and compiled DOLFINx
+          is faster than both at every target. The gap to DOLFINx is the cost per unknown of a Python implementation, not of
+          the discretisation. Many published “high-order beats finite volume” speed-ups, including the 7–16× measured here,
+          mainly reflect the order of accuracy.
+        </p>
+        <p>
+          One side finding: the openfoam.org 13 package I first installed gave 0.67–0.69 times the exact laminar
+          Poiseuille flow rate on every mesh and time step, including its own tutorial case. ESI v2512 was exact on the
+          same case, so I switched references and documented the reproduction.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Takeaways</h2>
+        <p>
+          The efficiency of divergence-conforming splines is real and now measured: fewest unknowns for a given error, exact
+          incompressibility, pressure robustness and low dissipation. Turning that into a cost advantage needs a compiled,
+          matrix-free implementation with iterative solvers; today's code relies on direct factorisation and runs 3D only in
+          periodic boxes. Multi-patch geometry and wall-bounded 3D flow are the other open steps. A manuscript for
+          <em>Computers &amp; Fluids</em> is prepared; the code is not public yet.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons learned</h2>
+        <ul>
+          <li><strong>Audit before you extend.</strong> Building on the prototype's claims would have stacked new work on hard-coded numbers. Cutting back to what could be reproduced was slower at first and the only way to get a result.</li>
+          <li><strong>A number without a script is not a result.</strong> Every figure, table and number in the manuscript is now generated from result files.</li>
+          <li><strong>Compare against the strongest rival, not the convenient one.</strong> Against OpenFOAM alone the splines look 7–16× faster; DOLFINx shows the speed comes from the order of accuracy, and the code itself is slow.</li>
+          <li><strong>Separate the method from the implementation.</strong> Plotting error against unknowns and against CPU time answers two different questions.</li>
+          <li><strong>Check the reference code on an exact solution.</strong> A widely used OpenFOAM package was wrong on laminar Poiseuille flow.</li>
+          <li><strong>Machine learning has to beat the classical baseline to stay in.</strong> The learned refinement policy did not, so it is reported and not used.</li>
+        </ul>
+      </div>
+
+      <div class="share-bar">
+        <button type="button" class="share-btn" data-share="linkedin">Share on LinkedIn</button>
+        <button type="button" class="share-btn" data-share="twitter">Share on X</button>
+        <button type="button" class="share-btn" data-share="copy">Copy link</button>
+      </div>
+
+      <nav class="case-nav" aria-label="Project navigation">
+        <a class="btn btn-ghost" href="../work.html">← All projects</a>
+        <a class="btn btn-primary" href="turbomachinery-cfd.html">Next: Turbomachinery CFD</a>
+      </nav>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated November 2026.</p>
+      <p class="footer-links">
+        <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
+        <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/abhishek-kun96" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+  <script src="../assets/js/main.js" defer></script>
+</body>
+</html>

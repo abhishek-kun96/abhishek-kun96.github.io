@@ -77,18 +77,18 @@
 
     <section class="container case reading">
       <dl class="case-meta">
-        <div><dt>Context</dt><dd>Personal project</dd></div>
+        <div><dt>Context</dt><dd>Personal project, September–November 2026</dd></div>
         <div><dt>Role</dt><dd>Sole developer</dd></div>
         <div><dt>Stack</dt><dd>Python, NVIDIA Warp, PyTorch, stable-baselines3, Blender</dd></div>
-        <div><dt>Status</dt><dd>v1.2.3 pre-release, October 2026 (145 regression tests); code not yet public</dd></div>
+        <div><dt>Status</dt><dd>v1.2.3 tagged; v1.2.4 in progress (151 unit tests); code not yet public</dd></div>
       </dl>
 
       <aside class="tldr" aria-label="Summary">
         <h2>In short</h2>
         <ul>
-          <li><strong>What:</strong> a weakly compressible SPH solver in 2D and 3D on NVIDIA Warp, differentiable end to end, running 24.1 M particle-steps/s on a laptop GPU (DualSPHysics: 20.4 M on the same case and GPU).</li>
-          <li><strong>Validation:</strong> SPHERIC Test 2 5/5, Re 100 cylinder 2/2, NACA 0012 4/4, Lobovsky dam break 7/11 (raw impact peaks fail), floating box 5/6. Gates are declared before each run; the one later change (the floating-box metric) is logged on the page.</li>
-          <li><strong>On top:</strong> batched runs, a Gaussian-process surrogate with active learning, a Transolver-style field surrogate and SAC reinforcement learning.</li>
+          <li><strong>Why:</strong> I wanted a free-surface solver I could take gradients through, run thousands of times for surrogates, and train controllers inside. Closed and open codes allow none of that easily, so I wrote one on NVIDIA Warp.</li>
+          <li><strong>How I kept it honest:</strong> each version is frozen, audited and scored against pass/fail gates declared before the run. Validation: SPHERIC Test 2 5/5, Re 100 cylinder 2/2, NACA 0012 4/4, floating box 5/6, Lobovsky dam break 7/11.</li>
+          <li><strong>What it showed:</strong> most “physics” errors turned out to be set-up errors (tunnel too narrow, particles overlapping walls, a pressure sensor that was dry). The one limit that remains, impact pressure peaks, is now traced to its causes and is the target of the current version.</li>
         </ul>
       </aside>
 
@@ -100,67 +100,82 @@
       </figure>
 
       <div class="case-section">
-        <h2>Why build it</h2>
-        <p>Commercial and open SPH codes are fast, but they are closed to the things I wanted to try: taking gradients through a simulation, generating thousands of consistent runs for a surrogate, and training a controller inside the solver. AuraFlow started in JAX; a benchmark showed NVIDIA Warp running the same kernels 162–375 times faster than the CPU path, so from v0.2 on it is a Warp-only GPU engine. After the frozen v1.0 campaign, versions v1.1 through v1.2.3 resolved open audit items on wall reaction forces, tunnel confinement, moving-body kinematics, and Mach &lt; 0.1 weakly-compressible scaling.</p>
+        <h2>Why build a solver</h2>
+        <p>
+          Smoothed-particle hydrodynamics (SPH) handles what mesh-based CFD finds hard: breaking waves, dam breaks,
+          sloshing and impacts, where the free surface folds and splits. I wanted three things existing codes do not give
+          easily: gradients through a whole simulation, many cheap and consistent runs to train surrogates, and a
+          reinforcement-learning loop inside the solver. That meant owning the code.
+        </p>
+        <p>
+          The first version was in JAX. A benchmark showed NVIDIA Warp running the same kernels 162–375 times faster
+          than the CPU path, so from v0.2 on AuraFlow is a GPU-only Warp engine. Its focus is free-surface and violent flow;
+          external aerodynamics at scale goes to a separate lattice-Boltzmann code.
+        </p>
       </div>
 
       <div class="case-section">
-        <h2>What is in it</h2>
+        <h2>How I worked: freeze, audit, gate</h2>
+        <p>
+          A solver can look right and be wrong, so I set rules early. Each version is frozen and tagged, then audited
+          before the next starts. Every validation case has its pass/fail tolerances written in its
+          <code>validation/README.md</code> <em>before</em> the first run. Since v1.2.2 every run stores a fingerprint of
+          the gates it started with, so any later change to a gate is flagged automatically. There has been one such
+          change (the floating-box metric, explained below), and it is logged. A thermal guard keeps the laptop GPU
+          below 87 °C, which also means long runs are paced by temperature rather than speed.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Why these validation cases</h2>
+        <p>Each case isolates a different part of the solver, so a failure points to one place:</p>
         <ul>
-          <li><strong>Physics chosen by validation.</strong> δ-SPH with modified dynamic boundary conditions in 2D; Riemann SPH with density re-initialisation and Adami walls in 3D (still-water density drift +0.07%–0.09% with <code>reinit_relax = 0.3</code>), because that combination passed the 3D gates and the 2D one did not.</li>
-          <li><strong>Exact reaction wall forces (v1.1–v1.2.3).</strong> Booking both the kinematic clamp impulse (Δv<sub>clamp</sub>/Δt) and the Monaghan wall repulsion on rigid bodies closes the fluid–wall momentum balance to <strong>3 × 10<sup>−8</sup></strong> of the gravity impulse (down from 0.94% in v1.0). Moving Riemann/Adami walls include <strong>g − a<sub>wall</sub></strong> in the wall pressure projection and exact half-step free-body kicks.</li>
-          <li><strong>Open boundaries.</strong> A stream tunnel with inflow and outflow buffers (after Tafuni 2018) holds a body in a steady stream for as long as needed. An empty tunnel stays uniform within 0.22% over ten flow-throughs.</li>
-          <li><strong>Speed &amp; memory work, measured.</strong> Own sorted cell lists (building the 3D cell list without stream compaction is a further 9% faster in v1.2 with bit-identical trajectories), fused fluid/wall force passes, out-of-domain particle parking (−30% GPU compute time on SPHERIC dx 0.01 m), and CUDA-graph step blocks cut the 3D step time 2.46×. A streaming conservation audit processes one frame at a time, cutting peak RAM from 11 GB to single-frame footprint (~200 MB). A thermal guard keeps the laptop GPU under 87 °C.</li>
-          <li><strong>Differentiable.</strong> Gradients of a final-state quantity with respect to viscosity, δ, α, gravity and initial velocities. The forward pass is bit-identical to the production solver; gradients agree with finite differences within 5%, and an inverse run recovers gravity in four gradient evaluations.</li>
-          <li><strong>Batched runs &amp; learning on top.</strong> Sixteen small cases share one launch, each bit-identical to its solo run, for 9.3× the throughput. A Gaussian-process surrogate with active learning and conformal 90% intervals, a Transolver-style field surrogate trained on 320 dam breaks (beating nearest-neighbour lookup by 36–47%), and SAC reinforcement learning sit on top.</li>
+          <li><strong>Lobovsky 2014 dam break (2D)</strong>: front position, water levels and wall pressures from a well-instrumented experiment. It tests free-surface kinematics and impact loads together.</li>
+          <li><strong>SPHERIC Test 2 (3D)</strong>: the community dam break onto a box. It tests 3D impact on an obstacle, and DualSPHysics runs the same case, which allows a direct speed comparison.</li>
+          <li><strong>Cylinder at Re 100 and NACA 0012</strong> in a stream tunnel with inflow and outflow buffers: tests open boundaries and body forces against well-known drag, lift and Strouhal numbers.</li>
+          <li><strong>Floating box in waves</strong> (Hadžić 2005, SPHERIC Test 12): two-way fluid–structure coupling.</li>
+          <li><strong>Taylor–Green vortex and wave flume</strong>: viscous decay with no walls, and wave generation, as clean checks of the fluid operator.</li>
+        </ul>
+        <div class="results-grid">
+          <div class="result"><div class="result-value">5 / 5</div><div class="result-label">SPHERIC Test 2: impact pressure P<sub>1</sub> 3,679 Pa vs 3,459 Pa measured, Mach 0.097</div></div>
+          <div class="result"><div class="result-value">2 / 2</div><div class="result-label">Cylinder Re 100: C<sub>D</sub> 1.352 (+1.8 %), St 0.1664 (+1.5 %)</div></div>
+          <div class="result"><div class="result-value">4 / 4</div><div class="result-label">NACA 0012 at 0° and 2° (Re 1000): lift slope 0.968π</div></div>
+          <div class="result"><div class="result-value">7 / 11</div><div class="result-label">Lobovsky dam break: front, levels and impact timing pass; raw impact peaks fail</div></div>
+        </div>
+      </div>
+
+      <div class="case-section">
+        <h2>What the failures turned out to be</h2>
+        <p>The most useful results came from the cases that failed first. Most were not physics errors:</p>
+        <ul>
+          <li><strong>The cylinder's Strouhal number was 6 % high at two resolutions.</strong> If refining from D/dx 20 to 40 does not move an error, resolution is not the cause. A domain-size study showed the tunnel walls were too close. In a 40 D wide tunnel with a 10 D inlet, drag and Strouhal are both within 2 %.</li>
+          <li><strong>A sloshing tank oscillated at 0.88 s with no forcing.</strong> Fluid particles had been placed on top of the baffle wall particles. Density re-initialisation then saw about 1300 kg/m³ and kicked the tank into its second mode. Removing fluid within half a particle spacing of walls fixed it.</li>
+          <li><strong>Still water slowly gained density under the Riemann scheme.</strong> Particle shifting lets the particle volume and the continuity density drift apart. Gentle density re-initialisation (relaxation 0.3) holds the drift at +0.09 %. Several correction terms from the literature were tried first and did not help; they are recorded with their numbers so I do not try them again.</li>
+          <li><strong>The floating box's roll looked twice as large as the experiment.</strong> The original gate metric counted small wiggles near zero in the measured roll as full cycles. I changed it to a peak-to-peak metric, after seeing results, and logged the change. In v1.2.4, the box's measured moment of inertia (14 kg cm², SPHERIC Test 12) replaced the uniform-density estimate, and the roll error dropped from −22 % to −8 %. One wave gauge still misses its ±10 % gate, so the case scores 5/6.</li>
         </ul>
       </div>
 
       <div class="case-section">
-        <h2>Validation (v1.0 → v1.2.3)</h2>
-        <p>Tolerances were declared in each case's <code>validation/README.md</code> before the first run, with one explicitly logged post-hoc amendment on the floating-box metric in v1.2.1 (noted below). Since v1.2.2 every run records the gate declarations it started with and validators report <code>gates_changed_since_run</code>. Sound speeds <em>c</em><sub>0</sub> are set so the 99.9th-percentile Mach stays below 0.1 across SPHERIC Test 2 (Mach 0.097), Lobovsky (Mach 0.085–0.098 with Monaghan α scaled by <em>c</em><sub>0,old</sub>/<em>c</em><sub>0,new</sub>), NACA 0012 at 8° (Mach 0.096), and the 3D CAD pillar (Mach 0.095).</p>
-        <div class="results-grid">
-          <div class="result"><div class="result-value">7 / 11</div><div class="result-label">Lobovsky 2014 2D dam break: front, gauge levels and impact timing pass; raw impact peaks fail</div></div>
-          <div class="result"><div class="result-value">5 / 5</div><div class="result-label">SPHERIC Test 2, 3D dam break over a box (P<sub>1</sub> 3,679 Pa vs 3,459 Pa exp, Mach 0.097)</div></div>
-          <div class="result"><div class="result-value">2 / 2</div><div class="result-label">Tunnel cylinder Re 100 (40D wide, 10D inlet): C<sub>D</sub> 1.352 (+1.8%), St 0.1664 (+1.5%)</div></div>
-          <div class="result"><div class="result-value">4 / 4</div><div class="result-label">NACA 0012 at α = 0° &amp; 2° (Re 1000): C<sub>D0</sub> 0.127, C<sub>L0</sub> 6×10<sup>−5</sup>, lift slope 0.968π</div></div>
-        </div>
+        <h2>The open problem: impact pressure peaks</h2>
         <p>
-          Wave flume passes 4/4, Taylor–Green vortex decay passes 2/2, sphere drag at Re 100 is 1.07 against 1.087 in
-          the literature, and Biswal forced-baffle sloshing passes under both δ-SPH and Riemann once overlapping
-          fluid-on-baffle initial particles were fixed and scored against the linear potential-flow solution (1.143 s
-          period). On NACA 0012, the 4/4 gates apply to α = 0° and 2°; the α = 8° run is an ungated diagnostic
-          (C<sub>L</sub> 0.147, C<sub>D</sub> 0.378).
+          Raw impact peaks in Lobovsky and in sloshing are far above the experimental bands and do not converge with
+          time step. This is a known weakness of single-phase weakly compressible SPH, but “known weakness” is not an
+          explanation, so in v1.2.4 I took it apart. At dx 5 mm the wall pressure sensor (4.2 mm across, smaller than
+          one particle) was <em>dry</em> for 91–98 % of the impact window, and the peak came from a few wet steps. Moving
+          the sampling point one particle spacing into the water keeps the sensor wet (66–99 %) and lowers the four
+          sensor peaks from 51.7/26.1/9.7/5.1 to 35.7/14.1/6.4/3.3 (normalised pressure). The pressure impulse is still
+          too high, so sampling explains part of it, but the water really does overload the wall.
         </p>
         <p>
-          <strong>Tunnel cylinder confinement resolved (v1.1–v1.2.2).</strong> In v1.0, the Re 100 cylinder Strouhal
-          number sat +6% high (0.174) at both D/dx = 20 and 40. A domain-size matrix (20D vs 40D width, 5D vs 10D inlet)
-          proved the offset was tunnel blockage rather than resolution: in the 40D-wide, 10D-inlet domain at D/dx = 20,
-          both drag (+2.0%) and Strouhal (+1.9%) pass their gates.
+          The next suspect is the missing air cushion. A two-phase water–air model (after Rezavand et al. 2020) is
+          implemented and passes its unit tests (still water under air matches single phase within 3 %). The GPU
+          comparison on the dam break is still running, so I make no claim yet.
         </p>
-        <div class="callout">
-          <p>
-            <strong>What does not pass, and the floating-box gate amendment.</strong> Raw impact peak pressures in
-            Lobovsky and sloshing T10 are 5–20× the experimental bands and do not converge with time step — a known
-            limit of single-phase weakly compressible SPH. The Lobovsky front is not monotone in resolution: after the
-            v1.2.3 Mach &lt; 0.1 re-runs (artificial viscosity held fixed), front MAE is 0.016 / 0.014 / 0.037 at
-            dx 0.005 / 0.0025 / 0.00125 m, and the finest front leads the experiment by up to 0.068 x/H, so at that
-            resolution it depends on the artificial viscosity. At D/dx = 10 (the 8 GB GPU ceiling), the 3D sphere wake is
-            dominated by numerical dissipation between Re 100 and 300. On the <strong>Hadžić (2005) floating box in
-            waves</strong>, the original v1.0 mean zero-up-crossing metric misread small experimental roll wiggles near
-            zero as full cycles (halving apparent experimental roll to 11.6° vs actual ±21.5°) and averaged trailing
-            wave ripples after the packet. In v1.2.1, the gates were amended <em>after results were seen</em> to a
-            peak-to-peak metric over the packet: under those amended gates, v1.2.1 passes 4/6 (heave, sway, roll, and
-            phase lag pass; both wave gauges H<sub>N1</sub> and H<sub>N2</sub> fail), and v1.2.3 passes
-            <strong>5/6</strong> (H<sub>N2</sub> +9.4%, heave +13.9%, sway +9.4%, roll −22.3%, lag 0.018 s pass;
-            H<sub>N1</sub> −15.6% fails its ±10% gate).
-          </p>
-        </div>
       </div>
 
       <div class="case-section">
         <h2>Speed against DualSPHysics</h2>
-        <p>Same 3D case (SPHERIC Test 2 at dx 0.01 m), same RTX 3070 Laptop GPU. The schemes differ, so per-step cost compares only roughly; the chart shows compute throughput.</p>
+        <p>Same 3D case (SPHERIC Test 2 at dx 0.01 m), same RTX 3070 Laptop GPU. The schemes differ, so this compares throughput, not identical work.</p>
         <figure class="chart-figure">
 <!-- chart:speed -->
 <svg class="chart" viewBox="0 0 640 122" role="img" aria-label="Particle-steps per second, SPHERIC Test 2 at dx 0.01 m, RTX 3070 Laptop">
@@ -169,23 +184,29 @@
 <g><title>AuraFlow v0.6: 24.1 M particle-steps/s</title><text class="chart-label" x="188" y="99.0" text-anchor="end" dominant-baseline="middle">AuraFlow v0.6</text><rect class="chart-bar chart-bar--hi" x="200" y="87" width="370.0" height="24" rx="4" /><text class="chart-value" x="578.0" y="99.0" dominant-baseline="middle">24.1 M</text></g>
 </svg>
 <!-- /chart -->
-          <figcaption>Million particle-steps per second. v0.4 was 3.3× slower than DualSPHysics; the v0.6 speed programme overtook it.</figcaption>
+          <figcaption>Million particle-steps per second. v0.4 was 3.3× slower than DualSPHysics; after a measured speed programme (own cell lists, separate fluid and wall passes, CUDA graphs) v0.6 overtook it.</figcaption>
         </figure>
+        <p>
+          The speed work was driven by measurement, not guesses: memory reordering bought 7 %, splitting the fluid and
+          wall force passes about 2×, and building the 3D cell list without compaction another 9 % with bit-identical
+          trajectories. One idea, a larger kernel radius in 3D, was rejected because the smaller time step it forces
+          cancelled the gain (net 1.04×).
+        </p>
       </div>
 
       <div class="case-section">
-        <h2>Flow past bodies</h2>
-        <figure class="video-hero">
-          <video controls muted loop playsinline preload="metadata" poster="../assets/images/sph-sphere-wake-poster.jpg">
-            <source src="../assets/videos/sph-sphere-wake.mp4" type="video/mp4" />
-          </video>
-          <figcaption>Wake behind a sphere in the stream tunnel: Q-criterion surfaces coloured by streamwise vorticity, 1.41 million fluid particles. A visual, not a quantitative result: at the resolution an 8 GB GPU allows, numerical dissipation dominates above Re 100.</figcaption>
-        </figure>
-      </div>
-
-      <div class="case-section">
-        <h2>Reinforcement learning inside the solver</h2>
-        <p>After a literature review (DRLinSPH, FluidGym, HydroGym), the recipe that worked was SAC acting as a residual on a linear expert, with smoothed sensors and free-surface observations, trained on batched tanks.</p>
+        <h2>What the solver is for: learning on top</h2>
+        <p>
+          The point of owning the solver was to use it for learning. The differentiable version gives gradients that
+          agree with finite differences within 5 %, and its forward pass is bit-identical to the production solver.
+          Sixteen small cases run in one batch, each bit-identical to its solo run, for 9.3× throughput. That feeds a
+          Gaussian-process surrogate with conformal intervals and a Transolver-style field surrogate trained on 320 dam
+          breaks (36–47 % better than nearest-neighbour lookup).
+        </p>
+        <p>
+          For control, after reviewing DRLinSPH, FluidGym and HydroGym, the recipe that worked was SAC acting as a
+          residual on a linear controller, with smoothed sensors and free-surface observations.
+        </p>
         <figure class="chart-figure">
 <!-- chart:rl -->
 <svg class="chart" viewBox="0 0 640 122" role="img" aria-label="Sloshing energy left at the end of an episode, fraction of the start (lower is better)">
@@ -194,18 +215,55 @@
 <g><title>SAC agent (5 seeds): 0.151 of initial energy</title><text class="chart-label" x="188" y="99.0" text-anchor="end" dominant-baseline="middle">SAC agent (5 seeds)</text><rect class="chart-bar chart-bar--hi" x="200" y="87" width="97.7" height="24" rx="4" /><text class="chart-value" x="305.7" y="99.0" dominant-baseline="middle">0.151</text></g>
 </svg>
 <!-- /chart -->
-          <figcaption>Sloshing suppression on held-out episodes: energy left relative to the start, lower is better. SAC result is the mean of five seeds (±0.003).</figcaption>
+          <figcaption>Sloshing suppression on held-out episodes: energy left relative to the start, lower is better. SAC is the mean of five seeds (±0.003).</figcaption>
         </figure>
-        <p>On a rotating cylinder at Re 100 (HydroGym conventions), SAC trained on a coarse grid and fine-tuned at D/dx 20 reduced drag by 5.8% and lift by 50%. Not everything worked. The published DRLinSPH forced-baffle benchmark was not reproduced (−1.4% against −68.8%), and model-based RL, gradient-based policies through the differentiable solver and a multi-agent wave array all missed their targets in v1.0.</p>
+        <p>
+          On a rotating cylinder at Re 100, SAC trained coarse and fine-tuned at D/dx 20 cut drag by 5.8 % and lift by
+          50 %. Not everything worked: the published DRLinSPH forced-baffle result was not reproduced (−1.4 % against
+          −68.8 %), and model-based RL, gradient-based policies through the differentiable solver and a multi-agent wave
+          array all missed their targets. I report those alongside the successes.
+        </p>
+        <figure class="video-hero">
+          <video controls muted loop playsinline preload="metadata" poster="../assets/images/sph-sphere-wake-poster.jpg">
+            <source src="../assets/videos/sph-sphere-wake.mp4" type="video/mp4" />
+          </video>
+          <figcaption>Wake behind a sphere in the stream tunnel: Q-criterion surfaces coloured by streamwise vorticity, 1.41 million particles. A visual, not a quantitative result: at the resolution an 8 GB GPU allows, numerical dissipation dominates above Re 100.</figcaption>
+        </figure>
       </div>
 
       <div class="case-section">
-        <h2>Lessons</h2>
+        <h2>Current version (v1.2.4, in progress)</h2>
+        <p>
+          v1.2.4 closes gaps against established codes, each as an opt-in feature that leaves existing results unchanged:
+          measured body inertia, hinged and moored floating bodies, a wave paddle driven by Biesel theory or a JONSWAP
+          spectrum (regular-wave flume 4/4: H 0.0387 m for 0.04 m, T 1.203 s for 1.2 s, reflection 0.7 %), active wave
+          absorption, and the two-phase air model. One feature failed: a hysteresis band on the variable-resolution
+          zones did not fix the noise on the zone's side faces and raised pressure noise across the whole run about
+          eightfold, so it is being removed. The unit suite has 151 tests; the version is not yet tagged and the code is not yet public.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Takeaways</h2>
+        <p>
+          A GPU SPH solver written by one person can match a mature code for speed and pass standard benchmarks, but only
+          because each failure was traced to a cause instead of tuned away. Kinematics, forces on bodies and wave
+          generation are validated. Impact pressure peaks are not, and the evidence so far says part of that is how
+          pressure is sampled and part is real over-loading without air. The solver is ready to serve as a free-surface
+          back end for reinforcement learning, which is where the next paper is aimed; the main gap there is PPO/SAC
+          baselines on standard tasks.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Lessons learned</h2>
         <ul>
-          <li>Declare the tolerance before the run, and log any metric change. One early pressure "near miss" turned out to be a sensor that went dry; on the floating box, tracking <code>gates_changed_since_run</code> keeps the post-hoc peak-to-peak metric amendment transparent.</li>
-          <li>When an error does not move with resolution, check the domain. Doubling cylinder resolution from D/dx = 20 to 40 left Strouhal at +6%; widening the tunnel to 40D with a 10D inlet brought both drag and Strouhal within 2%.</li>
-          <li>Chaotic quantities are not learnable targets. Post-impact pressure varies more between ensemble members than between designs, so the surrogates predict impact time and levels instead.</li>
-          <li>Measure before optimising. Memory reordering bought 7%; splitting the fluid and wall passes bought 2×; dropping stream compaction in the 3D cell list bought another 9% with bit-identical output.</li>
+          <li><strong>Declare the tolerance before the run, and log any change.</strong> One early pressure “near miss” turned out to be a dry sensor. Gate fingerprints keep the one metric change I made visible.</li>
+          <li><strong>When an error does not move with resolution, check the set-up.</strong> The Strouhal error was the tunnel, the phantom sloshing mode was overlapping particles, and part of the impact peak was where the sensor sat.</li>
+          <li><strong>Check the inputs before the model.</strong> Using the floating box's measured inertia did more for roll than any numerical change.</li>
+          <li><strong>Remove features that fail their test.</strong> The hysteresis band sounded reasonable and made things worse, so it is being deleted rather than left switched off.</li>
+          <li><strong>Chaotic quantities are not learnable targets.</strong> Post-impact pressure varies more between repeated runs than between designs, so the surrogates predict impact time and levels instead.</li>
+          <li><strong>Measure before optimising, and respect the hardware.</strong> Profiling decided every speed change, and a laptop GPU needs a thermal guard and clean stops, not force-kills.</li>
         </ul>
       </div>
 
@@ -224,7 +282,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated November 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>

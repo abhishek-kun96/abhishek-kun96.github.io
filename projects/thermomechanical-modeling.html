@@ -77,178 +77,198 @@
 
     <section class="container case reading">
       <dl class="case-meta">
-        <div><dt>Context</dt><dd>TUM lab experiments + independent v2.1 modelling &amp; metallography audit (October 2026)</dd></div>
-        <div><dt>Role</dt><dd>Analysis, software, quantitative metallography &amp; model validation. The Gleeble cycles were run by the lab-course group (“Thermomechanical material behaviour”, TUM), and some micrographs were contributed by fellow course members.</dd></div>
-        <div><dt>Stack</dt><dd>Gleeble 3500, Vickers HV1, Leica optical microscopy, Python, scikit-image, SciPy, pytest (29 tests)</dd></div>
+        <div><dt>Context</dt><dd>TUM lab course “Thermomechanical material behaviour” (SoSe 2025), re-analysed independently in October 2026 (report v2.1)</dd></div>
+        <div><dt>Role</dt><dd>Analysis, software, quantitative metallography and model validation. The Gleeble cycles were run by the lab-course group, and some micrographs were contributed by fellow course members.</dd></div>
+        <div><dt>Stack</dt><dd>Gleeble 3500, Vickers HV1, Leica optical microscopy, Python, scikit-image, SciPy, Quarto, pytest (29 tests)</dd></div>
       </dl>
 
       <aside class="tldr" aria-label="Summary">
         <h2>In short</h2>
         <ul>
-          <li><strong>What:</strong> three Gleeble 3500 weld-HAZ cycles on S355J2C+C steel (232.1, 208.4 and 164.3 HV1), re-analysed from the raw instrument files, with automated, oracle-tested metallography.</li>
-          <li><strong>What went wrong before:</strong> an earlier “model within 10 %” match came from two input errors cancelling out. With the measured cooling curve, the same model predicts 286–323 HV.</li>
-          <li><strong>Outcome:</strong> a model-free bound shows no ferrite–pearlite structure in this steel reaches 232 HV at the measured grain size (≈ 200 HV for grains ≥ 3 µm), so the light phase is not polygonal ferrite; and a ±39 HV Monte Carlo spread shows one hardness value cannot validate such a model.</li>
+          <li><strong>Question:</strong> an earlier report said a standard Kirkaldy–Li HAZ model matched our Gleeble hardness to within about 10 %. Was that a real validation?</li>
+          <li><strong>Answer:</strong> no. Two input errors cancelled. With the measured cooling curve the same model over-predicts by 54–91 HV, and over the realistic input range it can be tuned to almost any hardness (182 ± 39 HV).</li>
+          <li><strong>What it proved:</strong> hardness alone cannot validate this kind of model. Adding one microstructural observable and an independent, model-free bound shows the fast-cooled zone is not polygonal ferrite (most likely bainite). That is now a testable claim, and the test that settles it is named (EBSD).</li>
         </ul>
       </aside>
 
       <div class="case-section">
-        <h2>The validation question</h2>
+        <h2>Why I went back to this</h2>
         <p>
-          Semi-empirical Kirkaldy–Li austenite-decomposition models coupled with Maynier hardness relations are widely
-          used to predict weld heat-affected-zone (HAZ) hardness from a thermal history <em>T(t)</em> and steel
-          composition. Yet in practice they are almost always checked against a single scalar — bulk Vickers hardness —
-          while key inputs (exact heat carbon content, prior-austenite grain size) are only known within standard
-          brackets.
+          In a TUM lab course (“Thermomechanical material behaviour”) our group ran three Gleeble 3500 thermal cycles on
+          cold-drawn S355J2C+C structural steel, measured Vickers hardness and took optical micrographs. The original
+          write-up then ran an open-source implementation of the Li (1998) austenite-decomposition model with Maynier
+          hardness relations and reported that the model reproduced the welding-cycle hardness within about 10 %.
         </p>
         <p>
-          Using three Gleeble 3500 cycles on cold-drawn <strong>S355J2C+C</strong> structural steel (DIN EN 10277), this
-          study asks what validation a Kirkaldy-type model actually requires before its output can be trusted, and what
-          an independent, model-free microstructural bound says about the phase identity of a rapidly cooled fine-grained
-          HAZ.
+          That agreement was the weakest part of the work. The model needs carbon content and prior-austenite grain
+          size, and we had measured neither. A model with two free inputs that matches one number has not been tested.
+          So I re-did the analysis from the raw instrument files, with one question in mind: <strong>what does it take
+          to validate a Kirkaldy-type HAZ model, and how uncertain is it when the inputs are not known?</strong>
         </p>
       </div>
 
       <div class="case-section">
-        <h2>Measured thermal histories &amp; HV1 hardness</h2>
-        <p>
-          Thermocouple logs (<code>.d0x</code>, 100 Hz) and raw Vickers HV1 indents (22–23 indents per specimen across
-          four cross-section positions) were re-analysed directly from the instrument files:
-        </p>
+        <h2>Why these three specimens</h2>
+        <p>Each cycle tests something different, and together they bracket the model's range:</p>
+        <ul>
+          <li><strong>Single Cycle A</strong> (peak 1025.5 °C, t<sub>8/5</sub> = 6.90 s) is a fast welding-type cycle
+            that peaks just above Ae<sub>3</sub>, giving a fine-grained HAZ. Cooling is fast enough that the transformation
+            kinetics decide the outcome, so this is the hardest case for the model and the one the 10 % claim was about.</li>
+          <li><strong>Single A + heat treatment</strong> (900 °C for 600 s, then slow cooling) is the control. It ends
+            close to equilibrium ferrite–pearlite, where the lever rule tells you what to expect. If the model fails
+            here, the problem is the inputs, not the kinetics. It also gives the carbon content without any
+            transformation model.</li>
+          <li><strong>Multi Cycle</strong> (eight peaks from 1358 to 596 °C) imitates multi-pass welding. It checks
+            whether the measurements resolve overlapping HAZ sub-zones. They do: indent position matters only in this
+            specimen (25 HV between positions, Holm-adjusted p = 0.0017).</li>
+        </ul>
         <div class="results-grid">
-          <div class="result"><div class="result-value">232.1 ± 8.4</div><div class="result-label">Single Cycle A (HV1, n = 22): peak 1025.5 °C (FGHAZ), t<sub>8/5</sub> = 6.90 s, φ<sub>700</sub> = 51.5 °C/s</div></div>
-          <div class="result"><div class="result-value">208.4 ± 15.4</div><div class="result-label">Multi Cycle (HV1, n = 23): 8 peaks (1358 → 596 °C, CGHAZ → SCHAZ), t<sub>8/5</sub> = 6.3 → 13.6 s</div></div>
-          <div class="result"><div class="result-value">164.3 ± 2.4</div><div class="result-label">Single A + HT (HV1, n = 23): 900 °C / 600 s hold, slow cool t<sub>8/5</sub> ≈ 150 s, φ<sub>700</sub> = 2.0 °C/s</div></div>
-          <div class="result"><div class="result-value">p = 0.0017</div><div class="result-label">Multi Cycle spatial position effect (Holm-adjusted ANOVA, Δ = 25.3 HV across HAZ sub-zones)</div></div>
+          <div class="result"><div class="result-value">232.1 ± 8.4</div><div class="result-label">Single Cycle A, HV1 (n = 22). Fine-grained HAZ, φ<sub>700</sub> = 51.5 °C/s</div></div>
+          <div class="result"><div class="result-value">208.4 ± 15.4</div><div class="result-label">Multi Cycle, HV1 (n = 23). Sub-zones overlap; position effect significant</div></div>
+          <div class="result"><div class="result-value">164.3 ± 2.4</div><div class="result-label">Single A + HT, HV1 (n = 23). Near-equilibrium control</div></div>
         </div>
-        <p>
-          Pairwise Welch <em>t</em>-tests confirm large differences between the three specimens (|<em>d</em>| ≥ 1.9,
-          <em>p</em><sub>Holm</sub> &lt; 10<sup>−6</sup>). Within a specimen, indent position is statistically
-          significant only for the Multi Cycle (<em>p</em><sub>Holm</sub> = 0.0017; Single A and A+HT both give
-          <em>p</em><sub>Holm</sub> = 1.0), consistent with a spatial superposition of differently re-austenitised and
-          tempered zones.
-        </p>
       </div>
 
       <div class="case-section">
-        <h2>Exposing a compensating error in the prior model application</h2>
+        <h2>Step 1: check the inputs before the model</h2>
         <p>
-          An earlier application of the open-source Li (1998) / Maynier (1978) code reported <strong>208 HV</strong> for
-          Single Cycle A — seemingly within 10% of the measured 232.1 HV1. Re-examining the inputs revealed two errors
-          acting in opposite directions: the cooling branch had been entered as a constant linear ramp of
-          <strong>7.37 °C/s</strong> (the average from peak to 80 °C, giving t<sub>8/5</sub> = 40.7 s instead of the
-          measured 6.90 s) alongside the DIN EN 10277 maximum composition (0.20 wt% C).
+          Before trusting or blaming the model, I checked what had been fed into it. The original run used a constant
+          cooling rate of 7.37 °C/s, which is the average from the peak down to 80 °C. That gives t<sub>8/5</sub> = 40.7 s.
+          The thermocouple log shows 6.90 s, so in the window where austenite actually transforms, the real cooling was
+          about six times faster. The composition was the DIN EN 10277 <em>maximum</em> (0.20 wt% C), not the heat's
+          composition, which nobody had measured.
         </p>
         <p>
-          Replacing only the linear ramp with the measured Gleeble cooling curve moves the uncorrected prediction from
-          208 HV to <strong>286–323 HV</strong> (78–92% bainite across ASTM G 8–12). The earlier agreement was
-          compensating error, not validation.
+          Slow cooling makes the model predict soft ferrite–pearlite. Maximum alloy content makes it predict hard
+          constituents. The two errors pull in opposite directions, and they happened to land near the measurement.
+          With the measured cooling curve and nothing else changed, the prediction moves from 208 HV to
+          <strong>286–323 HV</strong>, against 232 HV measured. The 10 % claim was a cancellation of errors, and I
+          withdrew it.
         </p>
         <figure>
           <img src="../assets/images/gleeble-v2-cooling-audit.png" alt="Measured Gleeble Single Cycle A cooling curve compared with the linear 7.37 C/s ramp used in the original analysis" width="1334" height="737" loading="lazy" decoding="async" />
-          <figcaption>Single Cycle A cooling branch: measured TC1 (solid, t<sub>8/5</sub> = 6.90 s) versus the linear 7.37 °C/s input of the prior analysis (dashed, t<sub>8/5</sub> = 40.7 s). In the 800–500 °C transformation window (shaded), actual cooling is roughly six times faster.</figcaption>
+          <figcaption>Single Cycle A cooling branch: measured thermocouple (solid, t<sub>8/5</sub> = 6.90 s) against the linear 7.37 °C/s input of the original analysis (dashed, t<sub>8/5</sub> = 40.7 s). In the shaded 800–500 °C window the real cooling is about six times faster.</figcaption>
         </figure>
       </div>
 
       <div class="case-section">
-        <h2>Code audit, numerical sensitivity &amp; Monte Carlo propagation</h2>
+        <h2>Step 2: audit the code against the paper</h2>
+        <p>
+          I compared the open-source implementation line by line with Li et al. (1998). It is faithful except in two
+          places, and I fixed both. First, ferrite could grow without limit, so a slowly cooled specimen turned 100 % into
+          ferrite and never formed pearlite, which the micrograph of the control specimen clearly contradicts. Capping
+          ferrite at its equilibrium fraction restores an 84/16 ferrite/pearlite split. Second, the cooling rate at
+          700 °C was taken by inverse interpolation on noisy thermocouple data. A least-squares slope over 650–750 °C
+          is stable. Neither fix changes the conclusion for Single Cycle A, which shows the problem there is not a code bug.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Step 3: ask how much the model can actually say</h2>
+        <p>
+          Since carbon and grain size are unknown, picking one value and reporting a prediction hides the real
+          uncertainty. Instead I propagated the admissible ranges (C 0.08–0.15, Mn 1.00–1.60, Si 0.10–0.55,
+          Cu 0–0.55 wt%, ASTM G 9–12) through the corrected model with a 250-sample Monte Carlo run.
+        </p>
+        <p>
+          For Single Cycle A the model gives <strong>182 ± 39 HV</strong> (5th–95th percentile 134–246 HV). The
+          measured 232 HV sits inside that spread, so within the admissible inputs the model can be made to agree with
+          almost anything plausible. Agreement is uninformative unless the input range is stated with it. Mn and C dominate
+          the output; grain size comes third. The model's own time discretisation adds another 9.2 HV peak to peak,
+          which is about the same as the indent scatter.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Step 4: add a second observable</h2>
+        <p>
+          Hardness is a single number that depends on the phase mixture only through a rule of mixtures, so different
+          microstructures can give the same value. I measured the optically dark constituent fraction (≈ 0.10) with an
+          automated pipeline, and then asked whether any admissible input reproduces <em>both</em> the hardness and that
+          fraction, assuming the dark constituent is the model's non-ferrite fraction.
+        </p>
+        <p>
+          None of the 32 input combinations comes within 1σ of both (minimum Mahalanobis distance 5.3). Where the model
+          matches the dark fraction, it is about 80 HV too soft. Hardness alone hid this. With two observables, the model
+          and the “light phase is ferrite” reading cannot both be right.
+        </p>
+        <figure>
+          <img src="../assets/images/gleeble-v2-consistency-grid.png" alt="Contour maps of predicted Vickers hardness and non-ferrite fraction across carbon content and ASTM grain size" width="1592" height="1204" loading="lazy" decoding="async" />
+          <figcaption>Corrected model over carbon content and prior-austenite grain size. White contours: measured hardness (solid = mean, dashed = ±1 s.d.). Black contours: measured dark-fraction band (0.07–0.11). The two bands never cross.</figcaption>
+        </figure>
+        <p>
+          Before using the image-analysis routines on real micrographs, I tested them on synthetic Poisson–Voronoi
+          microstructures whose answers are known exactly. The first version of the method failed that test, and a
+          later check found a counting error next to pearlite that had inflated grain sizes about threefold. After both
+          fixes, intercepts are recovered within 10 % and agree between 500× and 1000× within 7 %. Measured light-phase intercepts are 7.8 µm (base metal),
+          7.0 µm (Single Cycle A) and 6.3 µm (A + HT).
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Step 5: a bound that shares no equations with the model</h2>
+        <p>
+          To decide what the light-etching phase in Single Cycle A is, I needed an argument that does not depend on Li
+          kinetics or Maynier relations. The Gladman–Pickering relation with a Hall–Petch term gives the strength of a
+          ferrite–pearlite aggregate from composition, pearlite fraction and grain size. I converted it to hardness
+          (ISO 18265) and propagated its scatter.
+        </p>
+        <p>
+          Over every admissible composition and up to 22 % pearlite, no near-equilibrium ferrite–pearlite structure in
+          this steel exceeds <strong>≈ 200 HV</strong> for grains of 3 µm or larger. Reaching 232 HV needs grains of
+          about 1 µm with everything else at its upper limit; we measured 7 µm. The light phase is therefore not
+          polygonal ferrite. The most consistent explanation is a largely bainitic product, which is also consistent with
+          published data: 230–265 HV1 in a simulated HAZ of a higher-strength steel (S700MC) at t<sub>8/5</sub> &lt; 10 s.
+        </p>
+        <figure>
+          <img src="../assets/images/gleeble-v2-gp-bound.png" alt="Gladman-Pickering ferrite-pearlite hardness envelope as a function of ferrite grain size" width="1333" height="738" loading="lazy" decoding="async" />
+          <figcaption>Model-free ferrite–pearlite hardness envelope against grain size, with composition, pearlite fraction and relation scatter propagated. The control specimen (164.3 HV1) sits inside it; Single Cycle A (232.1 HV1 at 7.0 µm) lies well above.</figcaption>
+        </figure>
+        <p>
+          The same idea bounds the unmeasured carbon. Two unrelated routes on the control specimen (lever rule from
+          the optical fraction, and inverting its hardness through Gladman–Pickering) give overlapping 90 % intervals on
+          <strong>0.067–0.123 wt% C</strong>, well below the 0.20 wt% that the original run assumed. A 1D carbon-diffusion
+          calculation along the measured heating ramp shows that the austenite is homogeneous at the observed pearlite
+          spacing, which rules that out as an alternative explanation.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>What it proved, and what it did not</h2>
         <ul>
-          <li>
-            <strong>Two solver corrections.</strong> Auditing the open-source implementation against Li et al. (1998)
-            identified and fixed two deviations: (1) ferrite reaction progress <em>X<sub>F</sub></em> is now capped by
-            the lever-rule equilibrium fraction <em>F</em><sub>eq</sub>(<em>T</em>) so slow cooling forms pearlite
-            (84% ferrite / 16% pearlite on A+HT at 0.14 wt% C, whereas the uncorrected code consumed 100% of austenite
-            as ferrite and never formed pearlite); and (2) the 700 °C cooling rate φ<sub>700</sub> is extracted by a
-            least-squares slope over 650–750 °C rather than ill-posed inverse interpolation on noisy thermocouple data.
-          </li>
-          <li>
-            <strong>Discretisation uncertainty.</strong> Sweeping the cooling-curve sampling stride from 10 to 100
-            samples changes the corrected model's predicted hardness by <strong>9.2 HV peak-to-peak</strong>
-            (σ = 3.1 HV) — comparable to the experimental indent scatter (8.4 HV).
-          </li>
-          <li>
-            <strong>Monte Carlo over admissible input brackets (N = 250).</strong> Because no mill certificate or
-            spark-OES analysis was available, propagating the admissible brackets (C 0.08–0.15, Mn 1.00–1.60,
-            Si 0.10–0.55, Cu 0–0.55 wt%, prior-austenite ASTM G 9–12) yields
-            <strong>182 ± 39 HV</strong> for Single Cycle A (5th–95th percentile <strong>134–246 HV</strong>,
-            <em>z</em> = −1.28 against 232.1 HV) and <strong>145 ± 20 HV</strong> for A+HT. Standardised regression
-            coefficients rank Mn (β = 0.72) and C (β = 0.45) ahead of grain size (β = −0.31). When the model's output
-            spread over unconstrained inputs is ±39 HV, matching a single hardness number within 10% does not test the
-            kinetics.
-          </li>
+          <li><strong>Proved:</strong> the previous agreement was compensating error; the Li/Maynier model cannot be
+            validated against bulk hardness when carbon and grain size are unknown; the fast-cooled zone is not
+            near-equilibrium ferrite–pearlite.</li>
+          <li><strong>Not proved:</strong> <em>which</em> bainite. Granular bainite and polygonal ferrite have almost the
+            same nano-hardness (2.7 vs 2.6 GPa), so the micro-hardness test I originally proposed cannot settle it. The
+            decisive test is an EBSD kernel-average-misorientation map. A spark-OES analysis would pin down carbon. Both are
+            listed in the report, ordered by how much they would change.</li>
+          <li><strong>Also reported:</strong> an optical shape-anisotropy test I hoped would replace a tint etch. It
+            failed its own synthetic control, so I rejected it and reported it as a negative result.</li>
         </ul>
       </div>
 
       <div class="case-section">
-        <h2>Two-observable consistency test</h2>
+        <h2>Takeaways</h2>
         <p>
-          Adding a second observable from quantitative metallography changes the test completely. Across all 32 points of
-          the admissible (C, G, Mn/Si/Cu) grid on Single Cycle A, if the optically dark constituent
-          (<code>0.103 ± 0.086</code>) is identified with the model's non-ferrite fraction, <strong>0 of 32
-          combinations fall within 1σ of both hardness and dark fraction</strong> (minimum Mahalanobis distance
-          <strong>5.3</strong>, used as a screening statistic with the dark-fraction threshold band; the model is
-          <strong>80 HV too soft</strong> at the measured dark fraction).
-        </p>
-        <figure>
-          <img src="../assets/images/gleeble-v2-consistency-grid.png" alt="Contour maps of predicted Vickers hardness and non-ferrite fraction across carbon content and ASTM grain size" width="1592" height="1204" loading="lazy" decoding="async" />
-          <figcaption>Corrected model over carbon content and prior-austenite ASTM G for lean and EN-max alloy sets. White contours: measured HV1 (solid = mean, dashed = ±1 s.d.); black contours: optically measured dark-fraction band (0.07–0.11). The two contour bands do not intersect in any panel.</figcaption>
-        </figure>
-      </div>
-
-      <div class="case-section">
-        <h2>Quantitative metallography &amp; model-free Gladman–Pickering bound</h2>
-        <p>
-          Optical micrographs (2% nital, calibrated from Leica <code>.xlif</code> pixel metadata at 500× and 1000×) were
-          measured with an automated pipeline: Otsu thresholding with a 0.4 µm morphological opening for the dark
-          constituent (±0.04 grey-level sensitivity band) and black top-hat filtering + skeletonisation for ASTM E112
-          lineal intercepts. Before touching real micrographs, both routines were verified against synthetic
-          Poisson–Voronoi tessellations clipped with the Liang–Barsky algorithm (analytic stereological intercept
-          ℓ̄ = πA / 2L<sub>total</sub> recovered within 10%; dark-disc area recovered within 0.02). The measured mean
-          intercepts are <strong>7.8 µm</strong> (ASTM G ≈ 10.7) in the base metal, <strong>7.0 µm</strong> in Single
-          Cycle A, and <strong>6.3 µm</strong> in A+HT (magnification-invariant within 7–8% between 500× and 1000×).
-        </p>
-        <figure>
-          <img src="../assets/images/gleeble-v2-gp-bound.png" alt="Gladman-Pickering ferrite-pearlite hardness envelope as a function of ferrite grain size" width="1333" height="738" loading="lazy" decoding="async" />
-          <figcaption>Model-free ferrite–pearlite hardness envelope from the Gladman–Pickering relation and ISO 18265 conversion (R<sub>m</sub> ≈ 3.2 HV), spanning Mn 1.00–1.60, Si 0.10–0.55 wt%, 8–22% pearlite, and ±31 MPa scatter. The A+HT specimen (164.3 HV1) sits inside the envelope; Single Cycle A (232.1 HV1 at 7.0 µm) lies well above it.</figcaption>
-        </figure>
-        <p>
-          Without invoking Li kinetics or Maynier relations, the Gladman–Pickering + Hall–Petch relation bounds any
-          near-equilibrium ferrite–pearlite aggregate in this steel to <strong>158 ± 11 HV</strong> (5th–95th percentile
-          139–178 HV) at the measured grain size (6.0–8.1 µm), and to <strong>≈ 200 HV for all grain sizes d ≥ 3 µm</strong>
-          (reaching 232 HV only at the 1.0 µm range edge under maximum Mn, Si, and pearlite). This independently rules
-          out polygonal ferrite as the light-etching matrix in Single Cycle A. Published data — Gyura et al. (2021) on
-          flame-straightened S355J2+N and Górka (2016) on simulated HAZs at t<sub>8/5</sub> &lt; 10 s (230–265 HV1) —
-          are <em>consistent with, but do not demonstrate</em>, a bainitic transformation product. Because granular
-          bainite and polygonal ferrite have nearly indistinguishable nano-hardness (2.7 vs 2.6 GPa, Jentner et al.
-          2023), <strong>EBSD kernel-average misorientation (KAM &gt; 3°)</strong> is identified as the decisive
-          discriminating test.
+          Semi-empirical HAZ models are useful for <em>trends</em>, for example how hardness moves with t<sub>8/5</sub>.
+          They are not reliable for absolute hardness when carbon is unknown to better than about ±0.03 wt%. This is not
+          specific to the Li model: four published CCT descriptions of S355J2+N disagree on phase fractions by more than
+          the model error measured here. A measured CCT diagram for the actual heat would reduce the uncertainty more than a
+          better model would. The analysis is written up as a reproducible Quarto report. Two verifier scripts recompute
+          every number in the text from the raw files, and 29 tests cover the code.
         </p>
       </div>
 
       <div class="case-section">
-        <h2>Model-free carbon bound, austenite homogenisation &amp; negative result</h2>
+        <h2>Lessons learned</h2>
         <ul>
-          <li>
-            <strong>Two independent model-free routes to carbon content.</strong> On the equilibrium A+HT specimen,
-            inverting the optical dark fraction via the lever rule gives a 90% interval of
-            <strong>0.067–0.123 wt% C</strong> (central 0.090 wt%), while inverting the measured hardness through the
-            Gladman–Pickering relation gives 0.048–0.268 wt% C (central 0.159 wt%). Their overlap
-            (<code>0.067–0.123 wt%</code>) bounds the unmeasured heat carbon well below the 0.20 wt% DIN EN 10277
-            maximum without using the transformation model.
-          </li>
-          <li>
-            <strong>1D Ågren carbon homogenisation check.</strong> Solving the non-isothermal 1D finite-volume diffusion
-            equation with Ågren's concentration-dependent diffusivity along the measured Single Cycle A ramp (419 °C/s
-            heating) shows that for the observed <strong>ferrite/pearlite island repeat distance λ = 15–25 µm</strong>,
-            austenite is homogeneous to within a few hundredths of a wt% C before cooling below Ae<sub>3</sub>
-            (significant inhomogeneity requires λ ≥ 40 µm). Incomplete homogenisation is therefore rejected as the cause
-            of the Single Cycle A hardness.
-          </li>
-          <li>
-            <strong>Negative result reported in full.</strong> A purely optical morphology discriminator based on the
-            structure-tensor coherence of grain-boundary skeletons was tested as a zero-cost substitute for a tint etch
-            or EBSD, but failed its own synthetic Voronoi equiaxed control (coherence 0.41–0.91 across seed densities;
-            Welch <em>p</em> = 0.20 between Single A and polygonal controls) and was rejected.
-          </li>
+          <li><strong>A match to one number is not validation.</strong> With free inputs, agreement can come from errors that cancel. Report the input range together with the prediction, and test against at least two independent observables.</li>
+          <li><strong>Audit the inputs before the physics.</strong> The biggest error here was a cooling curve typed in as a straight line, not anything in the model.</li>
+          <li><strong>Test the measuring tool on a known answer first.</strong> The first metallography method failed on synthetic microstructures, and a threefold grain-size error turned up soon after. Neither would have shown on real images alone.</li>
+          <li><strong>Look for an argument that shares no equations with the model.</strong> The model-free Gladman–Pickering bound did more to identify the phase than any amount of model tuning.</li>
+          <li><strong>Read the literature before proposing experiments.</strong> My proposed follow-up test was already published and turned out not to resolve the case that matters, which changed what I recommend measuring.</li>
+          <li><strong>Report the negative results.</strong> The failed optical discriminator saves the next person from trying it.</li>
         </ul>
       </div>
 
@@ -267,7 +287,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated November 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>

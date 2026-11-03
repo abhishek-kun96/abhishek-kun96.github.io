@@ -77,176 +77,176 @@
 
     <section class="container case reading">
       <dl class="case-meta">
-        <div><dt>Context</dt><dd>Self-directed study (v2.1, October 2026)</dd></div>
-        <div><dt>Role</dt><dd>Sole author &amp; developer</dd></div>
-        <div><dt>Stack</dt><dd>pycalphad 0.11.1, MatCalc mc_ni v2.036, scheil, scikit-learn, SciPy, pytest (47 tests)</dd></div>
+        <div><dt>Context</dt><dd>Self-directed study; audit and rebuild October 2026 (report v2.1)</dd></div>
+        <div><dt>Role</dt><dd>Sole author and developer</dd></div>
+        <div><dt>Stack</dt><dd>pycalphad 0.11.1, MatCalc mc_ni v2.036, scheil, scikit-learn, SciPy, Quarto, pytest (47 tests)</dd></div>
       </dl>
 
       <aside class="tldr" aria-label="Summary">
         <h2>In short</h2>
         <ul>
-          <li><strong>What:</strong> an automated alloy-screening pipeline (pycalphad with the open MatCalc mc_ni database, a Gaussian-process surrogate and constrained Bayesian optimisation) for γ/γ′ Ni superalloys over six alloying elements.</li>
-          <li><strong>What went wrong:</strong> two silent failures. Every γ′ fraction came out as 1.000 because of a phase-label error, and the database–solver pair produced a spurious Al-poor γ′ phase in 25 of 45 alloys. Tests and a chemistry guard now catch both.</li>
-          <li><strong>Outcome:</strong> a four-stage validation protocol. Against 50 measurements from six papers the corrected model shows three resolved offsets, and the GP is no better than linear regression and over-confident (51 % of residuals inside ±1σ instead of 68 %).</li>
+          <li><strong>Question:</strong> my earlier pycalphad + Gaussian-process + Bayesian-optimisation pipeline for Ni superalloys reported validated, optimised alloys. Could any of it be trusted?</li>
+          <li><strong>Answer:</strong> no. Every γ′ fraction was 1.000 because of a phase-label error, and the open database produced a spurious γ′ phase in 25 of 45 alloys under pycalphad's solver. Every layer downstream behaved normally, so nothing looked wrong.</li>
+          <li><strong>What it produced:</strong> a four-stage validation protocol that catches each failure cheaply, a measured error budget for the open database (50 values, six primary papers), and evidence that the surrogate was no better than linear regression.</li>
         </ul>
       </aside>
 
       <figure class="case-poster">
         <img src="../assets/images/calphad-v2-workflow.svg" alt="Four-stage validation protocol for automated CALPHAD and machine learning screening pipelines" width="1200" height="420" loading="lazy" decoding="async" />
-        <figcaption>The four-stage validation protocol sitting ahead of and around the 45-alloy CALPHAD + constrained Bayesian optimisation loop.</figcaption>
+        <figcaption>The four-stage validation protocol around the 45-alloy CALPHAD + constrained Bayesian optimisation loop.</figcaption>
       </figure>
 
       <div class="case-section">
-        <h2>Why the original pipeline had to be audited</h2>
+        <h2>Why I audited my own pipeline</h2>
         <p>
-          Automated alloy-design workflows couple an equilibrium thermodynamic solver (here <code>pycalphad</code>
-          with the open MatCalc <code>mc_ni v2.036</code> database across six alloying elements — Al, Cr, Co, Mo, W, Ti,
-          with Ni balance) to a machine-learning surrogate and a Bayesian optimiser. Because every downstream layer sees
-          only numbers, a silent error in phase identification or database–solver compatibility passes straight through:
-          the Gaussian Process fits smoothly, the acquisition function proposes candidates, and the ranking table looks
-          plausible.
+          I first built this pipeline as a learning project, largely with AI coding agents: pycalphad computes γ/γ′
+          equilibria for Ni–Al–Cr–Co–Mo–W–Ti alloys, a Gaussian-process (GP) surrogate learns the γ′ fraction and the
+          TCP-phase fraction, and constrained Bayesian optimisation proposes new alloys. It produced rankings, feature
+          importances and “validated” candidates. When I tried to turn it into something publishable, I could not trace
+          where its numbers came from.
         </p>
         <p>
-          A line-by-line audit of my initial workflow exposed four distinct failure classes that invalidated the
-          earlier results. Correcting them and building regression guards produced a transferable four-stage validation
-          checklist that costs minutes of compute compared with the equilibrium sweep it protects.
+          That made it a good test case. A pipeline that fails silently is exactly what a validation scheme has to
+          catch. So the question changed from “which alloy is best?” to <strong>what checks does an automated
+          CALPHAD + ML pipeline need before its output can be trusted, and what do they cost?</strong> Each check
+          below exists because it would have caught a real failure in this pipeline.
         </p>
       </div>
 
       <div class="case-section">
-        <h2>The four failure classes &amp; protocol stages</h2>
-        <ul>
-          <li>
-            <strong>Stage 1 — Invariant test at the thermodynamic layer (order–disorder classification).</strong>
-            In a partitioned two-sublattice L1<sub>2</sub> model (<code>FCC_A1#2</code> / <code>GAMMA_PRIME</code>),
-            the disordered FCC matrix and the ordered precipitate share the same phase label when disorder is allowed.
-            Label-based extraction returned a γ′ mole fraction of <code>1.000</code> for every evaluated alloy —
-            including Al-free <code>Ni–5Cr</code>. Replacing label matching with a quantitative sublattice site-fraction
-            ordering criterion, η = max<sub>i</sub> |y<sub>i</sub><sup>(1)</sup> − y<sub>i</sub><sup>(2)</sup>| &gt; 0.01,
-            restores physical γ/γ′ separation and is locked in by unit tests on known γ-only and two-phase anchors.
-          </li>
-          <li>
-            <strong>Stage 2 — Database–solver compatibility guard (the Al-poor GAMMA_PRIME artefact).</strong>
-            The open <code>mc_ni v2.036</code> assessment was fitted for MatCalc's local minimiser with explicit phase
-            flags. When evaluated under <code>pycalphad</code>'s global convex-hull minimiser, the solver finds a
-            spurious, ordered, Cr/Co/Mo-rich <code>GAMMA_PRIME</code> minimum (&lt; 10 at.% γ′-formers Al + Ti + Ta + Nb)
-            in <strong>25 of the 45</strong> evaluated design-space alloys — and in <strong>80% of alloys with ≥ 3 at.% Co</strong>.
-            Within the sampled design space it appears as a minority phase (median 7.5 mol.%, with the γ matrix surviving
-            at 0.17–0.79 mole fraction), whereas in Co-rich commercial alloys (Nimonic 115 and Udimet 720 at 14–15 wt.% Co)
-            it replaces the γ matrix completely above ~800 °C (0.36 and 0.51 mole fraction at 1000 °C). A chemistry guard
-            (<code>min_gp_former = 0.10</code>) detects and flags every affected equilibrium set.
-          </li>
-          <li>
-            <strong>Stage 3 — Provenance audit of inputs and citations.</strong>
-            Checking every input file and DOI in the initial repository revealed that 13 of 20 validation DOIs and 14 of
-            20 reference DOIs did not resolve, and that earlier summary plots had been generated from a four-element test
-            database (<code>alcocrni.tdb</code>) or a hand-coded formula rather than the trained surrogate. All unverified
-            tables were quarantined and replaced by a curated dataset with page- and table-level provenance.
-          </li>
-          <li>
-            <strong>Stage 4 — Benchmark against 50 primary experimental values &amp; baseline-calibrated surrogate checks.</strong>
-            The corrected thermodynamic layer was benchmarked against 50 primary measurements from six verified experimental
-            sources, and the Gaussian Process surrogate was scored against a plain linear regression baseline and checked
-            for out-of-fold uncertainty calibration before interpreting the Bayesian optimisation trace.
-          </li>
-        </ul>
+        <h2>Failure 1: the phase that was always 1.000</h2>
+        <p>
+          The open MatCalc mc_ni database describes γ and γ′ with one partitioned order/disorder model. When the
+          ordered phase is disordered, pycalphad still reports it under the γ′ label. The pipeline picked phases by
+          label, so it reported γ′ = 1.000 for every alloy, including Al-free Ni–5Cr, which cannot contain γ′ at all.
+          The GP then fitted a constant very well, reported low uncertainty, and the optimiser ranked noise.
+        </p>
+        <p>
+          The fix was to identify γ′ by what it physically is: an ordered phase, recognised by the difference between
+          its sublattice site fractions. The lasting change is a regression test: Ni–5Cr must give zero γ′. That
+          single test, run before any surrogate is fitted, would have caught the problem on day one.
+        </p>
       </div>
 
       <div class="case-section">
-        <h2>Benchmarking mc_ni v2.036 against 50 primary measurements</h2>
+        <h2>Failure 2: a database and a solver that do not fit together</h2>
         <p>
-          Fifty experimental values were compiled with page-level provenance from six primary sources:
-          <strong>Ma &amp; Ardell (2003)</strong> for the binary Ni–Al (γ + γ′)/γ′ boundary (600–1200 °C),
-          <strong>Kitajima, Hayashi &amp; Narita (2006)</strong> for ternary Ni–Al–Cr EPMA tie-lines at 1150 °C,
-          <strong>Pícha, Brož &amp; Buršík (2004)</strong> for quaternary Ni–Al–Cr–Ti phase compositions and phase
-          assemblages at 1000 and 1100 °C, <strong>Monajati et al. (2004)</strong> for Udimet 720,
-          <strong>Pike (2008)</strong> for Haynes 282, and <strong>Awais et al. (2023)</strong> for Nimonic 115
-          (two further candidate papers, Ortiz-de-Zárate et al. 2025 and Hawk et al. 2015, were read and excluded
-          because their γ′ fractions/phase diagrams were calculated rather than measured).
+          With identification fixed, a second problem appeared. mc_ni was assessed for MatCalc's local minimiser.
+          pycalphad uses global minimisation, which explores composition regions the assessment never constrained.
+          There it finds an Al-poor, Cr/Co/Mo-rich “γ′” that is not real: in <strong>25 of 45</strong> evaluated alloys,
+          and in 80 % of alloys with at least 3 at.% Co. In the design space it is a minority phase; in Co-rich
+          commercial alloys such as Udimet 720 it replaces the γ matrix entirely.
+        </p>
+        <p>
+          This cannot be fixed without re-assessing the database, but it can be detected cheaply: a real γ′ needs at
+          least 10 at.% of γ′-forming elements (Al, Ti, Nb, Ta, Hf). Every ordered composition set is now checked
+          against that rule and flagged. The general lesson is that an assessment is valid for the solver it was
+          fitted with, not automatically for another one.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Failure 3: references and data that did not exist</h2>
+        <p>
+          Checking provenance found that 13 of 20 validation DOIs and 14 of 20 reference DOIs in the original
+          repository did not resolve, and that some summary plots came from a four-element test database or a
+          hand-written formula rather than the trained model. I quarantined all of it and kept it under
+          <code>legacy/</code> for provenance, unused. I then built a new validation set by hand, where every value
+          carries the page and table it came from and is rejected by the loader if it does not.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Why these benchmarks</h2>
+        <p>
+          To measure how wrong the corrected model is, I chose sources that climb in complexity, so an error can be tied
+          to the alloying level where it starts: the binary Ni–Al γ′ boundary (Ma &amp; Ardell 2003), Ni–Al–Cr
+          tie-lines at 1150 °C (Kitajima et al. 2006), Ni–Al–Cr–Ti compositions and phase assemblages (Pícha et al. 2004),
+          and three commercial alloys (Udimet 720, Haynes 282, Nimonic 115). I used only measured values. Two
+          candidate papers were dropped because their γ′ data were themselves calculated.
         </p>
         <div class="results-grid">
-          <div class="result"><div class="result-value">+0.93 at.%</div><div class="result-label">Binary Ni–Al γ′ boundary offset (95% CI 0.83–1.03, p<sub>Holm</sub> &lt; 0.001)</div></div>
-          <div class="result"><div class="result-value">−2.36 at.%</div><div class="result-label">Ni–Al–Cr γ Al bias (95% CI 1.29–3.43, p<sub>Holm</sub> = 0.014)</div></div>
-          <div class="result"><div class="result-value">−0.83 at.%</div><div class="result-label">γ′ Cr bias across ternary/quaternary tie-lines (95% CI 0.43–1.22, p<sub>Holm</sub> = 0.020)</div></div>
-          <div class="result"><div class="result-value">7 / 16</div><div class="result-label">Ni–Al–Cr–Ti phase assemblages matched by mc_ni (vs 13 / 16 for a commercial database)</div></div>
+          <div class="result"><div class="result-value">+0.93 at.%</div><div class="result-label">Binary Ni–Al γ′ boundary sits too Al-rich at every temperature</div></div>
+          <div class="result"><div class="result-value">−2.36 at.%</div><div class="result-label">γ in Ni–Al–Cr too Al-poor (p<sub>Holm</sub> = 0.014)</div></div>
+          <div class="result"><div class="result-value">−0.83 at.%</div><div class="result-label">γ′ Cr too low (p<sub>Holm</sub> = 0.020)</div></div>
+          <div class="result"><div class="result-value">7 / 16</div><div class="result-label">Ni–Al–Cr–Ti phase assemblages matched (commercial database: 13 / 16)</div></div>
         </div>
+        <p>
+          The picture is clear: errors are small in the binary (about 1 at.%, close to the scatter between experimental
+          methods) and grow with alloying. The direct comparison with a commercial database on identical alloys (7/16
+          vs 13/16) is the strongest single argument for repeating the study with Thermo-Calc TCNI.
+        </p>
         <div class="callout">
           <p>
-            <strong>Statistical caveat.</strong> Because multiple points within a source come from a single
-            phase-diagram section (for example eight points along the Ni–Al boundary of Ma &amp; Ardell, or five tie-lines
-            at 1150 °C in Kitajima et al.), residuals within a source are not independent samples. The confidence
-            intervals and Holm-adjusted p-values across the five tested quantities (n ≥ 4) are therefore reported as
-            <em>screening statistics</em> that separate resolved database offsets from scatter, not as formal
-            independent significance tests. On the commercial alloys, the Haynes 282 γ′ solvus is exceeded by +20 K
-            (single developer-stated value), while the Udimet 720 comparison (+67 K nominal) is artefact-affected and
-            hits a non-monotonic liquid/solid solver sequence between 1200 and 1300 °C.
+            <strong>Statistical caveat.</strong> Values from one source come from one phase-diagram section, so they
+            are not independent samples. The confidence intervals and Holm-adjusted p-values are screening statistics
+            that separate resolved offsets from scatter, not formal significance tests. The Haynes 282 γ′ solvus is
+            +20 K too high (a single developer-stated value); the Udimet 720 comparison is affected by the artefact and
+            is reported separately.
           </p>
         </div>
       </div>
 
       <div class="case-section">
-        <h2>Surrogate baseline &amp; uncertainty calibration</h2>
+        <h2>Failure 4: a surrogate that had learnt a straight line</h2>
         <p>
-          In a six-element design space with 45 evaluated alloys (a 24-point Latin-hypercube initial design, a 10-alloy independent random test set, and the constrained Bayesian
-          optimisation proposals), reporting a Gaussian Process surrogate without a simple baseline hides whether the
-          model learnt anything beyond a linear trend. Using repeated 5-fold cross-validation (10 repeats, 45 alloys):
+          With 45 alloys in six dimensions, I suspected a GP had little room to beat a simple model, so I scored it
+          against linear regression in repeated cross-validation. For γ′ at 1000 °C the GP's error (RMSE 0.0445) is no
+          better than linear regression (0.0427). Its uncertainty is also too narrow: only 51 % of held-out residuals
+          fall within ±1σ instead of 68 %, and 73 % within ±2σ instead of 95 %. The GP is still useful because Bayesian
+          optimisation needs a variance, but its accuracy alone says nothing, and its error bars overstate confidence.
         </p>
-        <ul>
-          <li>
-            <strong>Linear regression matches the GP on γ′ at 1000 °C.</strong> The Matérn-5/2 GP achieves
-            <code>RMSE = 0.0445</code> (s.d. <code>0.0053</code>, <code>MAE = 0.0316</code>, <code>R² = 0.940</code>),
-            which does not beat plain linear regression on the six element fractions
-            (<code>RMSE = 0.0427</code>, s.d. <code>0.0018</code>, <code>MAE = 0.0325</code>, <code>R² = 0.946</code>;
-            Random Forest gives <code>RMSE = 0.0803</code>, <code>R² = 0.806</code>, and the mean predictor
-            <code>0.1855</code>). For TCP fraction at 900 °C, the GP is only marginally ahead of linear regression
-            (<code>RMSE = 0.0240</code> vs <code>0.0252</code>).
-          </li>
-          <li>
-            <strong>GP uncertainty is over-confident.</strong> Out-of-fold calibration shows that only
-            <strong>51.1%</strong> of held-out γ′ residuals fall inside the GP's ±1σ band (against 68.3% expected for a
-            calibrated Gaussian) and <strong>73.3%</strong> fall within ±2σ (against 95.4% expected). The GP remains
-            useful because the acquisition function requires predictive variance, but its intervals are too narrow.
-          </li>
-        </ul>
-      </div>
-
-      <div class="case-figures">
-        <figure>
-          <img src="../assets/images/calphad-v2-surrogate-parity.png" alt="GP surrogate parity on the independent test set for gamma prime at 1000 C and TCP at 900 C" width="1087" height="446" loading="lazy" decoding="async" />
-          <figcaption>GP surrogate parity on the independent test set (left: γ′ mole fraction at 1000 °C; right: TCP mole fraction at 900 °C; error bars ±2σ).</figcaption>
-        </figure>
-        <figure>
-          <img src="../assets/images/calphad-v2-composition-trends.png" alt="Composition trends across all 45 evaluated alloys showing gamma prime vs Al and TCP vs Cr+Mo+W" width="1080" height="439" loading="lazy" decoding="async" />
-          <figcaption>Composition trends across all evaluated alloys: γ′ at 1000 °C versus Al coloured by Cr (left), and TCP fraction at 900 °C versus Cr + Mo + W coloured by Ti (right).</figcaption>
-        </figure>
+        <div class="case-figures">
+          <figure>
+            <img src="../assets/images/calphad-v2-surrogate-parity.png" alt="GP surrogate parity on the independent test set for gamma prime at 1000 C and TCP at 900 C" width="1087" height="446" loading="lazy" decoding="async" />
+            <figcaption>GP parity on the independent test set (left: γ′ at 1000 °C; right: TCP at 900 °C; error bars ±2σ).</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/images/calphad-v2-composition-trends.png" alt="Composition trends across all 45 evaluated alloys showing gamma prime vs Al and TCP vs Cr+Mo+W" width="1080" height="439" loading="lazy" decoding="async" />
+            <figcaption>Trends over all evaluated alloys: γ′ against Al coloured by Cr (left); TCP fraction against Cr + Mo + W coloured by Ti (right). Mostly linear, which is why the GP has little to add.</figcaption>
+          </figure>
+        </div>
       </div>
 
       <div class="case-section">
-        <h2>Constrained Bayesian optimisation in context</h2>
+        <h2>The corrected optimisation, read honestly</h2>
         <p>
-          Running 12 iterations of constrained Expected Improvement (requiring <code>TCP<sub>900 °C</sub> &lt; 0.01</code>
-          and <code>artefact<sub>1000 °C</sub> &lt; 0.01</code>) raises the best feasible γ′ mole fraction at 1000 °C
-          from <code>0.48</code> in the initial design to <strong><code>0.642</code></strong>. Almost all of that gain
-          arrived by <strong>iteration 2 (<code>0.63</code>)</strong>; the later improvement at iteration 7 added less
-          than 0.01, and 8 of the 12 proposals violated either the TCP or the artefact constraint.
+          With all four fixes, 12 iterations of constrained Bayesian optimisation (TCP and artefact both below 1 %)
+          raise the best feasible γ′ at 1000 °C from 0.48 to 0.64. Almost all of that gain came by iteration 2, and 8 of
+          the 12 proposals broke a constraint.
         </p>
         <figure>
           <img src="../assets/images/calphad-v2-best-candidate.png" alt="Phase fractions versus temperature for the best feasible candidate alloy" width="689" height="440" loading="lazy" decoding="async" />
-          <figcaption>Phase fractions versus temperature for the highest-γ′ feasible candidate (Ni–13.1Al–7.2Cr–1.2Co–0.1Mo–3.0W–2.0Ti, at.%; γ′ = 0.642 at 1000 °C, ρ = 8.35 g/cm³, equilibrium solidus 1383 °C, Scheil solidus 1280 °C, model γ′ solvus ≈ 1350 °C).</figcaption>
+          <figcaption>Phase fractions against temperature for the best feasible candidate (Ni–13.1Al–7.2Cr–1.2Co–0.1Mo–3.0W–2.0Ti, at.%; model γ′ solvus ≈ 1350 °C).</figcaption>
         </figure>
         <p>
-          All top feasible candidates sit at low Co (≤ 1.2 at.%) and high Al. That is not a metallurgical discovery —
-          low Co is where <code>mc_ni</code> is free of the Al-poor <code>GAMMA_PRIME</code> artefact under global
-          minimisation, so the feasibility constraint steers the optimiser into the subspace where the database works.
+          All the best candidates are low in Co and high in Al. I do not present that as a design result: low Co is also
+          where the database artefact is absent, so the optimiser is partly steered by where the database works, not by
+          where alloys are best. No mechanical, microstructural or processing claim is made.
+        </p>
+      </div>
+
+      <div class="case-section">
+        <h2>Takeaways</h2>
+        <p>
+          The transferable result is the protocol, not the alloy: (1) an invariant test at the thermodynamic layer,
+          (2) a database–solver compatibility guard, (3) a provenance audit, and (4) a benchmark against primary data,
+          with the surrogate scored against a baseline and its uncertainty checked. The first two must run
+          <em>before</em> any surrogate is fitted, because the failures they catch make everything downstream
+          meaningless. Each costs minutes against the 45-alloy sweep it protects. I derived the protocol from these
+          failures, so this case is a consistency check, not proof that it catches everything. The work is a reproducible
+          Quarto report (tag v2.1-submission, 47 tests, all numbers recomputed by a verifier script).
         </p>
       </div>
 
       <div class="case-section">
         <h2>Lessons learned</h2>
         <ul>
-          <li><strong>Test invariants before fitting surrogates.</strong> A single regression test asserting that <code>Ni–5Cr</code> has zero γ′ catches label-based misidentification immediately; checking after the surrogate is trained only measures how well a GP fits a constant.</li>
-          <li><strong>A database and a solver are a pair.</strong> An assessment tuned for a local minimiser can develop spurious global minima in unassessed composition corners when driven by a convex-hull solver.</li>
-          <li><strong>Always score surrogates against a linear baseline and check coverage.</strong> With 45 points in 6 dimensions, linear regression is as accurate as a Matérn GP on γ′, and out-of-fold coverage exposes over-confident uncertainty bars.</li>
+          <li><strong>Test an invariant before fitting anything.</strong> One composition with a known answer (Ni–5Cr has no γ′) would have caught a failure that invalidated the whole stack.</li>
+          <li><strong>A database and a solver are a pair.</strong> An assessment fitted for one minimiser can produce phases that do not exist under another.</li>
+          <li><strong>Score every surrogate against a trivial baseline and check its coverage.</strong> A GP that ties with linear regression has not learnt anything extra, and uncalibrated error bars mislead the optimiser.</li>
+          <li><strong>Code written by agents needs the same audit as anyone else's code, and more provenance checks.</strong> The plots looked professional while the references behind them did not resolve. I now verify every DOI and every data row before any result is used.</li>
+          <li><strong>When an optimiser converges, ask why it chose that region.</strong> Here it partly chose where the database is valid, not where alloys are best.</li>
         </ul>
       </div>
 
@@ -265,7 +265,7 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 Abhishek Kuntal, Munich. Last updated October 2026.</p>
+      <p>© 2026 Abhishek Kuntal, Munich. Last updated November 2026.</p>
       <p class="footer-links">
         <a href="mailto:kuntal.abhishek@gmail.com">kuntal.abhishek@gmail.com</a>
         <a href="https://www.linkedin.com/in/abhishek-kuntal996/" target="_blank" rel="noopener">LinkedIn</a>

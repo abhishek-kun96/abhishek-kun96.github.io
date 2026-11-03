@@ -58,14 +58,14 @@
     <section class="container" aria-label="Project list">
       <div class="work-controls">
         <div class="filter-bar" role="toolbar" aria-label="Filter projects" data-filter-bar>
-          <button type="button" class="filter-btn" data-filter="all" aria-pressed="true">All (15)</button>
-          <button type="button" class="filter-btn" data-filter="cfd" aria-pressed="false">CFD and simulation (11)</button>
+          <button type="button" class="filter-btn" data-filter="all" aria-pressed="true">All (16)</button>
+          <button type="button" class="filter-btn" data-filter="cfd" aria-pressed="false">CFD and simulation (12)</button>
           <button type="button" class="filter-btn" data-filter="materials" aria-pressed="false">Experiment and materials (4)</button>
           <button type="button" class="filter-btn" data-filter="automation" aria-pressed="false">Automation and tools (6)</button>
         </div>
         <input type="search" class="search-input" placeholder="Search by title or tool" aria-label="Search projects" data-search />
       </div>
-      <p class="filter-empty" data-filter-empty hidden>No project matches that search. Clear it to see all 15.</p>
+      <p class="filter-empty" data-filter-empty hidden>No project matches that search. Clear it to see all 16.</p>
 
       <div class="project-grid">
         <!-- cards:start -->
@@ -87,8 +87,15 @@
           <img class="project-thumb" src="assets/images/thumbs/mesher.jpg" alt="" width="800" height="500" loading="lazy" decoding="async" />
           <p class="project-tag">Own CFD toolchain · 2026</p>
           <h2 class="project-title">Physics-informed 2D/3D CFD mesher &amp; solver-in-the-loop adaptation</h2>
-          <p class="project-summary">Automated y⁺ boundary-layer sizing, C-grid wake topology, and Fluent-in-the-loop metric adaptation via gmsh and MMG, cross-checked in SU2: DFG 2D-1 cylinder C<sub>D</sub> within −0.009% of reference; 155 automated tests.</p>
+          <p class="project-summary">Automated y⁺ boundary-layer sizing, C-grid wake topology, and Fluent-in-the-loop metric adaptation via gmsh and MMG, cross-checked in SU2: DFG 2D-1 cylinder C<sub>D</sub> within −0.009% of reference; an open turbulent drag gap traced to the mesh; 159 automated tests.</p>
           <div class="project-tools"><span class="tool">gmsh</span><span class="tool">MMG2D/3D</span><span class="tool">ANSYS Fluent</span><span class="tool">SU2</span></div>
+        </a>
+        <a class="project-card" href="projects/qihtc-framework.html" data-category="cfd">
+          <img class="project-thumb" src="assets/images/thumbs/qihtc.jpg" alt="" width="800" height="500" loading="lazy" decoding="async" />
+          <p class="project-tag">Own research code · 2026</p>
+          <h2 class="project-title">Divergence-free spline CFD: what exact incompressibility costs</h2>
+          <p class="project-summary">Divergence-conforming B-spline Navier–Stokes solver rebuilt from an audit, validated on seven benchmarks, and measured at equal accuracy against OpenFOAM and DOLFINx: fewest unknowns per error, but a Python implementation that needs compiling.</p>
+          <div class="project-tools"><span class="tool">Python</span><span class="tool">SciPy</span><span class="tool">OpenFOAM</span><span class="tool">DOLFINx</span></div>
         </a>
         <a class="project-card" href="projects/turbomachinery-cfd.html" data-category="cfd automation">
           <img class="project-thumb" src="assets/images/thumbs/turbomachinery.jpg" alt="" width="800" height="500" loading="lazy" decoding="async" />
