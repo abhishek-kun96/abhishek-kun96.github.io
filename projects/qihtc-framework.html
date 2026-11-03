@@ -13,7 +13,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Divergence-free spline CFD (QIHTC) — Abhishek Kuntal</title>
   <link rel="canonical" href="https://abhishek-kun96.github.io/projects/qihtc-framework.html" />
-  <meta name="description" content="An open divergence-conforming isogeometric Navier–Stokes solver, audited down to a verified core, validated on seven 2D and 3D benchmarks, and measured for cost at equal accuracy against ESI OpenFOAM and DOLFINx finite elements." />
+  <meta name="description" content="An open divergence-conforming isogeometric Navier–Stokes solver, verified and validated on seven 2D and 3D benchmarks, and measured for cost at equal accuracy against ESI OpenFOAM and DOLFINx finite elements." />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Divergence-free spline CFD: what exact incompressibility costs" />
   <meta property="og:url" content="https://abhishek-kun96.github.io/projects/qihtc-framework.html" />
@@ -30,7 +30,7 @@
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": "Divergence-free spline CFD: what exact incompressibility costs — Abhishek Kuntal",
-    "description": "An open divergence-conforming isogeometric Navier–Stokes solver, audited down to a verified core, validated on seven 2D and 3D benchmarks, and measured for cost at equal accuracy against ESI OpenFOAM and DOLFINx finite elements.",
+    "description": "An open divergence-conforming isogeometric Navier–Stokes solver, verified and validated on seven 2D and 3D benchmarks, and measured for cost at equal accuracy against ESI OpenFOAM and DOLFINx finite elements.",
     "author": {
       "@type": "Person",
       "name": "Abhishek Kuntal",
@@ -71,7 +71,7 @@
       <div class="container reading">
         <p class="eyebrow">Own research code, 2026</p>
         <h1>Divergence-free spline CFD: what exact incompressibility costs</h1>
-        <p>A Navier–Stokes solver on divergence-conforming B-splines whose velocity is divergence-free to round-off, rebuilt from an audit, validated on seven benchmarks and measured against OpenFOAM and high-order finite elements at equal accuracy.</p>
+        <p>A Navier–Stokes solver on divergence-conforming B-splines whose velocity is divergence-free to round-off, verified, validated on seven benchmarks and measured against OpenFOAM and high-order finite elements at equal accuracy.</p>
       </div>
     </header>
 
@@ -87,7 +87,7 @@
         <h2>In short</h2>
         <ul>
           <li><strong>Question:</strong> divergence-conforming B-splines give a velocity that is exactly divergence-free and unaffected by pressure errors. The theory is known. What do they actually cost against the codes engineers use?</li>
-          <li><strong>What I did:</strong> audited an over-claimed prototype down to its sound core, rebuilt it into a working 2D/3D solver, validated it on seven benchmarks, and measured cost at equal accuracy against OpenFOAM and high-order finite elements (DOLFINx).</li>
+          <li><strong>What I did:</strong> built a 2D/3D solver on these spaces, verified it against exact solutions, validated it on seven benchmarks, and measured cost at equal accuracy against OpenFOAM and high-order finite elements (DOLFINx).</li>
           <li><strong>Answer:</strong> per unknown, cubic splines were the most accurate of six discretisations tested. Per CPU second my Python code is 7–16× cheaper than OpenFOAM at moderate accuracy but 7–119× more expensive than compiled finite elements. The method is efficient; the implementation is the bottleneck.</li>
         </ul>
       </aside>
@@ -111,22 +111,6 @@
           not depend on the pressure. These properties are proven in the literature. What I could not find was a
           measurement of what they cost and buy against the discretisations people actually use. That became the question
           of this project.
-        </p>
-      </div>
-
-      <div class="case-section">
-        <h2>Starting with an audit</h2>
-        <p>
-          The project began as a quickly built prototype, and its documents claimed far more:
-          turbulent channel flow, “QIHTC vs FVM” speed-ups, learned adaptive refinement, neuromorphic and quantum
-          back ends. When I audited it (October 2026), most of those results were hard-coded numbers or untrained
-          networks, the “GPU” package ran on the CPU, and the “C interface” was plain Python. The 2D de Rham core was
-          sound: it reproduced the cavity benchmark and converged at the theoretical order.
-        </p>
-        <p>
-          I withdrew every unsupported claim, archived the old documents so they cannot be cited by mistake, and rebuilt
-          from the verified core. Every result below is produced by a script in the repository, and the manuscript's
-          numbers, tables and figures are generated from those result files.
         </p>
       </div>
 
@@ -211,12 +195,47 @@
       </div>
 
       <div class="case-section">
+        <h2>Current limits, and the plan to close them</h2>
+        <p>
+          The study above shows where the code stands. Each limit below has a concrete next step and a test that will
+          show whether the step worked. They are ordered by impact: the first one is what turns the method's efficiency
+          into a cost advantage.
+        </p>
+        <ol>
+          <li><strong>Speed per unknown (7–119× slower than compiled DOLFINx).</strong> The cause is Python assembly
+            and direct factorisation, not the discretisation. Plan: compiled, matrix-free operators using sum
+            factorisation, which already exists for the 2D viscous and mass operators and the 3D periodic convection
+            term, combined with a Krylov solver and a block preconditioner for the saddle-point system. Test: repeat the
+            same equal-accuracy study on the same problems and core, and measure how much of the CPU-time gap closes while
+            the unknowns-per-error advantage is kept.</li>
+          <li><strong>Single-node direct solvers.</strong> Factorisation does not scale to large 3D problems. Plan: once
+            the operators are matrix-free, add domain decomposition with MPI. Test: strong and weak scaling on the 3D
+            Taylor–Green vortex.</li>
+          <li><strong>One smooth patch of geometry.</strong> Real CAD needs several patches. Plan: couple Piola-mapped
+            patches through the constrained (augmented-Lagrangian) solver that already handles rank-deficient
+            saddle-point systems. Test: the curved-annulus and cylinder cases split into several patches must keep the
+            design order and a divergence at round-off.</li>
+          <li><strong>3D only in periodic boxes, and subgrid models untested near walls.</strong> Plan: non-periodic 3D
+            boundaries with the same Nitsche wall treatment as in 2D, then RBVMS and WALE on wall-bounded turbulence.
+            Test: turbulent channel flow at Re<sub>τ</sub> = 180 against published DNS profiles.</li>
+          <li><strong>Two-level refinement on closed boxes.</strong> Plan: more THB levels and refinement on mapped and
+            open domains. Test: the dipole–wall collision with three or more levels against the uniform fine run, at the
+            same unknown budget.</li>
+          <li><strong>Open availability.</strong> Plan: publish the repository with an archived, citable release
+            alongside the manuscript, so every number on this page can be reproduced by others.</li>
+        </ol>
+        <p>
+          The learned refinement policy stays out until it beats Dörfler marking consistently across seeds; the
+          classical indicator remains the default.
+        </p>
+      </div>
+
+      <div class="case-section">
         <h2>Takeaways</h2>
         <p>
           The efficiency of divergence-conforming splines is real and now measured: fewest unknowns for a given error, exact
-          incompressibility, pressure robustness and low dissipation. Turning that into a cost advantage needs a compiled,
-          matrix-free implementation with iterative solvers; today's code relies on direct factorisation and runs 3D only in
-          periodic boxes. Multi-patch geometry and wall-bounded 3D flow are the other open steps. A manuscript for
+          incompressibility, pressure robustness and low dissipation. Turning that into a cost advantage is an implementation
+          task, and the plan above sets out the steps in order, starting with compiled matrix-free operators. A manuscript for
           <em>Computers &amp; Fluids</em> is prepared; the code is not public yet.
         </p>
       </div>
@@ -224,9 +243,8 @@
       <div class="case-section">
         <h2>Lessons learned</h2>
         <ul>
-          <li><strong>Audit before you extend.</strong> Building on the prototype's claims would have stacked new work on hard-coded numbers. Cutting back to what could be reproduced was slower at first and the only way to get a result.</li>
           <li><strong>A number without a script is not a result.</strong> Every figure, table and number in the manuscript is now generated from result files.</li>
-          <li><strong>Compare against the strongest rival, not the convenient one.</strong> Against OpenFOAM alone the splines look 7–16× faster; DOLFINx shows the speed comes from the order of accuracy, and the code itself is slow.</li>
+          <li><strong>Compare against the strongest rival, not the convenient one.</strong> Against OpenFOAM alone the splines look 7–16× faster; DOLFINx shows the speed comes from the order of accuracy and tells me exactly where to optimise next.</li>
           <li><strong>Separate the method from the implementation.</strong> Plotting error against unknowns and against CPU time answers two different questions.</li>
           <li><strong>Check the reference code on an exact solution.</strong> A widely used OpenFOAM package was wrong on laminar Poiseuille flow.</li>
           <li><strong>Machine learning has to beat the classical baseline to stay in.</strong> The learned refinement policy did not, so it is reported and not used.</li>
