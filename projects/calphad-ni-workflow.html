@@ -99,7 +99,7 @@
       <div class="case-section">
         <h2>Why I audited my own pipeline</h2>
         <p>
-          I first built this pipeline as a learning project, largely with AI coding agents: pycalphad computes γ/γ′
+          I first built this pipeline quickly as a learning project: pycalphad computes γ/γ′
           equilibria for Ni–Al–Cr–Co–Mo–W–Ti alloys, a Gaussian-process (GP) surrogate learns the γ′ fraction and the
           TCP-phase fraction, and constrained Bayesian optimisation proposes new alloys. It produced rankings, feature
           importances and “validated” candidates. When I tried to turn it into something publishable, I could not trace
@@ -245,7 +245,7 @@
           <li><strong>Test an invariant before fitting anything.</strong> One composition with a known answer (Ni–5Cr has no γ′) would have caught a failure that invalidated the whole stack.</li>
           <li><strong>A database and a solver are a pair.</strong> An assessment fitted for one minimiser can produce phases that do not exist under another.</li>
           <li><strong>Score every surrogate against a trivial baseline and check its coverage.</strong> A GP that ties with linear regression has not learnt anything extra, and uncalibrated error bars mislead the optimiser.</li>
-          <li><strong>Code written by agents needs the same audit as anyone else's code, and more provenance checks.</strong> The plots looked professional while the references behind them did not resolve. I now verify every DOI and every data row before any result is used.</li>
+          <li><strong>Fast prototypes need a provenance audit before their results are used.</strong> The plots looked professional while the references behind them did not resolve. I now verify every DOI and every data row before any result is used.</li>
           <li><strong>When an optimiser converges, ask why it chose that region.</strong> Here it partly chose where the database is valid, not where alloys are best.</li>
         </ul>
       </div>
