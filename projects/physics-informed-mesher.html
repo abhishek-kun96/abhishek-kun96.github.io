@@ -231,6 +231,20 @@
       </div>
 
       <div class="case-section">
+        <h2>Current limits, and the plan to close them</h2>
+        <p>
+          Each limit below has a concrete next step and a check that shows whether it worked, ordered by how much it would change the conclusions.
+        </p>
+        <ol>
+          <li><strong>Turbulent drag gap (about 60 % still unexplained).</strong> Plan: change one region at a time towards the NASA reference grid (surface spacing, wall-normal growth, far-field growth) and keep what closes the gap; make the better far-field growth the default once confirmed. Check: drag within the reference grid's +1.95 % with the same Fluent and SU2 set-up.</li>
+          <li><strong>Adaptation matches but does not beat uniform refinement on steady flow.</strong> Plan: the next roadmap stages, output-based (adjoint-weighted residual) adaptation aimed at drag and lift, then adapting while solving, where the user sets an accuracy rather than a mesh. Check: fewer cells than the fixed family for the same drag and lift error on DFG 2D-1 and the aerofoil.</li>
+          <li><strong>Flap drag is not yet asymptotic.</strong> Plan: a finer fourth level on the 10° flap, or a pressure/viscous drag split to see which part moves.</li>
+          <li><strong>High-order and learned sizing are waiting on prerequisites.</strong> Plan: the curved P2 export is ready and needs a high-order solver to test true hp-adaptation; a learned metric waits until at least 200 logged cases exist, and is kept only if it beats the physics-based metric.</li>
+          <li><strong>Not yet public.</strong> Plan: an MIT-licensed public repository with continuous integration and an archived release, a software paper (JOSS) and a methods paper (Computers &amp; Fluids), with every number in them generated from logged runs.</li>
+        </ol>
+      </div>
+
+      <div class="case-section">
         <h2>Takeaways</h2>
         <p>
           Sizing a mesh from flow physics works: on laminar benchmarks the mesher reaches reference accuracy with clean

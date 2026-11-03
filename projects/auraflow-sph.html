@@ -167,9 +167,10 @@
           too high, so sampling explains part of it, but the water really does overload the wall.
         </p>
         <p>
-          The next suspect is the missing air cushion. A two-phase water–air model (after Rezavand et al. 2020) is
-          implemented and passes its unit tests (still water under air matches single phase within 3 %). The GPU
-          comparison on the dam break is still running, so I make no claim yet.
+          Two causes remain. Switching off the kinematic wall clamp halves the sensor-1 peak (51.7 to 24.1), so the
+          clamp's instant momentum change at first contact contributes. The missing air cushion may contribute too: a
+          two-phase water–air model (after Rezavand et al. 2020) is implemented and passes its unit tests (still water
+          under air matches single phase within 3 %), but its GPU comparison is still running, so I make no claim yet.
         </p>
       </div>
 
@@ -244,12 +245,27 @@
       </div>
 
       <div class="case-section">
+        <h2>Current limits, and the plan to close them</h2>
+        <p>
+          Each limit below has a concrete next step and a check that shows whether it worked, ordered by how much it would change the conclusions.
+        </p>
+        <ol>
+          <li><strong>Impact pressure peaks.</strong> Plan, staged cheapest first: (a) report the pressure impulse, which SPH can converge, next to the raw peak; (b) replace the kinematic wall clamp with a pressure-consistent wall repulsion if the no-clamp runs confirm it matters; (c) finish the two-phase comparison on the GPU. Check: the sensor-1 impulse moves into the experimental band and its grid-convergence study converges.</li>
+          <li><strong>Variable-resolution zone edges are rough.</strong> Plan: build the vacancy fill for side faces (generators refill empty spots even with no normal flow), then a Taylor gradient term in the interpolation, one change at a time. Check: the edge-noise metric drops on the side faces without raising noise elsewhere, the test the hysteresis band failed.</li>
+          <li><strong>One floating-box wave gauge misses its gate.</strong> Plan: the miss is in the tail amplitude of the wave group, not in reflections, so wave absorption would not fix it; next is a resolution study of that tail before any physics change. Check: gauge N1 within ±10 %.</li>
+          <li><strong>3D resolution is capped by an 8 GB laptop GPU.</strong> Plan: run large 3D cases (sphere wake above Re 100, finer SPHERIC levels) on a single cloud GPU with more memory and no thermal throttling; the code runs there unchanged. Multi-GPU is deliberately not planned, because batching already gives 9.3× throughput for the learning use case.</li>
+          <li><strong>v1.2.4 is not finished.</strong> Plan: complete the GPU checks for active wave absorption and the air model, decide the defaults from the results, record them in the validation log and tag the version.</li>
+          <li><strong>No public code or paper yet.</strong> Plan: publish the code with a software paper and a benchmark paper positioned as a free-surface back end for HydroGym-style reinforcement learning, after adding PPO and SAC baselines on standard tasks.</li>
+        </ol>
+      </div>
+
+      <div class="case-section">
         <h2>Takeaways</h2>
         <p>
           A GPU SPH solver written by one person can match a mature code for speed and pass standard benchmarks, but only
           because each failure was traced to a cause instead of tuned away. Kinematics, forces on bodies and wave
           generation are validated. Impact pressure peaks are not, and the evidence so far says part of that is how
-          pressure is sampled and part is real over-loading without air. The solver is ready to serve as a free-surface
+          pressure is sampled and part is real over-loading, with the wall clamp and the missing air as the remaining suspects. The solver is ready to serve as a free-surface
           back end for reinforcement learning, which is where the next paper is aimed; the main gap there is PPO/SAC
           baselines on standard tasks.
         </p>

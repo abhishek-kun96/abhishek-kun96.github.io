@@ -227,6 +227,21 @@
       </div>
 
       <div class="case-section">
+        <h2>Current limits, and the plan to close them</h2>
+        <p>
+          Each limit below has a concrete next step and a check that shows whether it worked, ordered by how much it would change the conclusions.
+        </p>
+        <ol>
+          <li><strong>The open database limits every number.</strong> Plan: rerun the identical pipeline and benchmark with the commercial Thermo-Calc TCNI database through a licensed route. Check: whether the three resolved offsets and the 7/16 phase-assemblage score improve, which tells whether they belong to mc_ni or to open assessments in general.</li>
+          <li><strong>Modern single-crystal alloys are out of reach.</strong> Plan: TCNI also covers Ta and Re, which mc_ni lacks, so the same pipeline can then include CMSX-4-type compositions.</li>
+          <li><strong>Database uncertainty is not propagated.</strong> Plan: propagate thermodynamic parameter uncertainty into the γ′ and solvus predictions, and report it separately from the surrogate's own uncertainty instead of adding the two.</li>
+          <li><strong>The surrogate's error bars are too narrow.</strong> Plan: recalibrate the GP intervals on out-of-fold residuals and keep the linear baseline in every report. Check: about 68 % of held-out residuals inside ±1σ and 95 % inside ±2σ.</li>
+          <li><strong>Validation values were extracted and checked by one person.</strong> Plan: a second, independent extraction of all 50 values from the source papers, and more primary data sets as they are found.</li>
+          <li><strong>The checks are a protocol on paper.</strong> Plan: run all four stages as standing automated tests, so every database or code change has to pass them before any result is used.</li>
+        </ol>
+      </div>
+
+      <div class="case-section">
         <h2>Takeaways</h2>
         <p>
           The transferable result is the protocol, not the alloy: (1) an invariant test at the thermodynamic layer,
